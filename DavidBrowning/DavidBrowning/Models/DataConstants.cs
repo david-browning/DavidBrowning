@@ -1,0 +1,17 @@
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+namespace DavidBrowning.Models
+{
+   public sealed class DataConstants
+   {
+      public const int MaxSlugLength = 64;
+
+      public const int MaxLabelLength = 128;
+
+      public const int MaxAzureAssetLength = 256;
+
+      public const int MaxMetadataLength = 512;
+
+      public const int MaxNameLength = 256;
+   }
+}
