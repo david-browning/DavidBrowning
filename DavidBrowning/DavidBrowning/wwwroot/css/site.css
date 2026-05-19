@@ -1,0 +1,677 @@
+/* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. */
+/* ============================================================
+   Workbench Theme
+   Bootstrap should be loaded before this file.
+   ============================================================ */
+
+:root {
+   /* Core palette */
+   --wb-bg: #0f1217;
+   --wb-bg-alt: #121821;
+   --wb-surface: #181e27;
+   --wb-surface-raised: #202836;
+   --wb-text: #f4f6fb;
+   --wb-text-muted: #aab2c0;
+   --wb-text-subtle: #7f8898;
+   --wb-accent: #6ea8fe;
+   --wb-accent-strong: #3d8bfd;
+   --wb-accent-soft: rgba(110, 168, 254, 0.14);
+   --wb-border: rgba(255, 255, 255, 0.10);
+   --wb-border-strong: rgba(255, 255, 255, 0.18);
+   --wb-border-accent: rgba(110, 168, 254, 0.55);
+   /* Shape */
+   --wb-border-width: 1px;
+   --wb-border-width-accent: 3px;
+   --wb-radius-sm: 0.25rem;
+   --wb-radius-md: 0.375rem;
+   --wb-radius-lg: 0.5rem;
+   /* Type */
+   --wb-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+   --wb-font-mono: "Cascadia Code", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+   --wb-line-height-body: 1.65;
+   --wb-line-height-heading: 1.12;
+   --wb-focus-ring: 0 0 0 0.2rem rgba(110, 168, 254, 0.35);
+   /* Bootstrap overrides */
+   --bs-body-bg: var(--wb-bg);
+   --bs-body-color: var(--wb-text);
+   --bs-primary: var(--wb-accent);
+   --bs-primary-rgb: 110, 168, 254;
+   --bs-link-color: var(--wb-accent);
+   --bs-link-hover-color: var(--wb-accent-strong);
+   --bs-border-color: var(--wb-border);
+   --bs-border-radius: var(--wb-radius-md);
+   --bs-border-radius-sm: var(--wb-radius-sm);
+   --bs-border-radius-lg: var(--wb-radius-lg);
+   --bs-font-sans-serif: var(--wb-font-sans);
+   --bs-font-monospace: var(--wb-font-mono);
+   --bs-heading-color: var(--wb-text);
+   --bs-secondary-color: var(--wb-text-muted);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+html {
+   min-height: 100%;
+   scroll-behavior: smooth;
+}
+
+body {
+   min-height: 100vh;
+   background: radial-gradient(circle at top left, rgba(110, 168, 254, 0.08), transparent 32rem), linear-gradient(180deg, var(--wb-bg-alt) 0%, var(--wb-bg) 22rem);
+   color: var(--wb-text);
+   font-family: var(--wb-font-sans);
+   line-height: var(--wb-line-height-body);
+   text-rendering: optimizeLegibility;
+}
+
+main {
+   min-height: 70vh;
+}
+
+::selection {
+   background: var(--wb-accent);
+   color: #071019;
+}
+
+img {
+   max-width: 100%;
+   height: auto;
+}
+
+hr {
+   border-color: var(--wb-border);
+   opacity: 1;
+}
+
+
+/* ============================================================
+   App Layout
+   ============================================================ */
+
+.wb-app-shell {
+   min-height: 100vh;
+}
+
+.wb-site-header {
+   position: sticky;
+   top: 0;
+   z-index: 1030;
+   border-bottom: var(--wb-border-width) solid var(--wb-border);
+   background: rgba(15, 18, 23, 0.9);
+   backdrop-filter: blur(14px);
+}
+
+.wb-site-header-inner {
+   display: flex;
+   align-items: center;
+   min-height: 4rem;
+   gap: 1rem;
+}
+
+.wb-site-brand {
+   color: var(--wb-text);
+   font-weight: 800;
+   letter-spacing: -0.035em;
+   text-decoration: none;
+}
+
+   .wb-site-brand:hover {
+      color: var(--wb-accent);
+   }
+
+.wb-site-header-text {
+   color: var(--wb-text-subtle);
+   font-family: var(--wb-font-mono);
+   font-size: 0.78rem;
+   font-weight: 700;
+   letter-spacing: 0.12em;
+   text-transform: uppercase;
+}
+
+.wb-nav-toggle {
+   margin-left: auto;
+   padding: 0.45rem 0.75rem;
+   border: var(--wb-border-width) solid var(--wb-border);
+   border-radius: var(--wb-radius-md);
+   background: var(--wb-surface);
+   color: var(--wb-text);
+   font-family: var(--wb-font-mono);
+   font-size: 0.8rem;
+   font-weight: 700;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+}
+
+   .wb-nav-toggle:hover {
+      border-color: var(--wb-border-accent);
+      background: var(--wb-accent-soft);
+   }
+
+.wb-layout {
+   display: grid;
+   grid-template-columns: 16rem minmax(0, 1fr);
+   align-items: start;
+}
+
+.wb-sidebar {
+   position: sticky;
+   top: 4rem;
+   min-height: calc(100vh - 4rem);
+   border-right: var(--wb-border-width) solid var(--wb-border);
+   background: rgba(15, 18, 23, 0.58);
+}
+
+.wb-sidebar-inner {
+   display: flex;
+   flex-direction: column;
+   gap: 0.25rem;
+   padding: 1rem;
+}
+
+.wb-nav-link {
+   position: relative;
+   display: block;
+   padding: 0.7rem 0.85rem;
+   border: var(--wb-border-width) solid transparent;
+   border-radius: var(--wb-radius-md);
+   color: var(--wb-text-muted);
+   font-weight: 650;
+   text-decoration: none;
+}
+
+   .wb-nav-link:hover,
+   .wb-nav-link:focus {
+      border-color: var(--wb-border);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--wb-text);
+      text-decoration: none;
+   }
+
+   .wb-nav-link.active {
+      border-color: var(--wb-border-accent);
+      border-left: var(--wb-border-width-accent) solid var(--wb-accent);
+      background: var(--wb-accent-soft);
+      color: var(--wb-text);
+   }
+
+.wb-main {
+   min-width: 0;
+}
+
+   /* Let page sections control their own width with .container/.container-fluid. */
+   .wb-main > .container:first-child,
+   .wb-main > section:first-child {
+      margin-top: 0;
+   }
+
+/* ============================================================
+   Typography
+   ============================================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+   color: var(--wb-text);
+   font-weight: 700;
+   line-height: var(--wb-line-height-heading);
+   letter-spacing: -0.035em;
+}
+
+h1 {
+   font-size: clamp(2.5rem, 6vw, 5rem);
+}
+
+h2 {
+   font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+h3 {
+   font-size: clamp(1.4rem, 2.4vw, 2rem);
+}
+
+.wb-kicker {
+   margin-bottom: 0.75rem;
+   color: var(--wb-accent);
+   font-family: var(--wb-font-mono);
+   font-size: 0.78rem;
+   font-weight: 700;
+   letter-spacing: 0.12em;
+   text-transform: uppercase;
+}
+
+.wb-lede {
+   max-width: 72ch;
+   color: var(--wb-text-muted);
+   font-size: clamp(1.1rem, 2vw, 1.3rem);
+   line-height: 1.6;
+}
+
+.wb-prose {
+   max-width: 72ch;
+}
+
+   .wb-prose > * + * {
+      margin-top: 1.1rem;
+   }
+
+   .wb-prose h2,
+   .wb-prose h3 {
+      margin-top: 2.5rem;
+   }
+
+/* ============================================================
+   Links / Focus
+   ============================================================ */
+
+a {
+   color: var(--wb-accent);
+   text-decoration-color: rgba(110, 168, 254, 0.45);
+   text-underline-offset: 0.18em;
+   transition: color 140ms ease, text-decoration-color 140ms ease, background-color 140ms ease, border-color 140ms ease;
+}
+
+   a:hover {
+      color: var(--wb-accent-strong);
+      text-decoration-color: currentColor;
+   }
+
+   a:focus-visible,
+   button:focus-visible,
+   .btn:focus-visible,
+   .form-control:focus,
+   .form-select:focus {
+      outline: none;
+      box-shadow: var(--wb-focus-ring);
+   }
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+
+.wb-navbar {
+   background: rgba(15, 18, 23, 0.86);
+   border-bottom: var(--wb-border-width) solid var(--wb-border);
+   backdrop-filter: blur(14px);
+}
+
+   .wb-navbar .navbar-brand {
+      color: var(--wb-text);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+   }
+
+      .wb-navbar .navbar-brand:hover {
+         color: var(--wb-accent);
+      }
+
+   .wb-navbar .nav-link {
+      position: relative;
+      color: var(--wb-text-muted);
+      font-weight: 500;
+      text-decoration: none;
+   }
+
+      .wb-navbar .nav-link:hover,
+      .wb-navbar .nav-link:focus {
+         color: var(--wb-text);
+      }
+
+      .wb-navbar .nav-link.active {
+         color: var(--wb-accent);
+      }
+
+         .wb-navbar .nav-link.active::after {
+            position: absolute;
+            right: 0.5rem;
+            bottom: 0.2rem;
+            left: 0.5rem;
+            height: 2px;
+            background: var(--wb-accent);
+            content: "";
+         }
+
+.navbar-toggler {
+   border-color: var(--wb-border);
+   border-radius: var(--wb-radius-md);
+}
+
+   .navbar-toggler:focus {
+      box-shadow: var(--wb-focus-ring);
+   }
+
+/* ============================================================
+   Bootstrap Button Theme
+   ============================================================ */
+
+.btn {
+   border-radius: var(--wb-radius-md);
+   font-weight: 650;
+}
+
+.btn-primary {
+   --bs-btn-bg: var(--wb-accent);
+   --bs-btn-border-color: var(--wb-accent);
+   --bs-btn-color: #071019;
+   --bs-btn-hover-bg: var(--wb-accent-strong);
+   --bs-btn-hover-border-color: var(--wb-accent-strong);
+   --bs-btn-hover-color: #071019;
+   --bs-btn-active-bg: var(--wb-accent-strong);
+   --bs-btn-active-border-color: var(--wb-accent-strong);
+   --bs-btn-focus-shadow-rgb: 110, 168, 254;
+}
+
+.btn-outline-primary {
+   --bs-btn-color: var(--wb-accent);
+   --bs-btn-border-color: var(--wb-border-accent);
+   --bs-btn-hover-bg: var(--wb-accent);
+   --bs-btn-hover-border-color: var(--wb-accent);
+   --bs-btn-hover-color: #071019;
+   --bs-btn-focus-shadow-rgb: 110, 168, 254;
+}
+
+/* ============================================================
+   Layout Sections
+   ============================================================ */
+
+.wb-hero {
+   padding: clamp(4rem, 10vw, 8rem) 0;
+}
+
+.wb-section {
+   padding: clamp(3rem, 8vw, 6rem) 0;
+}
+
+.wb-section-header {
+   max-width: 78ch;
+   margin-bottom: 2rem;
+}
+
+/* ============================================================
+   Panels / Cards
+   ============================================================ */
+
+.wb-panel,
+.wb-card {
+   position: relative;
+   border: var(--wb-border-width) solid var(--wb-border);
+   border-radius: var(--wb-radius-lg);
+   background: var(--wb-surface);
+   color: var(--wb-text);
+}
+
+.wb-panel {
+   padding: 2rem;
+}
+
+.wb-card {
+   padding: 1.5rem;
+}
+
+.wb-panel-accent,
+.wb-card-accent {
+   border-left: var(--wb-border-width-accent) solid var(--wb-accent);
+}
+
+.wb-card:hover {
+   border-color: var(--wb-border-strong);
+}
+
+.wb-card-meta {
+   margin-bottom: 0.75rem;
+   color: var(--wb-text-subtle);
+   font-family: var(--wb-font-mono);
+   font-size: 0.78rem;
+   font-weight: 700;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+}
+
+/* Bootstrap card compatibility */
+
+.card {
+   border-color: var(--wb-border);
+   border-radius: var(--wb-radius-lg);
+   background: var(--wb-surface);
+   color: var(--wb-text);
+}
+
+.card-header,
+.card-footer {
+   border-color: var(--wb-border);
+   background: rgba(255, 255, 255, 0.025);
+}
+
+/* ============================================================
+   Tags
+   ============================================================ */
+
+.wb-tag-list {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 0.5rem;
+   margin: 0;
+   padding: 0;
+   list-style: none;
+}
+
+.wb-tag {
+   display: inline-flex;
+   align-items: center;
+   min-height: 1.75rem;
+   padding: 0.15rem 0.55rem;
+   border: var(--wb-border-width) solid var(--wb-border);
+   border-radius: 999px;
+   background: rgba(255, 255, 255, 0.035);
+   color: var(--wb-text-muted);
+   font-family: var(--wb-font-mono);
+   font-size: 0.78rem;
+   line-height: 1;
+   white-space: nowrap;
+}
+
+/* ============================================================
+   Code
+   ============================================================ */
+
+.wb-code-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 1rem;
+   padding: 0.65rem 1rem;
+   border: var(--wb-border-width) solid var(--wb-border);
+   border-bottom: 0;
+   border-radius: var(--wb-radius-lg) var(--wb-radius-lg) 0 0;
+   background: var(--wb-surface-raised);
+   color: var(--wb-text-muted);
+   font-family: var(--wb-font-mono);
+   font-size: 0.78rem;
+}
+
+.wb-code-block,
+pre {
+   overflow-x: auto;
+   padding: 1.25rem;
+   border: var(--wb-border-width) solid var(--wb-border);
+   border-left: var(--wb-border-width-accent) solid var(--wb-accent);
+   border-radius: var(--wb-radius-lg);
+   background: #0a0d12;
+   color: #e7edf7;
+   font-family: var(--wb-font-mono);
+   font-size: 0.92rem;
+   line-height: 1.65;
+   tab-size: 4;
+}
+
+.wb-code-header + .wb-code-block,
+.wb-code-header + pre {
+   border-top-left-radius: 0;
+   border-top-right-radius: 0;
+}
+
+.wb-code-block code,
+pre code {
+   color: inherit;
+   font: inherit;
+   word-break: normal;
+}
+
+code:not(pre code) {
+   padding: 0.1rem 0.32rem;
+   border: var(--wb-border-width) solid var(--wb-border);
+   border-radius: var(--wb-radius-sm);
+   background: rgba(255, 255, 255, 0.06);
+   color: var(--wb-text);
+   font-family: var(--wb-font-mono);
+   font-size: 0.9em;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.wb-footer {
+   margin-top: 3rem;
+   padding: 1.5rem 0;
+   border-top: var(--wb-border-width) solid var(--wb-border);
+   background: rgba(15, 18, 23, 0.72);
+   color: var(--wb-text-subtle);
+}
+
+.wb-footer-inner {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 1.5rem;
+}
+
+.wb-footer-identity {
+   display: flex;
+   flex-direction: column;
+   gap: 0.2rem;
+   min-width: 0;
+}
+
+.wb-footer-note {
+   color: var(--wb-text-subtle);
+   font-family: var(--wb-font-mono);
+   font-size: 0.78rem;
+}
+
+.wb-footer-nav {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   justify-content: flex-end;
+   gap: 0.4rem 0.9rem;
+}
+
+.wb-footer-link {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.4rem;
+   color: var(--wb-text-muted);
+   font-weight: 550;
+   text-decoration: none;
+}
+
+   .wb-footer-link:hover,
+   .wb-footer-link:focus {
+      color: var(--wb-accent);
+      text-decoration: none;
+   }
+
+   .wb-footer-link i {
+      width: 1.1rem;
+      text-align: center;
+   }
+
+/* ============================================================
+   Forms
+   ============================================================ */
+
+.form-control,
+.form-select {
+   border-color: var(--wb-border);
+   border-radius: var(--wb-radius-md);
+   background-color: rgba(255, 255, 255, 0.035);
+   color: var(--wb-text);
+}
+
+   .form-control:focus,
+   .form-select:focus {
+      border-color: var(--wb-border-accent);
+      background-color: rgba(255, 255, 255, 0.055);
+      color: var(--wb-text);
+   }
+
+   .form-control::placeholder {
+      color: var(--wb-text-subtle);
+   }
+
+.form-label {
+   color: var(--wb-text-muted);
+   font-weight: 650;
+}
+
+/* ============================================================
+   Mobile Polish
+   Bootstrap handles most responsiveness. These are component-level.
+   ============================================================ */
+
+@media (max-width: 991.98px) {
+   .wb-layout {
+      display: block;
+   }
+
+   .wb-sidebar {
+      position: static;
+      min-height: auto;
+      border-right: 0;
+      border-bottom: var(--wb-border-width) solid var(--wb-border);
+      background: rgba(15, 18, 23, 0.92);
+   }
+
+   .wb-sidebar-inner {
+      padding: 0.75rem;
+   }
+
+   .wb-nav-link {
+      padding: 0.8rem 0.85rem;
+   }
+
+      .wb-nav-link.active {
+         border-left-width: var(--wb-border-width);
+      }
+
+   .wb-footer-inner {
+      align-items: flex-start;
+      flex-direction: column;
+   }
+
+   .wb-footer-nav {
+      justify-content: flex-start;
+   }
+}
+
+/* ============================================================
+   Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+   *,
+   *::before,
+   *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+   }
+}
