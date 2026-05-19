@@ -1,0 +1,165 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - DavidBrowning</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/DavidBrowning.styles.css" asp-append-version="true" />
+	<script src="https://kit.fontawesome.com/9800358062.js" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div class="wb-app-shell">
+		<header class="wb-site-header">
+			<div class="container-fluid">
+				<div class="wb-site-header-inner">
+					<a class="wb-site-brand"
+					   asp-area=""
+					   asp-controller="Home"
+					   asp-action="Index">
+						David Browning
+					</a>
+
+					<div class="wb-site-header-text d-none d-md-block">
+						Software / Systems / Tools
+					</div>
+
+					<button class="wb-nav-toggle d-lg-none"
+							type="button"
+							data-bs-toggle="collapse"
+							data-bs-target="#siteNavigation"
+							aria-controls="siteNavigation"
+							aria-expanded="false"
+							aria-label="Toggle navigation">
+						<i class="fa-solid fa-bars" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<div class="wb-layout">
+			<nav id="siteNavigation"
+				 class="wb-sidebar collapse d-lg-block"
+				 aria-label="Primary navigation">
+				<div class="wb-sidebar-inner">
+					<a class="wb-nav-link active"
+					   asp-area=""
+					   asp-controller="Home"
+					   asp-action="Index">
+						<i class="fa-solid fa-house wb-nav-icon" aria-hidden="true"></i>
+						<span>Home</span>
+					</a>
+
+					<a class="wb-nav-link"
+					   asp-area=""
+					   asp-controller="Home"
+					   asp-action="Work">
+						<i class="fa-solid fa-briefcase wb-nav-icon" aria-hidden="true"></i>
+						<span>Work</span>
+					</a>
+
+					<a class="wb-nav-link"
+					   asp-area=""
+					   asp-controller="Projects"
+					   asp-action="Index">
+						<i class="fa-solid fa-diagram-project wb-nav-icon" aria-hidden="true"></i>
+						<span>Projects</span>
+					</a>
+
+					<a class="wb-nav-link"
+					   asp-area=""
+					   asp-controller="Writing"
+					   asp-action="Index">
+						<i class="fa-solid fa-pen-nib wb-nav-icon" aria-hidden="true"></i>
+						<span>Writing</span>
+					</a>
+
+					<a class="wb-nav-link"
+					   asp-area=""
+					   asp-controller="Home"
+					   asp-action="About">
+						<i class="fa-solid fa-user wb-nav-icon" aria-hidden="true"></i>
+						<span>About</span>
+					</a>
+
+					<a class="wb-nav-link"
+					   asp-area=""
+					   asp-controller="Home"
+					   asp-action="Contact">
+						<i class="fa-solid fa-envelope wb-nav-icon" aria-hidden="true"></i>
+						<span>Contact</span>
+					</a>
+				</div>
+			</nav>
+
+			<main class="wb-main" role="main">
+				@RenderBody()
+			</main>
+		</div>
+
+		<footer class="wb-footer">
+			<div class="container-fluid">
+				<div class="wb-footer-inner">
+					<div class="wb-footer-identity">
+						<div>
+							&copy; 2026 David Browning
+						</div>
+
+						<div class="wb-footer-note">
+							Built with ASP.NET Core MVC.
+						</div>
+					</div>
+
+					<nav class="wb-footer-nav" aria-label="Footer navigation">
+						<a class="wb-footer-link"
+						   href="https://github.com/david-browning"
+						   target="_blank"
+						   rel="noopener noreferrer">
+							<i class="fa-brands fa-github" aria-hidden="true"></i>
+							<span>GitHub</span>
+						</a>
+
+						<a class="wb-footer-link"
+						   href="https://www.linkedin.com/in/david-browning/"
+						   target="_blank"
+						   rel="noopener noreferrer">
+							<i class="fa-brands fa-linkedin" aria-hidden="true"></i>
+							<span>LinkedIn</span>
+						</a>
+
+@* 						<a class="wb-footer-link"
+						   href="mailto:your-email@example.com">
+							<i class="fa-solid fa-envelope" aria-hidden="true"></i>
+							<span>Email</span>
+						</a> *@
+
+						<a class="wb-footer-link"
+						   asp-area=""
+						   asp-controller="Home"
+						   asp-action="Privacy">
+							<span>Privacy</span>
+						</a>
+
+						<a class="wb-footer-link"
+						   href="https://github.com/david-browning/DavidBrowning"
+						   target="_blank"
+						   rel="noopener noreferrer">
+							<i class="fa-solid fa-code" aria-hidden="true"></i>
+							<span>Source</span>
+						</a>
+					</nav>
+				</div>
+			</div>
+		</footer>
+	</div>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
