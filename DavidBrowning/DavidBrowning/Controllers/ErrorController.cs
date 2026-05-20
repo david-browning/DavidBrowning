@@ -5,7 +5,6 @@ using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
@@ -15,7 +14,7 @@ namespace DavidBrowning.Controllers
       public ErrorController(
          IErrorStore errorLogStore,
          IWebHostEnvironment environment,
-         IOptions<ErrorControllerDiagnosticsOptions> options) 
+         IOptions<ErrorControllerDiagnosticsOptions> options)
       {
          _errorLogStore = errorLogStore;
          _environment = environment;

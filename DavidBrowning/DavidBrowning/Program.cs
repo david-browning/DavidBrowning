@@ -1,15 +1,16 @@
 // Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using DavidBrowning.Data;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Middleware;
+using DavidBrowning.Services.Assets;
+using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,17 +45,59 @@ namespace DavidBrowning
 
       private static void ConfigureServices(WebApplicationBuilder builder)
       {
+         // Register controller options.
          builder.Services.Configure<HomeControllerDiagnosticsOptions>(
             builder.Configuration.GetSection("Diagnostics:Home"));
          builder.Services.Configure<WritingControllerDiagnosticsOptions>(
             builder.Configuration.GetSection("Diagnostics:Writing"));
          builder.Services.Configure<ErrorControllerDiagnosticsOptions>(
             builder.Configuration.GetSection("Diagnostics:Error"));
+
+         // Register additional options.
+         builder.Services.Configure<LookupCacheOptions>(
+            builder.Configuration.GetSection("LookupCache"));
+
+         builder.Services.AddMemoryCache();
+         builder.Services.AddSingleton<ISystemClock, SystemClock>();
+         builder.Services.AddSingleton<ISiteAssetService, DummySiteAssetService>();
+
+         builder.Services.AddSingleton<ILookupCache, BasicLookupCache>();
+         builder.Services.AddScoped(
+            typeof(ISlugLookupService<>),
+            typeof(SlugLookupService<>));
+
          builder.Services.AddControllersWithViews();
       }
 
       private static void ConfigureDatabase(WebApplicationBuilder builder)
       {
+         var lookupProvider = builder.Configuration["Stores:LookupStore:Provider"] ?? _backupStoreName;
+         if (string.Equals(lookupProvider, _backupStoreName, StringComparison.OrdinalIgnoreCase))
+         {
+            builder.Services.AddScoped(
+               typeof(ISlugLookupService<>),
+               typeof(DummySlugLookupService<>));
+            
+         }
+         else if (string.Equals(lookupProvider, "AzureSql", StringComparison.OrdinalIgnoreCase))
+         {
+            throw new InvalidOperationException("Database not supported yet.");
+            builder.Services.AddDbContext<SiteDbContext>(options =>
+            {
+               options.UseSqlServer(
+                  builder.Configuration.GetConnectionString("SiteDatabase"));
+            });
+
+            builder.Services.AddScoped(
+               typeof(ISlugLookupService<>),
+               typeof(SlugLookupService<>));
+         }
+         else
+         {
+            throw new InvalidOperationException(
+               $"Unknown lookup provider: {lookupProvider}");
+         }
+
          var errorProvider = builder.Configuration["Stores:ErrorStore:Provider"] ?? _backupStoreName;
          if (string.Equals(errorProvider, _backupStoreName, StringComparison.OrdinalIgnoreCase))
          {
@@ -110,8 +153,6 @@ namespace DavidBrowning
 
          app.UseAuthentication();
          app.UseAuthorization();
-
-         //app.UseMiddleware<DatabaseExceptionLogger>();
 
          app.MapControllerRoute(
              name: "default",

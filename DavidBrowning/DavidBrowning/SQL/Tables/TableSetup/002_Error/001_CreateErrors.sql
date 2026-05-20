@@ -1,4 +1,6 @@
-﻿CREATE TABLE dbo.db_ErrorLogEntries
+﻿-- Copyright © 2026 David Browning. All rights reserved.
+-- Source-available for viewing only. No license granted.
+CREATE TABLE dbo.db_ErrorLogEntries
 (
     Id int IDENTITY(1,1) NOT NULL,
 

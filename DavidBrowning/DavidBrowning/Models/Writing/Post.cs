@@ -2,9 +2,6 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -97,7 +94,7 @@ namespace DavidBrowning.Models.Writing
       /// <summary>
       /// Links to the assets attached to the post.
       /// </summary>
-      public ICollection<PostAssetLink> AssetLinks { get; } =
-         new List<PostAssetLink>();
+      public ICollection<SiteAssetLink> AssetLinks { get; } =
+         new List<SiteAssetLink>();
    }
 }

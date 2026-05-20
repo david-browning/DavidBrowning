@@ -1,8 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-namespace DavidBrowning.Models.Writing
+namespace DavidBrowning.Models
 {
-   public enum PostAssetRole : byte
+   public enum SiteAssetRole : byte
    {
       Attachment = 0,
       HeroImage = 1,

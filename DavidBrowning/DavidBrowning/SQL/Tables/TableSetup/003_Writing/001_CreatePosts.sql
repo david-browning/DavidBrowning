@@ -1,4 +1,6 @@
-﻿CREATE TABLE dbo.db_Posts
+﻿-- Copyright © 2026 David Browning. All rights reserved.
+-- Source-available for viewing only. No license granted.
+CREATE TABLE dbo.db_Posts
 (
     Id int IDENTITY(1,1) NOT NULL,
     Slug nvarchar(64) NOT NULL,

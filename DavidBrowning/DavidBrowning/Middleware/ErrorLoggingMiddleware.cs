@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Middleware
 {
-   public sealed class ErrorLoggingMiddleware
+   internal sealed class ErrorLoggingMiddleware
    {
       public ErrorLoggingMiddleware(
          RequestDelegate next,

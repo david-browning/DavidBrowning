@@ -2,61 +2,68 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using DavidBrowning.Models.Projects;
 using Microsoft.EntityFrameworkCore;
 
-namespace DavidBrowning.Models.Writing
+namespace DavidBrowning.Models
 {
    /// <summary>
-   /// Maps to db_PostAssets
-   /// The BlobContainer/BlobName must be a unique combination, otherwise you
-   /// have duplicate content.
+   /// Maps to db_SiteAssets.
+   /// Reusable blob-backed asset that can be referenced by posts, projects, or future site content.
    /// </summary>
-   [PrimaryKey("Id")]
+   [PrimaryKey(nameof(Id))]
    [Index(nameof(BlobContainer), nameof(BlobName), IsUnique = true)]
-   public sealed class PostAsset
+   public sealed class SiteAsset
    {
       [Required, Key]
       public int Id { get; set; }
 
       /// <summary>
       /// The type of content the asset is.
-      /// Instead of having it be a foreign key, we'll just map it to an enum
-      /// in code.
+      /// Example: image, PDF, code, binary.
       /// </summary>
-      public required PostAssetType AssetType { get; set; }
+      public required SiteAssetType AssetType { get; set; }
 
+      /// <summary>
+      /// Original uploaded filename, if available.
+      /// </summary>
       [StringLength(DataConstants.MaxNameLength)]
       public string? OriginalFileName { get; set; }
 
-
       /// <summary>
-      /// The Azure blob container that contains the content. Posts can use this
-      /// and the BlobName to refer to the content.
+      /// Azure blob container containing the asset.
       /// </summary>
+      [Required]
       [StringLength(DataConstants.MaxAzureAssetLength)]
       public required string BlobContainer { get; set; }
 
       /// <summary>
-      /// Name of the blob. Posts can use this to refer to the actual content.
+      /// Name/path of the blob inside the container.
       /// </summary>
+      [Required]
       [StringLength(DataConstants.MaxAzureAssetLength)]
       public required string BlobName { get; set; }
 
       /// <summary>
-      /// Alternate text of the asset. This will show up as a subtitle or when
-      /// someone hovers the assets.
+      /// Default alternate text for the asset.
+      /// Content-specific links can override this.
       /// </summary>
       public string? AltText { get; set; }
 
+      /// <summary>
+      /// Size of the asset in bytes.
+      /// </summary>
       public required long SizeBytes { get; set; }
 
+      /// <summary>
+      /// When this asset record was created.
+      /// Stored in UTC.
+      /// </summary>
       public required DateTime CreatedAtUtc { get; set; }
 
-      public ICollection<PostAssetLink> PostLinks { get; } =
-         new List<PostAssetLink>();
+      public ICollection<SiteAssetLink> PostLinks { get; } = new List<SiteAssetLink>();
+
+      public ICollection<ProjectAssetLink> ProjectLinks { get; } = new List<ProjectAssetLink>();
    }
 }
