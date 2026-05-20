@@ -7,14 +7,14 @@
 
 :root {
    /* Core palette */
-   --wb-bg: #0f1217;
+   --wb-bg: #0f0f0f;
    --wb-bg-alt: #121821;
-   --wb-surface: #181e27;
+   --wb-surface: #0b0d10;
    --wb-surface-raised: #202836;
    --wb-text: #f4f6fb;
    --wb-text-muted: #aab2c0;
    --wb-text-subtle: #7f8898;
-   --wb-accent: #6ea8fe;
+   --wb-accent: #0be4ec;
    --wb-accent-strong: #3d8bfd;
    --wb-accent-soft: rgba(110, 168, 254, 0.14);
    --wb-border: rgba(255, 255, 255, 0.10);
@@ -72,7 +72,7 @@ main {
 }
 
 ::selection {
-   background: var(--wb-accent);
+   background: var(--wb-accent-strong);
    color: #071019;
 }
 
@@ -199,6 +199,7 @@ hr {
 
 .wb-main {
    min-width: 0;
+   padding: 1em;
 }
 
    /* Let page sections control their own width with .container/.container-fluid. */
@@ -467,7 +468,7 @@ a {
    min-height: 1.75rem;
    padding: 0.15rem 0.55rem;
    border: var(--wb-border-width) solid var(--wb-border);
-   border-radius: 999px;
+   border-radius: 0.25em;
    background: rgba(255, 255, 255, 0.035);
    color: var(--wb-text-muted);
    font-family: var(--wb-font-mono);

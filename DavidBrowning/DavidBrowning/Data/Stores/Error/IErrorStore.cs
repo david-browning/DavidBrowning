@@ -9,10 +9,16 @@ namespace DavidBrowning.Data.Stores.Error
 {
    public interface IErrorStore
    {
-      Task<IReadOnlyList<WebsiteError>> GetErrors(
+      Task<PagedResult<WebsiteError>> GetErrorsAsync(
+         int page, 
+         int pageSize, 
          CancellationToken cancellationToken = default);
 
-      Task InsertError(
+      Task<WebsiteError> GetErrorAsync(
+         int id, 
+         CancellationToken cancellationToken = default);
+
+      Task InsertErrorAsync(
          WebsiteError error,
          CancellationToken cancellationToken = default);
    }

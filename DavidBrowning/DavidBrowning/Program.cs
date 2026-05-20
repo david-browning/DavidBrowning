@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Writing;
+using DavidBrowning.Diagnostics;
 using DavidBrowning.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,12 @@ namespace DavidBrowning
 
       private static void ConfigureServices(WebApplicationBuilder builder)
       {
+         builder.Services.Configure<HomeControllerDiagnosticsOptions>(
+            builder.Configuration.GetSection("Diagnostics:Home"));
+         builder.Services.Configure<WritingControllerDiagnosticsOptions>(
+            builder.Configuration.GetSection("Diagnostics:Writing"));
+         builder.Services.Configure<ErrorControllerDiagnosticsOptions>(
+            builder.Configuration.GetSection("Diagnostics:Error"));
          builder.Services.AddControllersWithViews();
       }
 
