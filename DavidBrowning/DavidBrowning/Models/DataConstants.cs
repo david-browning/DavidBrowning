@@ -13,5 +13,9 @@ namespace DavidBrowning.Models
       public const int MaxMetadataLength = 512;
 
       public const int MaxNameLength = 256;
+
+      public const int MaxUrlLength = 2048;
+
+      public const int MaxIconCssClassLength = 128;
    }
 }

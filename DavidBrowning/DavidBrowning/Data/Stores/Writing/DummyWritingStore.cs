@@ -9,7 +9,7 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Data.Stores.Writing
 {
-   public sealed class DummyWritingStore : IWritingStore
+   internal sealed class DummyWritingStore : IWritingStore
    {
       private readonly IReadOnlyList<Post> _posts;
       private readonly IReadOnlyList<WritingTag> _tags;
@@ -19,21 +19,21 @@ namespace DavidBrowning.Data.Stores.Writing
          WritingTag engineeringTag = new()
          {
             Id = 1,
-            Name = "Engineering",
+            DisplayName = "Engineering",
             Slug = "engineering"
          };
 
          WritingTag systemsTag = new()
          {
             Id = 2,
-            Name = "Systems",
+            DisplayName = "Systems",
             Slug = "systems"
          };
 
          WritingTag designTag = new()
          {
             Id = 3,
-            Name = "Design",
+            DisplayName = "Design",
             Slug = "design"
          };
 

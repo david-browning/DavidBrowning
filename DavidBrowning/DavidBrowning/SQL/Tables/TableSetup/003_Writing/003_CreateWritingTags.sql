@@ -1,7 +1,9 @@
-﻿CREATE TABLE dbo.db_WritingTags
+﻿-- Copyright © 2026 David Browning. All rights reserved.
+-- Source-available for viewing only. No license granted.
+CREATE TABLE dbo.db_WritingTags
 (
     Id int IDENTITY(1,1) NOT NULL,
-    Name nvarchar(128) NOT NULL,
+    DisplayName nvarchar(128) NOT NULL,
     Slug nvarchar(64) NOT NULL,
 
     CONSTRAINT PK_db_WritingTags PRIMARY KEY (Id),

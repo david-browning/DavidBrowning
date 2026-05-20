@@ -1,13 +1,11 @@
 // Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Models;
+using DavidBrowning.Models.Projects;
+using DavidBrowning.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -17,14 +15,17 @@ namespace DavidBrowning.Controllers
    {
       public HomeController(
          ILogger<HomeController> logger,
-         IWritingStore writingStore)
+         IWritingStore writingStore,
+         ISlugLookupService<ProjectVisibility> projectLookup)
       {
          _logger = logger;
          _writingStore = writingStore;
+         _projectVisibilityLookup = projectLookup;
       }
 
-      public IActionResult Index()
+      public async Task<IActionResult> Index()
       {
+         //int? publishedVisibilityId = await _projectVisibilityLookup.GetIdBySlugAsync("published");
          return View();
       }
 
@@ -41,5 +42,6 @@ namespace DavidBrowning.Controllers
 
       private readonly ILogger<HomeController> _logger;
       private readonly IWritingStore _writingStore;
+      private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;
    }
 }

@@ -2,9 +2,6 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +12,7 @@ namespace DavidBrowning.Models.Writing
    /// </summary>
    [PrimaryKey("Id")]
    [Index(nameof(Slug), IsUnique = true)]
-   public sealed class WritingTag
+   public sealed class WritingTag : ISlugLookup
    {
       [Required, Key]
       public int Id { get; set; }
@@ -25,7 +22,7 @@ namespace DavidBrowning.Models.Writing
       /// </summary>
       [Required]
       [StringLength(DataConstants.MaxLabelLength)]
-      public required string Name { get; set; }
+      public required string DisplayName { get; set; }
 
       /// <summary>
       /// The URL-friendly text so we can query all posts with this tag applied.

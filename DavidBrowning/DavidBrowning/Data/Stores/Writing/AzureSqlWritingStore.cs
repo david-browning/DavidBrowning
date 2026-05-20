@@ -2,14 +2,13 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Data.Stores.Writing
 {
-   public class AzureSqlWritingStore : IWritingStore
+   internal class AzureSqlWritingStore : IWritingStore
    {
       public Task<IReadOnlyList<Post>> GetPublishedPostsAsync(
          CancellationToken cancellationToken = default)
