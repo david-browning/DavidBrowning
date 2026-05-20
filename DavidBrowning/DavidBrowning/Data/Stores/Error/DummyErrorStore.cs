@@ -15,15 +15,17 @@ namespace DavidBrowning.Data.Stores.Error
 
       }
 
-      public Task<IReadOnlyList<WebsiteError>> GetErrors(
-         CancellationToken cancellationToken = default)
+      public Task<PagedResult<WebsiteError>> GetErrorsAsync(int page, int pageSize, CancellationToken cancellationToken = default)
       {
          throw new System.NotImplementedException();
       }
 
-      public Task InsertError(
-         WebsiteError error, 
-         CancellationToken cancellationToken = default)
+      public Task<WebsiteError> GetErrorAsync(int id, CancellationToken cancellationToken = default)
+      {
+         throw new System.NotImplementedException();
+      }
+
+      public Task InsertErrorAsync(WebsiteError error, CancellationToken cancellationToken = default)
       {
          throw new System.NotImplementedException();
       }
