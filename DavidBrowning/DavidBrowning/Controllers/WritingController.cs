@@ -1,0 +1,138 @@
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System.Threading;
+using System.Threading.Tasks;
+using DavidBrowning.Data.Stores.Error;
+using DavidBrowning.Data.Stores.Writing;
+using DavidBrowning.Diagnostics;
+using DavidBrowning.Models.Projects;
+using DavidBrowning.Services.Assets;
+using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Slugs;
+using DavidBrowning.Services.Time;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace DavidBrowning.Controllers
+{
+   public class WritingController : Controller
+   {
+      public WritingController(
+         ILogger<WritingController> logger,
+         ISystemClock clock,
+         IErrorStore errorLogStore,
+         IOptions<DiagnosticsOptions> options,
+         ISiteAssetService assetService,
+         IWebHostEnvironment environment,
+         IConfiguration configuration,
+
+         IWritingStore writingStore,
+         ISlugService slugs)
+      {
+         _logger = logger;
+         _clock = clock;
+         _errorLogStore = errorLogStore;
+         _options = options.Value;
+         _assetService = assetService;
+         _webHostEnvironment = environment;
+         _configuration = configuration;
+
+         _writingStore = writingStore;
+         _slugService = slugs;
+      }
+
+      [HttpGet]
+      public IActionResult Index()
+      {
+         return View();
+      }
+
+      /// <summary>
+      /// Render one published post.
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("{slug}")]
+      public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
+      {
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         await Task.CompletedTask;
+
+         return View();
+      }
+
+      /// <summary>
+      /// Gets Published posts by writing tag.
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("tags/{slug}")]
+      public async Task<IActionResult> Tag(string slug, CancellationToken cancellationToken)
+      {
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         await Task.CompletedTask;
+
+         return View();
+      }
+
+      /// <summary>
+      /// Gets a page of featured writings.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("featured")]
+      public IActionResult Featured(CancellationToken cancellationToken)
+      {
+         return View();
+      }
+
+      /// <summary>
+      /// Returns a partial view of a card with writing title, subtitle and
+      /// maybe the abstract
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("card/{slug}")]
+      public IActionResult Card(string slug, CancellationToken cancellationToken)
+      {
+         return PartialView();
+      }
+
+      /// <summary>
+      /// Gets a partial view with cards of the featured writings.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("featured-cards")]
+      public IActionResult FeaturedCards(CancellationToken cancellationToken)
+      {
+         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
+         return PartialView();
+      }
+
+      private readonly ILogger<WritingController> _logger;
+      private readonly ISystemClock _clock;
+      private readonly IErrorStore _errorLogStore;
+      private readonly DiagnosticsOptions _options;
+      private readonly ISiteAssetService _assetService;
+      private readonly IWebHostEnvironment _webHostEnvironment;
+      private readonly IConfiguration _configuration;
+
+      private readonly IWritingStore _writingStore;
+      private readonly ISlugService _slugService;
+   }
+}

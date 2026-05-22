@@ -1,0 +1,20 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Models.ViewModels.Error.StatusCodeViewModel
+@{
+	ViewData["Title"] = $"HTTP {Model}";
+}
+
+<section class="wb-hero">
+	<div class="container">
+		<h1 class="text-danger">HTTP @Model.HttpError</h1>
+		<h2>An error occurred while processing your request. The details have been logged for review.</h2>
+
+		@if (Model.ShowRequestId)
+		{
+			<p>
+				<strong>Request ID:</strong> <code>@Model.RequestId</code>
+			</p>
+		}
+	</div>
+</section>

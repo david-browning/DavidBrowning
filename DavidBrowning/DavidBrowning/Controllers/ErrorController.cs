@@ -1,10 +1,18 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Diagnostics;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models.ViewModels.Error;
+using DavidBrowning.Services.Assets;
+using DavidBrowning.Services.Time;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
@@ -12,18 +20,57 @@ namespace DavidBrowning.Controllers
    public class ErrorController : Controller
    {
       public ErrorController(
+         ILogger<ErrorController> logger,
+         ISystemClock clock,
          IErrorStore errorLogStore,
+         IOptions<DiagnosticsOptions> options,
+         ISiteAssetService assetService,
          IWebHostEnvironment environment,
-         IOptions<DiagnosticsOptions> options)
+         IConfiguration configuration,
+
+         IErrorStore errorStore)
       {
+         _logger = logger;
+         _clock = clock;
          _errorLogStore = errorLogStore;
-         _environment = environment;
          _options = options.Value;
+         _assetService = assetService;
+         _webHostEnvironment = environment;
+         _configuration = configuration;
+
+         _errorStore = errorStore;
       }
 
-      public IActionResult Index()
+      [HttpGet]
+      [Route("/Error/StatusCode/{statusCode:int}")]
+      public IActionResult StatusCodePage(int statusCode)
       {
-         return View();
+         var exceptionFeature =
+            HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+
+         var statusCodeFeature =
+            HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+
+         StatusCodeViewModel model = new()
+         {
+            HttpError = statusCode,
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+            OriginalPath =
+               exceptionFeature?.Path ??
+               statusCodeFeature?.OriginalPath ??
+               HttpContext.Request.Path.Value,
+            OriginalQueryString =
+               statusCodeFeature?.OriginalQueryString ?? string.Empty,
+         };
+
+         Response.StatusCode = statusCode;
+
+         return statusCode switch
+         {
+            StatusCodes.Status403Forbidden => View("Forbidden", model),
+            StatusCodes.Status404NotFound => View("NotFound", model),
+            _ => View("ServerError", model)
+         };
       }
 
       [HttpGet("test-crash")]
@@ -60,8 +107,14 @@ namespace DavidBrowning.Controllers
          return NotFound();
       }
 
+      private readonly ILogger<ErrorController> _logger;
+      private readonly ISystemClock _clock;
       private readonly IErrorStore _errorLogStore;
-      private readonly IWebHostEnvironment _environment;
       private readonly DiagnosticsOptions _options;
+      private readonly ISiteAssetService _assetService;
+      private readonly IWebHostEnvironment _webHostEnvironment;
+      private readonly IConfiguration _configuration;
+
+      private readonly IErrorStore _errorStore;
    }
 }

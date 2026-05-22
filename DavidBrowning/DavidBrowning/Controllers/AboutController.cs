@@ -1,9 +1,7 @@
-// Copyright � 2026 David Browning. All rights reserved.
+﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Time;
@@ -15,19 +13,18 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
 {
-   public class HomeController : Controller
+   public class AboutController : Controller
    {
-      public HomeController(
-         ILogger<HomeController> logger,
+      public AboutController(
+         ILogger<WorkController> logger,
          ISystemClock clock,
          IErrorStore errorLogStore,
          IOptions<DiagnosticsOptions> options,
-         ISiteAssetService assetService,
+         ISiteAssetService assetService, 
          IWebHostEnvironment environment,
          IConfiguration configuration,
 
-         IProjectStore projectStore,
-         IWritingStore writingStore)
+         IProjectStore projectStore)
       {
          _logger = logger;
          _clock = clock;
@@ -38,7 +35,6 @@ namespace DavidBrowning.Controllers
          _configuration = configuration;
 
          _projectStore = projectStore;
-         _writingStore = writingStore;
       }
 
       [HttpGet]
@@ -47,13 +43,17 @@ namespace DavidBrowning.Controllers
          return View();
       }
 
-      [HttpGet]
-      public IActionResult Privacy()
+      /// <summary>
+      /// Returns a page with information about the site.
+      /// </summary>
+      /// <returns></returns>
+      [HttpGet("this")]
+      public IActionResult This()
       {
          return View();
       }
 
-      private readonly ILogger<HomeController> _logger;
+      private readonly ILogger<WorkController> _logger;
       private readonly ISystemClock _clock;
       private readonly IErrorStore _errorLogStore;
       private readonly DiagnosticsOptions _options;
@@ -62,6 +62,5 @@ namespace DavidBrowning.Controllers
       private readonly IConfiguration _configuration;
 
       private readonly IProjectStore _projectStore;
-      private readonly IWritingStore _writingStore;
    }
 }

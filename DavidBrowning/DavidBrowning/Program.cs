@@ -320,16 +320,20 @@ namespace DavidBrowning
 
       private static void ConfigureWebApp(WebApplication app)
       {
-         // Configure the HTTP request pipeline.
-         if (!app.Environment.IsDevelopment())
+         if (app.Environment.IsDevelopment())
          {
-            app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this
-            // for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseDeveloperExceptionPage();
+            // Uncommment to get custom error pages in developer mode.
+            //app.UseExceptionHandler("/Error/StatusCode/500");
+         }
+         else
+         {
+            app.UseExceptionHandler("/Error/StatusCode/500");
             app.UseHsts();
          }
 
          app.UseMiddleware<ErrorLoggingMiddleware>();
+         app.UseStatusCodePagesWithReExecute("/Error/StatusCode/{0}");
 
          app.UseHttpsRedirection();
          app.UseStaticFiles();
