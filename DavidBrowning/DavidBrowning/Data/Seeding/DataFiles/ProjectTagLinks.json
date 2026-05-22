@@ -1,0 +1,12 @@
+[
+  {
+    "ProjectId": 1,
+    "ProjectTagId": 1,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 1,
+    "ProjectTagId": 3,
+    "SortOrder": 20
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Slug": "website",
+    "DisplayName": "Website",
+    "Description": "A web application or website project.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "tooling",
+    "DisplayName": "Tooling",
+    "Description": "Developer tooling, automation, or workflow infrastructure.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "engine",
+    "DisplayName": "Engine",
+    "Description": "Systems or engine-style software.",
+    "SortOrder": 30,
+    "IsActive": true
+  }
+]

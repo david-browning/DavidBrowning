@@ -1,0 +1,16 @@
+[
+  {
+    "Id": 1,
+    "Slug": "welcome-to-the-workbench",
+    "Title": "Welcome to the Workbench",
+    "Subtitle": "Why this site exists",
+    "Summary": "A short introduction to the personal website, its design goals, and the engineering mindset behind it.",
+    "MetaDescription": "An introduction to David Browning's personal website and software engineering workbench.",
+    "Status": "Published",
+    "IsFeatured": true,
+    "CreatedDateUtc": "2026-05-01T00:00:00Z",
+    "LastUpdatedDateUtc": "2026-05-01T00:00:00Z",
+    "PublishedDateUtc": "2026-05-01T00:00:00Z",
+    "CurrentRevisionId": 1
+  }
+]

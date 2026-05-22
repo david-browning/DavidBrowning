@@ -14,7 +14,7 @@ namespace DavidBrowning.Controllers
       public ErrorController(
          IErrorStore errorLogStore,
          IWebHostEnvironment environment,
-         IOptions<ErrorControllerDiagnosticsOptions> options)
+         IOptions<DiagnosticsOptions> options)
       {
          _errorLogStore = errorLogStore;
          _environment = environment;
@@ -47,7 +47,7 @@ namespace DavidBrowning.Controllers
       /// <returns></returns>
       private IActionResult? GuardDiagnosticsAccess()
       {
-         if (_options.Enabled)
+         if (_options.EnableDebugEndpoints)
          {
             return null;
          }
@@ -62,6 +62,6 @@ namespace DavidBrowning.Controllers
 
       private readonly IErrorStore _errorLogStore;
       private readonly IWebHostEnvironment _environment;
-      private readonly ErrorControllerDiagnosticsOptions _options;
+      private readonly DiagnosticsOptions _options;
    }
 }

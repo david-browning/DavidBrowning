@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Slug": "repository",
+    "DisplayName": "Repository",
+    "Description": "Source repository or code browser.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "live-site",
+    "DisplayName": "Live Site",
+    "Description": "Publicly hosted application or website.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "documentation",
+    "DisplayName": "Documentation",
+    "Description": "Documentation, notes, or reference material.",
+    "SortOrder": 30,
+    "IsActive": true
+  }
+]

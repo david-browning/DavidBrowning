@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Slug": "portfolio",
+    "DisplayName": "Portfolio",
+    "Description": "Portfolio-facing work.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "infrastructure",
+    "DisplayName": "Infrastructure",
+    "Description": "Infrastructure and deployment work.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "architecture",
+    "DisplayName": "Architecture",
+    "Description": "Architecture-heavy project work.",
+    "SortOrder": 30,
+    "IsActive": true
+  }
+]

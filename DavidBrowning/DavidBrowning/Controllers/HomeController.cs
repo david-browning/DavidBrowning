@@ -25,7 +25,7 @@ namespace DavidBrowning.Controllers
 
       public async Task<IActionResult> Index()
       {
-         //int? publishedVisibilityId = await _projectVisibilityLookup.GetIdBySlugAsync("published");
+         int? publishedVisibilityId = await _projectVisibilityLookup.GetIdBySlugAsync("private");
          return View();
       }
 

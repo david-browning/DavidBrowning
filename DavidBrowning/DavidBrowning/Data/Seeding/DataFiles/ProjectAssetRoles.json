@@ -1,0 +1,26 @@
+[
+   {
+      "Id": 1,
+      "Slug": "hero-image",
+      "DisplayName": "Hero Image",
+      "Description": "Primary image used to represent the project.",
+      "SortOrder": 10,
+      "IsActive": true
+   },
+   {
+      "Id": 2,
+      "Slug": "screenshot",
+      "DisplayName": "Screenshot",
+      "Description": "Screenshot showing the project interface or behavior.",
+      "SortOrder": 20,
+      "IsActive": true
+   },
+   {
+      "Id": 3,
+      "Slug": "diagram",
+      "DisplayName": "Diagram",
+      "Description": "Diagram explaining architecture, flow, or structure.",
+      "SortOrder": 30,
+      "IsActive": true
+   }
+]

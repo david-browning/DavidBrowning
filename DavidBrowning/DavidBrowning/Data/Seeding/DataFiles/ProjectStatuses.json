@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Slug": "active",
+    "DisplayName": "Active",
+    "Description": "Currently maintained or in active development.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "complete",
+    "DisplayName": "Complete",
+    "Description": "Complete enough to present as finished work.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "archived",
+    "DisplayName": "Archived",
+    "Description": "Historical work preserved for reference.",
+    "SortOrder": 30,
+    "IsActive": true
+  }
+]

@@ -39,14 +39,14 @@ namespace DavidBrowning.Models.Writing
       /// Instead of having it be a foreign key, we'll just map it to an enum
       /// in code.
       /// </summary>
-      public required PostContentFormat ContentFormat { get; set; }
+      public required ContentFormat ContentFormat { get; set; }
 
       /// <summary>
       /// How to render the content.
       /// Instead of having it be a foreign key, we'll just map it to an enum
       /// in code.
       /// </summary>
-      public required PostRenderMode RenderMode { get; set; }
+      public required RenderMode RenderMode { get; set; }
 
       [Required]
       [StringLength(DataConstants.MaxNameLength)]

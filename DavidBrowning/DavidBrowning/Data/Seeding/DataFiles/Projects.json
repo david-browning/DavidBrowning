@@ -1,0 +1,25 @@
+[
+  {
+    "Id": 1,
+    "Slug": "personal-website",
+    "Name": "Personal Website",
+    "Description": "A source-available portfolio site built as a practical ASP.NET Core workbench.",
+    "ProjectStatusId": 1,
+    "ProjectTypeId": 1,
+    "ProjectOriginId": 1,
+    "ProjectVisibilityId": 1,
+    "Role": "Creator",
+    "ContributionSummary": "Designed and implemented the application architecture, data model, styling system, and deployment path.",
+    "Problem": "I wanted a personal site that could present projects and writing without becoming a static brochure.",
+    "Solution": "Build a data-driven ASP.NET Core MVC site with provider-selectable persistence, reusable assets, and structured project metadata.",
+    "Result": "The site can grow from a portfolio into a small publishing and project showcase platform.",
+    "Tradeoffs": "The model is more structured than a simple static site, but the structure keeps future content from becoming ad hoc.",
+    "IsFeatured": true,
+    "SortOrder": 10,
+    "StartDate": "2026-05-01",
+    "EndDate": null,
+    "DateDisplayText": "2026-Present",
+    "CreatedAtUtc": "2026-05-01T00:00:00Z",
+    "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+  }
+]

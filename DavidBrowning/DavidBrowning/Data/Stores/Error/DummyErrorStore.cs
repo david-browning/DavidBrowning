@@ -26,7 +26,7 @@ namespace DavidBrowning.Data.Stores.Error
 
       public Task InsertErrorAsync(WebsiteError error, CancellationToken cancellationToken = default)
       {
-         throw new System.NotImplementedException();
+         return Task.CompletedTask;
       }
    }
 }

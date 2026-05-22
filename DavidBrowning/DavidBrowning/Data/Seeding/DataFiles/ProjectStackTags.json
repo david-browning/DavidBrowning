@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "Slug": "csharp",
+    "DisplayName": "C#",
+    "Description": "C# application code.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "aspnet-core",
+    "DisplayName": "ASP.NET Core",
+    "Description": "ASP.NET Core web application framework.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "sql-server",
+    "DisplayName": "SQL Server",
+    "Description": "Relational database storage.",
+    "SortOrder": 30,
+    "IsActive": true
+  },
+  {
+    "Id": 4,
+    "Slug": "bootstrap",
+    "DisplayName": "Bootstrap",
+    "Description": "Responsive front-end layout and components.",
+    "SortOrder": 40,
+    "IsActive": true
+  },
+  {
+    "Id": 5,
+    "Slug": "azure",
+    "DisplayName": "Azure",
+    "Description": "Azure hosting and platform services.",
+    "SortOrder": 50,
+    "IsActive": true
+  }
+]
