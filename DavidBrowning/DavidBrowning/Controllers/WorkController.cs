@@ -1,11 +1,10 @@
-// Copyright � 2026 David Browning. All rights reserved.
+﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Services.Assets;
+using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +14,10 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
 {
-   public class HomeController : Controller
+   public class WorkController : Controller
    {
-      public HomeController(
-         ILogger<HomeController> logger,
+      public WorkController(
+         ILogger<WorkController> logger,
          ISystemClock clock,
          IErrorStore errorLogStore,
          IOptions<DiagnosticsOptions> options,
@@ -27,7 +26,7 @@ namespace DavidBrowning.Controllers
          IConfiguration configuration,
 
          IProjectStore projectStore,
-         IWritingStore writingStore)
+         ISlugService slugs)
       {
          _logger = logger;
          _clock = clock;
@@ -38,7 +37,7 @@ namespace DavidBrowning.Controllers
          _configuration = configuration;
 
          _projectStore = projectStore;
-         _writingStore = writingStore;
+         _slugService = slugs;
       }
 
       [HttpGet]
@@ -47,13 +46,49 @@ namespace DavidBrowning.Controllers
          return View();
       }
 
-      [HttpGet]
-      public IActionResult Privacy()
+      /// <summary>
+      /// Returns a page with my resume.
+      /// </summary>
+      /// <returns></returns>
+      [HttpGet("resume")]
+      public IActionResult Resume()
       {
          return View();
       }
 
-      private readonly ILogger<HomeController> _logger;
+      /// <summary>
+      /// Returns a partial view with the highlights of my career.
+      /// Useful for a page header or hero image.
+      /// </summary>
+      /// <returns></returns>
+      [HttpGet("highlights")]
+      public IActionResult Highlights()
+      {
+         return PartialView();
+      }
+
+      /// <summary>
+      /// A page of the case studies I've written.
+      /// </summary>
+      /// <returns></returns>
+      [HttpGet("case-studies")]
+      public IActionResult CaseStudies()
+      {
+         return View();
+      }
+
+      /// <summary>
+      /// Gets a page with the details of a case study.
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <returns></returns>
+      [HttpGet("case-studies/{slug}")]
+      public IActionResult CaseStudy(string slug)
+      {
+         return View();
+      }
+
+      private readonly ILogger<WorkController> _logger;
       private readonly ISystemClock _clock;
       private readonly IErrorStore _errorLogStore;
       private readonly DiagnosticsOptions _options;
@@ -62,6 +97,6 @@ namespace DavidBrowning.Controllers
       private readonly IConfiguration _configuration;
 
       private readonly IProjectStore _projectStore;
-      private readonly IWritingStore _writingStore;
+      private readonly ISlugService _slugService;
    }
 }

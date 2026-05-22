@@ -10,10 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\ViewModels\" />
     <Folder Include="Services\Content\" />
-    <Folder Include="Views\Projects\" />
-    <Folder Include="Views\Writing\" />
   </ItemGroup>
 
   <ItemGroup>

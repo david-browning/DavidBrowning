@@ -56,24 +56,6 @@ namespace DavidBrowning.Middleware
                context.Request.Path,
                context.TraceIdentifier);
 
-            if (!context.Response.HasStarted)
-            {
-               context.Response.Clear();
-               context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-               if (IsHtmlRequest(context))
-               {
-                  context.Response.Redirect("/Home/Error");
-               }
-               else
-               {
-                  context.Response.ContentType = "text/plain";
-                  await context.Response.WriteAsync("An unexpected error occurred.");
-               }
-
-               return;
-            }
-
             throw;
          }
       }
