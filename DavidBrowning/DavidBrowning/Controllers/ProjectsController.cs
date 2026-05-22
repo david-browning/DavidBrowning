@@ -18,10 +18,11 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
 {
-   public class ProjectController : Controller
+   [Route("projects")]
+   public class ProjectsController : Controller
    {
-      public ProjectController(
-         ILogger<ProjectController> logger,
+      public ProjectsController(
+         ILogger<ProjectsController> logger,
          ISystemClock clock,
          IErrorStore errorLogStore,
          IOptions<DiagnosticsOptions> options,
@@ -46,22 +47,9 @@ namespace DavidBrowning.Controllers
          _projectVisibilityLookup = projectLookup;
       }
 
-      [HttpGet]
       public async Task<IActionResult> Index(CancellationToken cancellationToken)
       {
          int? publishedVisibilityId = await _projectVisibilityLookup.GetIdBySlugAsync("private");
-         return View();
-      }
-
-      /// <summary>
-      /// Gets a page with project details.
-      /// </summary>
-      /// <param name="slug"></param>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("{slug}")]
-      public IActionResult Details(string slug, CancellationToken cancellationToken)
-      {
          return View();
       }
 
@@ -77,6 +65,18 @@ namespace DavidBrowning.Controllers
       }
 
       /// <summary>
+      /// Gets a partial view with cards of the featured projects.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("featured-cards")]
+      public IActionResult FeaturedCards(CancellationToken cancellationToken)
+      {
+         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
+         return PartialView();
+      }
+
+      /// <summary>
       /// Returns a partial view of a card with project highlights
       /// </summary>
       /// <param name="slug"></param>
@@ -89,18 +89,19 @@ namespace DavidBrowning.Controllers
       }
 
       /// <summary>
-      /// Gets a partial view with cards of the featured projects.
+      /// Gets a page with project details.
       /// </summary>
+      /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("featured-cards")]
-      public IActionResult FeaturedCards(CancellationToken cancellationToken)
+      [HttpGet("{slug}")]
+      public IActionResult Details(string slug, CancellationToken cancellationToken)
       {
-         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
-         return PartialView();
+         return View();
       }
 
-      private readonly ILogger<ProjectController> _logger;
+
+      private readonly ILogger<ProjectsController> _logger;
       private readonly ISystemClock _clock;
       private readonly IErrorStore _errorLogStore;
       private readonly DiagnosticsOptions _options;

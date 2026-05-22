@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
 {
+   [Route("work")]
    public class WorkController : Controller
    {
       public WorkController(
@@ -40,7 +41,6 @@ namespace DavidBrowning.Controllers
          _slugService = slugs;
       }
 
-      [HttpGet]
       public IActionResult Index()
       {
          return View();

@@ -1,5 +1,23 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
+@{
+	var currentController =
+	   ViewContext.RouteData.Values["controller"]?.ToString();
+
+	var currentAction =
+	   ViewContext.RouteData.Values["action"]?.ToString();
+
+	string GetNavLinkClass(string controller)
+	{
+		var controllerMatches = string.Equals(
+		   currentController,
+		   controller,
+		   StringComparison.OrdinalIgnoreCase);
+
+		return controllerMatches ? "wb-nav-link active" : "wb-nav-link";
+	}
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +26,7 @@
 	<title>@ViewData["Title"] - DavidBrowning</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/DavidBrowning.styles.css" asp-append-version="true" />
+	@* <link rel="stylesheet" href="~/DavidBrowning.styles.css" asp-append-version="true" /> *@
 	<script src="https://kit.fontawesome.com/9800358062.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -45,43 +63,35 @@
 				 class="wb-sidebar collapse d-lg-block"
 				 aria-label="Primary navigation">
 				<div class="wb-sidebar-inner">
-					<a class="wb-nav-link active"
+					<a class="@GetNavLinkClass("Home")"
 					   asp-area="" asp-controller="Home" asp-action="Index">
 						<i class="fa-solid fa-house wb-nav-icon" aria-hidden="true"></i>
 						<span>Home</span>
 					</a>
 
-					<a class="wb-nav-link"
+					<a class="@GetNavLinkClass("Work")"
 					   asp-area="" asp-controller="Work" asp-action="Index">
 						<i class="fa-solid fa-briefcase wb-nav-icon" aria-hidden="true"></i>
 						<span>Work</span>
 					</a>
 
-					<a class="wb-nav-link"
+					<a class="@GetNavLinkClass("Projects")"
 					   asp-area="" asp-controller="Projects" asp-action="Index">
 						<i class="fa-solid fa-diagram-project wb-nav-icon" aria-hidden="true"></i>
 						<span>Projects</span>
 					</a>
 
-					<a class="wb-nav-link"
+					<a class="@GetNavLinkClass("Writing")"
 					   asp-area="" asp-controller="Writing" asp-action="Index">
-						<i class="fa-solid fa-pen-nib wb-nav-icon" aria-hidden="true"></i>
+						<i class="fa-solid fa-pen wb-nav-icon" aria-hidden="true"></i>
 						<span>Writing</span>
 					</a>
 
-					<a class="wb-nav-link"
+					<a class="@GetNavLinkClass("About")"
 					   asp-area="" asp-controller="About" asp-action="Index">
 						<i class="fa-solid fa-user wb-nav-icon" aria-hidden="true"></i>
 						<span>About</span>
 					</a>
-
-@* 					<a class="wb-nav-link"
-					   asp-area=""
-					   asp-controller="Home"
-					   asp-action="Contact">
-						<i class="fa-solid fa-envelope wb-nav-icon" aria-hidden="true"></i>
-						<span>Contact</span>
-					</a> *@
 				</div>
 			</nav>
 
