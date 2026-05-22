@@ -1,0 +1,27 @@
+[
+  {
+    "Id": 1,
+    "DisplayName": "Software Engineering",
+    "Slug": "software-engineering"
+  },
+  {
+    "Id": 2,
+    "DisplayName": "C++",
+    "Slug": "cpp"
+  },
+  {
+    "Id": 3,
+    "DisplayName": "ASP.NET Core",
+    "Slug": "aspnet-core"
+  },
+  {
+    "Id": 4,
+    "DisplayName": "Architecture",
+    "Slug": "architecture"
+  },
+  {
+    "Id": 5,
+    "DisplayName": "Retrospective",
+    "Slug": "retrospective"
+  }
+]

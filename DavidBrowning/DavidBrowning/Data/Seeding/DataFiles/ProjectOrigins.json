@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Slug": "personal",
+    "DisplayName": "Personal",
+    "Description": "Personal project or independent study.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "professional",
+    "DisplayName": "Professional",
+    "Description": "Professional work or case study.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "academic",
+    "DisplayName": "Academic",
+    "Description": "Coursework or academic project.",
+    "SortOrder": 30,
+    "IsActive": true
+  }
+]

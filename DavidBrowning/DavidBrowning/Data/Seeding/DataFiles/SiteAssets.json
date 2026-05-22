@@ -1,0 +1,12 @@
+[
+  {
+    "Id": 1,
+    "AssetType": "Image",
+    "OriginalFileName": "personal-website-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/personal-website/hero.png",
+    "AltText": "Workbench-inspired screenshot placeholder for the personal website project.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  }
+]

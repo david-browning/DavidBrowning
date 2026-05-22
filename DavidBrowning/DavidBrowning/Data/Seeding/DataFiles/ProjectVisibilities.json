@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Slug": "public",
+    "DisplayName": "Public",
+    "Description": "Visible on the public site.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Slug": "unlisted",
+    "DisplayName": "Unlisted",
+    "Description": "Available by direct link, but not featured in standard lists.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Slug": "private",
+    "DisplayName": "Private",
+    "Description": "Hidden from public presentation.",
+    "SortOrder": 30,
+    "IsActive": true
+  }
+]

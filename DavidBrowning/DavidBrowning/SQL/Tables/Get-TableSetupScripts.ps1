@@ -34,10 +34,9 @@ so another script can later execute them.
 [CmdletBinding()]
 param
 (
-    [Parameter()]
+    [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string]
-    $TableSetupPath = ".\Tables\TableSetup"
+    [string]$TableSetupPath = ".\Tables\TableSetup"
 )
 
 Set-StrictMode -Version Latest
@@ -48,8 +47,7 @@ function Get-NumberedNameParts
     param
     (
         [Parameter(Mandatory = $true)]
-        [System.IO.FileSystemInfo]
-        $Item
+        [System.IO.FileSystemInfo]$Item
     )
 
     $match = [regex]::Match($Item.Name, '^(?<Number>\d+)_(?<Name>.+)$')

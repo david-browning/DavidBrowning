@@ -1,0 +1,27 @@
+[
+  {
+    "ProjectId": 1,
+    "ProjectStackTagId": 1,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 1,
+    "ProjectStackTagId": 2,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 1,
+    "ProjectStackTagId": 3,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 1,
+    "ProjectStackTagId": 4,
+    "SortOrder": 40
+  },
+  {
+    "ProjectId": 1,
+    "ProjectStackTagId": 5,
+    "SortOrder": 50
+  }
+]

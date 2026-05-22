@@ -1,0 +1,13 @@
+[
+  {
+    "Id": 1,
+    "PostId": 1,
+    "RevisionNumber": 1,
+    "ContentFormat": "Markdown",
+    "RenderMode": "Markdown",
+    "CreatedBy": "SeedData",
+    "CreatedAtUtc": "2026-05-01T00:00:00Z",
+    "Content": "# Welcome to the Workbench\n\nThis site is a place for projects, writing, and engineering notes.",
+    "CachedHtml": null
+  }
+]

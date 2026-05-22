@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Data.Stores.Writing
@@ -164,8 +165,8 @@ namespace DavidBrowning.Data.Stores.Writing
             PostId = id,
             Post = post,
             RevisionNumber = 1,
-            ContentFormat = PostContentFormat.Markdown,
-            RenderMode = PostRenderMode.Article,
+            ContentFormat = ContentFormat.Markdown,
+            RenderMode = RenderMode.Article,
             CreatedBy = "Dummy",
             CreatedAtUtc = nowUtc.AddDays(-id * 5),
             Content = $"# {title}\n\nThis is dummy content for the test writing store.",

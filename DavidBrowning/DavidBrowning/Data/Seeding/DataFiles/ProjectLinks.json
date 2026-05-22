@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 1,
+    "ProjectId": 1,
+    "ProjectLinkTypeId": 1,
+    "Label": "Repository",
+    "Url": "https://github.com/david-browning/DavidBrowning",
+    "IsPrimary": true,
+    "SortOrder": 10
+  },
+  {
+    "Id": 2,
+    "ProjectId": 1,
+    "ProjectLinkTypeId": 2,
+    "Label": "Live Site",
+    "Url": "https://davidbrowning.com",
+    "IsPrimary": false,
+    "SortOrder": 20
+  }
+]
