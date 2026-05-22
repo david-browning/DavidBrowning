@@ -41,13 +41,11 @@ namespace DavidBrowning.Controllers
          _writingStore = writingStore;
       }
 
-      [HttpGet]
       public IActionResult Index()
       {
          return View();
       }
 
-      [HttpGet]
       public IActionResult Privacy()
       {
          return View();

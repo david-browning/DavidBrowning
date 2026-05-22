@@ -13,6 +13,7 @@ using DavidBrowning.Diagnostics;
 using DavidBrowning.Middleware;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -104,6 +105,8 @@ namespace DavidBrowning
          builder.Services.AddMemoryCache();
          builder.Services.AddSingleton<ISystemClock, SystemClock>();
          builder.Services.AddSingleton<ISiteAssetService, DummySiteAssetService>();
+
+         builder.Services.AddScoped(typeof(ISlugService), typeof(BasicSlugService));
 
          builder.Services.AddSingleton<ILookupCache, BasicLookupCache>();
          builder.Services.AddScoped(

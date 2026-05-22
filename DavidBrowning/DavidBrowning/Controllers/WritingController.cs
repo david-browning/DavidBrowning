@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
 {
+   [Route("writing")]
    public class WritingController : Controller
    {
       public WritingController(
@@ -44,29 +45,32 @@ namespace DavidBrowning.Controllers
          _slugService = slugs;
       }
 
-      [HttpGet]
       public IActionResult Index()
       {
          return View();
       }
 
       /// <summary>
-      /// Render one published post.
+      /// Gets a page of featured writings.
       /// </summary>
-      /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("{slug}")]
-      public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
+      [HttpGet("featured")]
+      public IActionResult Featured(CancellationToken cancellationToken)
       {
-         if (string.IsNullOrWhiteSpace(slug))
-         {
-            return NotFound();
-         }
-
-         await Task.CompletedTask;
-
          return View();
+      }
+
+      /// <summary>
+      /// Gets a partial view with cards of the featured writings.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("featured-cards")]
+      public IActionResult FeaturedCards(CancellationToken cancellationToken)
+      {
+         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
+         return PartialView();
       }
 
       /// <summary>
@@ -89,17 +93,6 @@ namespace DavidBrowning.Controllers
       }
 
       /// <summary>
-      /// Gets a page of featured writings.
-      /// </summary>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("featured")]
-      public IActionResult Featured(CancellationToken cancellationToken)
-      {
-         return View();
-      }
-
-      /// <summary>
       /// Returns a partial view of a card with writing title, subtitle and
       /// maybe the abstract
       /// </summary>
@@ -113,15 +106,22 @@ namespace DavidBrowning.Controllers
       }
 
       /// <summary>
-      /// Gets a partial view with cards of the featured writings.
+      /// Render one published post.
       /// </summary>
+      /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("featured-cards")]
-      public IActionResult FeaturedCards(CancellationToken cancellationToken)
+      [HttpGet("{slug}")]
+      public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
       {
-         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
-         return PartialView();
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         await Task.CompletedTask;
+
+         return View();
       }
 
       private readonly ILogger<WritingController> _logger;

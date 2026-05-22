@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers
 {
+   [Route("about")]
    public class AboutController : Controller
    {
       public AboutController(
@@ -37,7 +38,6 @@ namespace DavidBrowning.Controllers
          _projectStore = projectStore;
       }
 
-      [HttpGet]
       public IActionResult Index()
       {
          return View();
