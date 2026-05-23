@@ -1,0 +1,23 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+@*
+	A query tag is a bootstrap pill that when clicked, directs to a search query
+	of the attached slug in the controller.
+
+	Put this partial view inside an unordered list like this:
+	  <ul class="wb-tag-list mt-4">
+	  @foreach (var tag in Model.StackTagLinks)
+	  {
+		 <partial.../>
+	  }
+	</ul>
+*@
+@model DavidBrowning.Models.ViewModels.QueryTagViewModel
+@inject DavidBrowning.Services.UrlBuilder urlBuilder
+@{
+	var url = urlBuilder.GetSearchUrl(Model.Slug, Model.Controller, Model.Endpoint);
+}
+
+<li class="wb-tag">
+	<a href="@url">@Model.DisplayName</a>
+</li>

@@ -237,7 +237,7 @@ h3 {
 }
 
 .wb-kicker {
-   margin-bottom: 0.75rem;
+   margin-bottom: 0.35rem;
    color: var(--wb-accent);
    font-family: var(--wb-font-mono);
    font-size: 0.78rem;
@@ -251,6 +251,11 @@ h3 {
    color: var(--wb-text-muted);
    font-size: clamp(1.1rem, 2vw, 1.3rem);
    line-height: 1.6;
+}
+
+/* Override the max width for the lede when it is in the hero banner. */
+.wb-hero .wb-lede {
+   max-width: none;
 }
 
 .wb-prose {
@@ -382,11 +387,11 @@ a {
    ============================================================ */
 
 .wb-hero {
-   padding: clamp(4rem, 10vw, 8rem) 0;
+   padding: clamp(4rem, 6vw, 4rem) 0;
 }
 
 .wb-section {
-   padding: clamp(3rem, 8vw, 6rem) 0;
+   padding: clamp(2rem, 6vw, 4rem) 0;
 }
 
 .wb-section-header {

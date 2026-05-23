@@ -8,7 +8,7 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Data.Stores.Writing
 {
-   internal class AzureSqlWritingStore : IWritingStore
+   internal class SqlWritingStore : IWritingStore
    {
       public Task<IReadOnlyList<Post>> GetPublishedPostsAsync(
          CancellationToken cancellationToken = default)

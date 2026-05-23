@@ -51,29 +51,6 @@ namespace DavidBrowning.Controllers
       }
 
       /// <summary>
-      /// Gets a page of featured writings.
-      /// </summary>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("featured")]
-      public IActionResult Featured(CancellationToken cancellationToken)
-      {
-         return View();
-      }
-
-      /// <summary>
-      /// Gets a partial view with cards of the featured writings.
-      /// </summary>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("featured-cards")]
-      public IActionResult FeaturedCards(CancellationToken cancellationToken)
-      {
-         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
-         return PartialView();
-      }
-
-      /// <summary>
       /// Gets Published posts by writing tag.
       /// </summary>
       /// <param name="slug"></param>
@@ -90,19 +67,6 @@ namespace DavidBrowning.Controllers
          await Task.CompletedTask;
 
          return View();
-      }
-
-      /// <summary>
-      /// Returns a partial view of a card with writing title, subtitle and
-      /// maybe the abstract
-      /// </summary>
-      /// <param name="slug"></param>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("card/{slug}")]
-      public IActionResult Card(string slug, CancellationToken cancellationToken)
-      {
-         return PartialView();
       }
 
       /// <summary>
