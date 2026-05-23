@@ -1,0 +1,57 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+
+@*
+	A project card is a wide (takes up the whole width) card with the overview
+	and key details of a project.
+*@
+@model DavidBrowning.Models.Projects.Project
+@inject DavidBrowning.Services.UrlBuilder urlBuilder
+@{
+
+}
+
+<article class="wb-card h-100">
+	<p class="wb-card-meta">@Model.Name</p>
+	<h3>@Model.ProjectType!.DisplayName</h3>
+	<p class="wb-card-meta">Project Facts</p>
+
+	<div class="container">
+		<div class="row row-cols-2">
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Status</dt>
+					<dd class="text-secondary">@Model.ProjectStatus!.DisplayName</dd>
+				</dl>
+			</div>
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Origin</dt>
+					<dd class="text-secondary">@Model.ProjectOrigin!.DisplayName</dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+	<p class="text-secondary">
+		@Model.Description
+	</p>
+
+	<p class="text-secondary">
+		@Model.ContributionSummary
+	</p>
+
+	<ul class="wb-tag-list mt-4">
+		@foreach (var tag in Model.StackTagLinks)
+		{
+			var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+			{
+				Controller = "projects",
+				Endpoint = "stacks",
+				DisplayName = tag.ProjectStackTag!.DisplayName,
+				Slug = tag.ProjectStackTag!.Slug,
+			};
+			<partial name="_QueryTag" model="@m" />
+		}
+	</ul>
+	<a href="@urlBuilder.GetDetailsUrl(Model.Slug, "projects")">More</a>
+</article>

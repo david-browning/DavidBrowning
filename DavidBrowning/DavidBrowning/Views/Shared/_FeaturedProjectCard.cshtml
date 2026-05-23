@@ -1,0 +1,33 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+
+@*
+	A featured project card is a narrow card with the overview a project.
+*@
+@inject DavidBrowning.Services.UrlBuilder urlBuilder
+@model DavidBrowning.Models.Projects.Project
+@{
+
+}
+
+<article class="wb-card h-100">
+	<p class="wb-card-meta">@Model.Name</p>
+	<h3>@Model.ProjectType!.DisplayName</h3>
+	<p class="text-secondary">
+		@Model.Description
+	</p>
+	<ul class="wb-tag-list mt-4">
+		@foreach (var tag in Model.StackTagLinks)
+		{
+			var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+			{
+				Controller = "projects",
+				Endpoint = "stacks",
+				DisplayName = tag.ProjectStackTag!.DisplayName,
+				Slug = tag.ProjectStackTag!.Slug,
+			};
+			<partial name="_QueryTag" model="@m" />
+		}
+	</ul>
+	<a href="@urlBuilder.GetDetailsUrl(Model.Slug, "projects")">More</a>
+</article>

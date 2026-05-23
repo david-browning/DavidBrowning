@@ -11,6 +11,7 @@ using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Middleware;
+using DavidBrowning.Services;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Slugs;
@@ -40,7 +41,7 @@ namespace DavidBrowning
          ConfigureAuthorization(builder);
 
          var app = builder.Build();
-         ConfigureWebApp(app);
+         ConfigureWebApp(builder.Configuration, app);
 
          await SeedDatabaseAsync(app);
 
@@ -105,8 +106,11 @@ namespace DavidBrowning
          builder.Services.AddMemoryCache();
          builder.Services.AddSingleton<ISystemClock, SystemClock>();
          builder.Services.AddSingleton<ISiteAssetService, DummySiteAssetService>();
+         builder.Services.AddSingleton(typeof(ISlugService), typeof(BasicSlugService));
 
-         builder.Services.AddScoped(typeof(ISlugService), typeof(BasicSlugService));
+         // Its ok to make this a singleton because it only relies on the slug
+         // service which is a singleton and relies on no injection.
+         builder.Services.AddSingleton(typeof(UrlBuilder));
 
          builder.Services.AddSingleton<ILookupCache, BasicLookupCache>();
          builder.Services.AddScoped(
@@ -269,7 +273,8 @@ namespace DavidBrowning
          }
          else if (string.Equals(provider, _sqlServerProviderName, StringComparison.OrdinalIgnoreCase))
          {
-            builder.Services.AddScoped<IErrorStore, AzureSqlErrorStore>();
+            builder.Services.AddScoped<IErrorStore, SqlErrorStore>();
+            return;
          }
 
          throw new InvalidOperationException(
@@ -289,7 +294,8 @@ namespace DavidBrowning
 
          if (string.Equals(provider, _sqlServerProviderName, StringComparison.OrdinalIgnoreCase))
          {
-            builder.Services.AddScoped<IWritingStore, AzureSqlWritingStore>();
+            builder.Services.AddScoped<IWritingStore, SqlWritingStore>();
+            return;
          }
 
          throw new InvalidOperationException(
@@ -309,7 +315,8 @@ namespace DavidBrowning
 
          if (string.Equals(provider, _sqlServerProviderName, StringComparison.OrdinalIgnoreCase))
          {
-            builder.Services.AddScoped<IProjectStore, AzureSqlProjectStore>();
+            builder.Services.AddScoped<IProjectStore, SqlProjectStore>();
+            return;
          }
 
          throw new InvalidOperationException(
@@ -321,13 +328,17 @@ namespace DavidBrowning
 
       }
 
-      private static void ConfigureWebApp(WebApplication app)
+      private static void ConfigureWebApp(
+         ConfigurationManager config,
+         WebApplication app)
       {
          if (app.Environment.IsDevelopment())
          {
             app.UseDeveloperExceptionPage();
-            // Uncommment to get custom error pages in developer mode.
-            //app.UseExceptionHandler("/Error/StatusCode/500");
+            if (config.GetValue<bool>("Diagnostics:EnableCustomerErrors"))
+            {
+               app.UseExceptionHandler("/Error/StatusCode/500");
+            }
          }
          else
          {

@@ -112,14 +112,6 @@ namespace DavidBrowning.Middleware
          };
       }
 
-      private static bool IsHtmlRequest(HttpContext context)
-      {
-         string acceptHeader = context.Request.Headers.Accept.ToString();
-
-         return string.IsNullOrWhiteSpace(acceptHeader) ||
-            acceptHeader.Contains("text/html", StringComparison.OrdinalIgnoreCase);
-      }
-
       private readonly RequestDelegate _next;
       private readonly ILogger<ErrorLoggingMiddleware> _logger;
    }

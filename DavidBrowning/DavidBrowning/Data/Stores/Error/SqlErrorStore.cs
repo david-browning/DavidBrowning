@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Data.Stores.Error
 {
-   internal sealed class AzureSqlErrorStore : IErrorStore
+   internal sealed class SqlErrorStore : IErrorStore
    {
-      public AzureSqlErrorStore(ILogger<AzureSqlErrorStore> logger)
+      public SqlErrorStore(ILogger<SqlErrorStore> logger)
       {
       }
 

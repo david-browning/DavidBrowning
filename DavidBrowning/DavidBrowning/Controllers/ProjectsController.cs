@@ -6,6 +6,7 @@ using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.ViewModels.Projects;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Slugs;
@@ -49,43 +50,78 @@ namespace DavidBrowning.Controllers
 
       public async Task<IActionResult> Index(CancellationToken cancellationToken)
       {
-         int? publishedVisibilityId = await _projectVisibilityLookup.GetIdBySlugAsync("private");
-         return View();
+         return View(await GetIndexModelAsync(cancellationToken));
       }
 
       /// <summary>
-      /// A page of featured projects.
-      /// </summary>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("featured")]
-      public IActionResult Featured(CancellationToken cancellationToken)
-      {
-         return View();
-      }
-
-      /// <summary>
-      /// Gets a partial view with cards of the featured projects.
-      /// </summary>
-      /// <param name="cancellationToken"></param>
-      /// <returns></returns>
-      [HttpGet("featured-cards")]
-      public IActionResult FeaturedCards(CancellationToken cancellationToken)
-      {
-         var numCards = _configuration.GetValue<int>("Content:CardCollectionLength");
-         return PartialView();
-      }
-
-      /// <summary>
-      /// Returns a partial view of a card with project highlights
+      /// Returns a page with all projects that have the given slug as a 
+      /// technology stack tag.
       /// </summary>
       /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("card/{slug}")]
-      public IActionResult Card(string slug, CancellationToken cancellationToken)
+      [HttpGet("stacks/{slug}")]
+      public IActionResult Stacks(string slug, CancellationToken cancellationToken)
       {
-         return PartialView();
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         return View();
+      }
+
+      /// <summary>
+      /// Returns a page with all projects that have the given slug as a 
+      /// status.
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("/statuses/{slug}")]
+      public IActionResult Statuses(string slug, CancellationToken cancellationToken)
+      {
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         return View();
+      }
+
+      /// <summary>
+      /// Returns a page with all projects that have the given slug as an 
+      /// origin.
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("/origins/{slug}")]
+      public IActionResult Origins(string slug, CancellationToken cancellationToken)
+      {
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         return View();
+      }
+      /// <summary>
+      /// Returns a page with all projects that have the given slug as a 
+      /// project type.
+      /// </summary>
+      /// <param name="slug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      [HttpGet("/types/{slug}")]
+      public IActionResult Types(string slug, CancellationToken cancellationToken)
+      {
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
+         return View();
       }
 
       /// <summary>
@@ -97,9 +133,25 @@ namespace DavidBrowning.Controllers
       [HttpGet("{slug}")]
       public IActionResult Details(string slug, CancellationToken cancellationToken)
       {
+         if (string.IsNullOrWhiteSpace(slug))
+         {
+            return NotFound();
+         }
+
          return View();
       }
 
+      private async Task<IndexViewModel> GetIndexModelAsync(
+         CancellationToken cancellationToken)
+      {
+         var featured = await _projectStore.GetFeaturedProjectsAsync(cancellationToken);
+         var all = await _projectStore.GetPublishedProjectsAsync(cancellationToken);
+         return new IndexViewModel()
+         {
+            AllProjects = all,
+            FeaturedProjects = featured,
+         };
+      }
 
       private readonly ILogger<ProjectsController> _logger;
       private readonly ISystemClock _clock;

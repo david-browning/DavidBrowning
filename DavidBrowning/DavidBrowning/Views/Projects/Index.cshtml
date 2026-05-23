@@ -1,5 +1,71 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Models.ViewModels.Projects.IndexViewModel
 @{
 	ViewData["Title"] = "Projects";
 }
+
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col-12">
+				@* Use these kickers if a page is broken into many sections *@
+				@* <p class="wb-kicker">Projects</p> *@
+				<h1>Projects</h1>
+				<p class="wb-lede">
+					Every project should teach something.
+					Sometimes it is a new technology stack.
+					Sometimes it is a better way to test, structure,
+					or reason about a system. Big or small, each project here is
+					meant to stretch my understanding of engineering and leave
+					me better than when I started.
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="featured" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Featured Projects</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+
+		@*
+			row-cols-1     = 1 card per row by default
+			row-cols-md-2  = 2 cards per row on medium screens
+			row-cols-xl-4  = 4 cards per row on extra-large screens
+		*@
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+			@foreach (var project in Model.FeaturedProjects)
+			{
+				<div class="col">
+					<partial name="_FeaturedProjectCard" model="project" />
+				</div>
+			}
+		</div>
+	</div>
+</section>
+
+<section id="all" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>All Projects</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+
+		<div class="row row-cols-1 g-4">
+			@foreach (var project in Model.AllProjects)
+			{
+				<div class="col">
+					<partial name="_ProjectCard" model="project" />
+				</div>
+			}
+		</div>
+	</div>
+</section>
