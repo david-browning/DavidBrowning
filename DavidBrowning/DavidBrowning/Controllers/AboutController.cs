@@ -21,7 +21,7 @@ namespace DavidBrowning.Controllers
          ISystemClock clock,
          IErrorStore errorLogStore,
          IOptions<DiagnosticsOptions> options,
-         ISiteAssetService assetService, 
+         ISiteAssetService assetService,
          IWebHostEnvironment environment,
          IConfiguration configuration,
 

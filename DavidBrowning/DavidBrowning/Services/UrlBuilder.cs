@@ -6,35 +6,28 @@ namespace DavidBrowning.Services
 {
    public sealed class UrlBuilder
    {
-      public UrlBuilder(ISlugService slugService) 
-      { 
-         _slugService = slugService;
-      }
-
       /// <summary>
       /// 
       /// </summary>
       /// <param name="slug">
-      /// The slug can be a display name. It is automatically formatted 
-      /// before the URL is returned.
+      /// Assume a normalized slug
       /// </param>
       /// <param name="controller"></param>
       /// <param name="endpoint"></param>
       /// <returns></returns>
       public string GetDetailsUrl(
          string slug,
-         string controller, 
+         string controller,
          string endpoint = "details")
       {
-         return $"{controller}/{endpoint}/{_slugService.CreateSlug(slug)}";
+         return BuildSlugUrl(slug, controller, endpoint);
       }
 
       /// <summary>
       /// 
       /// </summary>
       /// <param name="slug">
-      /// The slug can be a display name. It is automatically formatted 
-      /// before the URL is returned.
+      /// Assume a normalized slug
       /// </param>
       /// <param name="controller"></param>
       /// <param name="endpoint"></param>
@@ -44,9 +37,20 @@ namespace DavidBrowning.Services
          string controller,
          string endpoint = "search")
       {
-         return $"{controller}/{endpoint}/{_slugService.CreateSlug(slug)}";
+         return BuildSlugUrl(slug, controller, endpoint);
       }
 
-      private readonly ISlugService _slugService;
+      private static string BuildSlugUrl(
+         string slug,
+         string controller,
+         string endpoint)
+      {
+         return string.Join(
+            "/",
+            string.Empty,
+            controller.Trim('/'),
+            endpoint.Trim('/'),
+            slug.Trim('/'));
+      }
    }
 }

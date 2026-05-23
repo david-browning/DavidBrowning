@@ -63,5 +63,20 @@ namespace DavidBrowning.Data.Stores.Projects
       {
          throw new System.NotImplementedException();
       }
+
+      public Task<IReadOnlyList<Project>> GetPublishedProjectsByStatusSlugAsync(string normalizedStatusSlug, CancellationToken cancellationToken = default)
+      {
+         throw new System.NotImplementedException();
+      }
+
+      public Task<IReadOnlyList<Project>> GetPublishedProjectsByOriginSlugAsync(string normalizedOriginSlug, CancellationToken cancellationToken = default)
+      {
+         throw new System.NotImplementedException();
+      }
+
+      public Task<IReadOnlyList<Project>> GetPublishedProjectsByTypeSlugAsync(string normalizedTypeSlug, CancellationToken cancellationToken = default)
+      {
+         throw new System.NotImplementedException();
+      }
    }
 }

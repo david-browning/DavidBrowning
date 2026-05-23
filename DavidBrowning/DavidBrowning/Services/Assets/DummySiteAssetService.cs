@@ -9,14 +9,14 @@ namespace DavidBrowning.Services.Assets
    public class DummySiteAssetService : ISiteAssetService
    {
       public Task<SiteAssetResult?> ResolveAsync(
-         SiteAsset asset, 
+         SiteAsset asset,
          CancellationToken cancellationToken = default)
       {
          throw new System.NotImplementedException();
       }
 
       public Task<SiteAssetResult?> ResolveAsync(
-         SiteAssetReference reference, 
+         SiteAssetReference reference,
          CancellationToken cancellationToken = default)
       {
          throw new System.NotImplementedException();
