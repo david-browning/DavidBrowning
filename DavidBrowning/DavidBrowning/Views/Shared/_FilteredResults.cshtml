@@ -1,0 +1,39 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Models.ViewModels.FilteredResultsViewModel
+@{
+	ViewData["Title"] = Model.PageTitle;
+}
+
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col-12">
+				<h1>@Model.PageTitle</h1>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="all" class="wb-section">
+	<div class="container">
+		<div class="row row-cols-1 g-4">
+			@if (Model.Results == null || Model.Results.Count == 0)
+			{
+				<div class="col">
+					<h2>No Results found</h2>
+				</div>
+			}
+			else
+			{
+				@foreach (var result in Model.Results)
+				{
+					<div class="col">
+						<partial name="@Model.ResultPartialName" model="result" />
+					</div>
+				}
+			}
+		</div>
+	</div>
+</section>
+

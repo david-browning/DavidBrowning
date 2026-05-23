@@ -16,5 +16,26 @@ namespace DavidBrowning.Services.Slugs
       /// <param name="value"></param>
       /// <returns></returns>
       string CreateSlug(string value);
+
+      /// <summary>
+      /// Cleans up the existing slug of any whitespace and makes it
+      /// lowercase.
+      /// 
+      ///  _______________
+      /// |_______________|
+      ///  |O| | |O| |O| | O
+      /// O O  O O  O O O O O
+      /// 
+      /// @     @
+      ///  \   /
+      ///  _\_/______________
+      /// / whey, whey, whey \
+      /// \__________________/
+      ///
+      /// </summary>
+      /// <param name="slug">An existing slug either from the database 
+      /// or made using CreateSlug</param>
+      /// <returns></returns>
+      string CleanSlug(string slug);
    }
 }

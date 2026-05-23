@@ -11,7 +11,7 @@ namespace DavidBrowning.Models.ViewModels
    {
       public required string DisplayName { get; set; }
 
-      public required string Controller {  get; set; }
+      public required string Controller { get; set; }
 
       public required string Endpoint { get; set; }
 

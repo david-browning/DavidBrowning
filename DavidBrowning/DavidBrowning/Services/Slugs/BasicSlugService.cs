@@ -34,6 +34,11 @@ namespace DavidBrowning.Services.Slugs
          return normalized;
       }
 
+      public string CleanSlug(string slug)
+      {
+         return slug.Trim().ToLowerInvariant();
+      }
+
       private static string RemoveDiacritics(string value)
       {
          string normalized = value.Normalize(NormalizationForm.FormD);

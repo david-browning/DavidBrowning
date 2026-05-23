@@ -1,16 +1,16 @@
 // Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
-using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using System.Threading.Tasks;
-using System.IO;
-using System.Collections.Generic;
-using System.Threading;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DavidBrowning.Data.Seeding

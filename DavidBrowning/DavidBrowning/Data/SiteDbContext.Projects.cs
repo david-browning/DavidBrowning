@@ -156,7 +156,7 @@ namespace DavidBrowning.Data
             });
          });
       }
-      
+
       private static void ConfigureProjectTags(ModelBuilder modelBuilder)
       {
          modelBuilder.Entity<ProjectTag>(entity =>

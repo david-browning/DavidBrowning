@@ -107,9 +107,6 @@ namespace DavidBrowning
          builder.Services.AddSingleton<ISystemClock, SystemClock>();
          builder.Services.AddSingleton<ISiteAssetService, DummySiteAssetService>();
          builder.Services.AddSingleton(typeof(ISlugService), typeof(BasicSlugService));
-
-         // Its ok to make this a singleton because it only relies on the slug
-         // service which is a singleton and relies on no injection.
          builder.Services.AddSingleton(typeof(UrlBuilder));
 
          builder.Services.AddSingleton<ILookupCache, BasicLookupCache>();

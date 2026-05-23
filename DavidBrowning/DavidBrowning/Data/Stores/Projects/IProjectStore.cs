@@ -12,36 +12,113 @@ namespace DavidBrowning.Data.Stores.Projects
       Task<IReadOnlyList<Project>> GetPublishedProjectsAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Get public projects that are marked with IsFeatued.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<Project>> GetFeaturedProjectsAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Assume the slug is normalized.
+      /// </summary>
+      /// <param name="normalizedSlug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<Project?> GetPublishedProjectBySlugAsync(
-         string slug,
+         string normalizedSlug,
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Assume the slug is normalized.
+      /// </summary>
+      /// <param name="normalizedStatusSlug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      Task<IReadOnlyList<Project>> GetPublishedProjectsByStatusSlugAsync(
+         string normalizedStatusSlug,
+         CancellationToken cancellationToken = default);
+
+      /// <summary>
+      /// Assume the slug is normalized.
+      /// </summary>
+      /// <param name="statusSlug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
+      Task<IReadOnlyList<Project>> GetPublishedProjectsByOriginSlugAsync(
+         string normalizedOriginSlug,
+         CancellationToken cancellationToken = default);
+
+      Task<IReadOnlyList<Project>> GetPublishedProjectsByTypeSlugAsync(
+         string normalizedTypeSlug,
+         CancellationToken cancellationToken = default);
+
+      /// <summary>
+      /// Assume the slug is normalized.
+      /// </summary>
+      /// <param name="normalizedTagSlug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<Project>> GetPublishedProjectsByTagSlugAsync(
-         string tagSlug,
+         string normalizedTagSlug,
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Assume the slug is normalized.
+      /// </summary>
+      /// <param name="normalizedStackTagSlug"></param>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<Project>> GetPublishedProjectsByStackTagSlugAsync(
-         string stackTagSlug,
+         string normalizedStackTagSlug,
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Gets all project tags.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<ProjectTag>> GetProjectTagsAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Gets all project stack tags.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<ProjectStackTag>> GetProjectStackTagsAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Gets all project statuses.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<ProjectStatus>> GetProjectStatusesAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Gets all project types.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<ProjectType>> GetProjectTypesAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Gets all project origins.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<ProjectOrigin>> GetProjectOriginsAsync(
          CancellationToken cancellationToken = default);
 
+      /// <summary>
+      /// Gets all project visibilities.
+      /// </summary>
+      /// <param name="cancellationToken"></param>
+      /// <returns></returns>
       Task<IReadOnlyList<ProjectVisibility>> GetProjectVisibilitiesAsync(
          CancellationToken cancellationToken = default);
    }

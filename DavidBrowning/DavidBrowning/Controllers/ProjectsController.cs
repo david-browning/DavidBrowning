@@ -6,6 +6,7 @@ using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Projects;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
@@ -33,7 +34,12 @@ namespace DavidBrowning.Controllers
 
          IProjectStore project,
          ISlugService slugService,
-         ISlugLookupService<ProjectVisibility> projectLookup)
+         ISlugLookupService<ProjectVisibility> projectLookup,
+         ISlugLookupService<ProjectStackTag> stackLookup,
+         ISlugLookupService<ProjectOrigin> originLookup,
+         ISlugLookupService<ProjectType> typeLookup,
+         ISlugLookupService<ProjectStatus> statusLookup,
+         ISlugLookupService<ProjectTag> tagLookup)
       {
          _logger = logger;
          _clock = clock;
@@ -46,6 +52,11 @@ namespace DavidBrowning.Controllers
          _projectStore = project;
          _slugService = slugService;
          _projectVisibilityLookup = projectLookup;
+         _stackLookup = stackLookup;
+         _originLookup = originLookup;
+         _typeLookup = typeLookup;
+         _statusLookup = statusLookup;
+         _tagLookup = tagLookup;
       }
 
       public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -61,14 +72,35 @@ namespace DavidBrowning.Controllers
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
       [HttpGet("stacks/{slug}")]
-      public IActionResult Stacks(string slug, CancellationToken cancellationToken)
+      public async Task<IActionResult> Stacks(
+         string slug,
+         CancellationToken cancellationToken)
       {
          if (string.IsNullOrWhiteSpace(slug))
          {
             return NotFound();
          }
 
-         return View();
+         var normalizedSlug = _slugService.CleanSlug(slug);
+         var stack = await _stackLookup.GetBySlugAsync(
+            normalizedSlug, cancellationToken);
+         if (stack == null)
+         {
+            return NotFound();
+         }
+
+         var projects = await _projectStore.GetPublishedProjectsByStackTagSlugAsync(
+            normalizedSlug, cancellationToken);
+         FilteredResultsViewModel model = new()
+         {
+            PageTitle = $"Projects with {stack.DisplayName}",
+            FilterName = stack.DisplayName,
+            FilterSlug = normalizedSlug,
+            Results = projects,
+            ResultPartialName = "_ProjectCard",
+         };
+
+         return View("_FilteredResults", model);
       }
 
       /// <summary>
@@ -78,15 +110,36 @@ namespace DavidBrowning.Controllers
       /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("/statuses/{slug}")]
-      public IActionResult Statuses(string slug, CancellationToken cancellationToken)
+      [HttpGet("statuses/{slug}")]
+      public async Task<IActionResult> Statuses(
+         string slug,
+         CancellationToken cancellationToken)
       {
          if (string.IsNullOrWhiteSpace(slug))
          {
             return NotFound();
          }
 
-         return View();
+         var normalizedSlug = _slugService.CleanSlug(slug);
+         var status = await _statusLookup.GetBySlugAsync(
+            normalizedSlug, cancellationToken);
+         if (status == null)
+         {
+            return NotFound();
+         }
+
+         var projects = await _projectStore.GetPublishedProjectsByStatusSlugAsync(
+            normalizedSlug, cancellationToken);
+         FilteredResultsViewModel model = new()
+         {
+            PageTitle = $"{status.DisplayName} Projects",
+            FilterName = status.DisplayName,
+            FilterSlug = normalizedSlug,
+            Results = projects,
+            ResultPartialName = "_ProjectCard",
+         };
+
+         return View("_FilteredResults", model);
       }
 
       /// <summary>
@@ -96,15 +149,36 @@ namespace DavidBrowning.Controllers
       /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("/origins/{slug}")]
-      public IActionResult Origins(string slug, CancellationToken cancellationToken)
+      [HttpGet("origins/{slug}")]
+      public async Task<IActionResult> Origins(
+         string slug,
+         CancellationToken cancellationToken)
       {
          if (string.IsNullOrWhiteSpace(slug))
          {
             return NotFound();
          }
 
-         return View();
+         var normalizedSlug = _slugService.CleanSlug(slug);
+         var origin = await _originLookup.GetBySlugAsync(
+            normalizedSlug, cancellationToken);
+         if (origin == null)
+         {
+            return NotFound();
+         }
+
+         var projects = await _projectStore.GetPublishedProjectsByOriginSlugAsync(
+            normalizedSlug, cancellationToken);
+         FilteredResultsViewModel model = new()
+         {
+            PageTitle = $"Projects from {origin.DisplayName}",
+            FilterName = origin.DisplayName,
+            FilterSlug = normalizedSlug,
+            Results = projects,
+            ResultPartialName = "_ProjectCard"
+         };
+
+         return View("_FilteredResults", model);
       }
       /// <summary>
       /// Returns a page with all projects that have the given slug as a 
@@ -113,15 +187,36 @@ namespace DavidBrowning.Controllers
       /// <param name="slug"></param>
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
-      [HttpGet("/types/{slug}")]
-      public IActionResult Types(string slug, CancellationToken cancellationToken)
+      [HttpGet("types/{slug}")]
+      public async Task<IActionResult> Types(
+         string slug,
+         CancellationToken cancellationToken)
       {
          if (string.IsNullOrWhiteSpace(slug))
          {
             return NotFound();
          }
 
-         return View();
+         var normalizedSlug = _slugService.CleanSlug(slug);
+         var type = await _typeLookup.GetBySlugAsync(
+            normalizedSlug, cancellationToken);
+         if (type == null)
+         {
+            return NotFound();
+         }
+
+         var projects = await _projectStore.GetPublishedProjectsByTypeSlugAsync(
+            normalizedSlug, cancellationToken);
+         FilteredResultsViewModel model = new()
+         {
+            PageTitle = $"{type.DisplayName} Projects",
+            FilterName = type.DisplayName,
+            FilterSlug = normalizedSlug,
+            Results = projects,
+            ResultPartialName = "_ProjectCard"
+         };
+
+         return View("_FilteredResults", model);
       }
 
       /// <summary>
@@ -131,7 +226,9 @@ namespace DavidBrowning.Controllers
       /// <param name="cancellationToken"></param>
       /// <returns></returns>
       [HttpGet("{slug}")]
-      public IActionResult Details(string slug, CancellationToken cancellationToken)
+      public IActionResult Details(
+         string slug,
+         CancellationToken cancellationToken)
       {
          if (string.IsNullOrWhiteSpace(slug))
          {
@@ -164,5 +261,10 @@ namespace DavidBrowning.Controllers
       private readonly IProjectStore _projectStore;
       private readonly ISlugService _slugService;
       private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;
+      private readonly ISlugLookupService<ProjectStackTag> _stackLookup;
+      private readonly ISlugLookupService<ProjectOrigin> _originLookup;
+      private readonly ISlugLookupService<ProjectType> _typeLookup;
+      private readonly ISlugLookupService<ProjectStatus> _statusLookup;
+      private readonly ISlugLookupService<ProjectTag> _tagLookup;
    }
 }
