@@ -3,7 +3,6 @@
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Diagnostics;
-using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +21,6 @@ namespace DavidBrowning.Controllers
          ISystemClock clock,
          IErrorStore errorLogStore,
          IOptions<DiagnosticsOptions> options,
-         ISiteAssetService assetService,
          IWebHostEnvironment environment,
          IConfiguration configuration,
 
@@ -33,7 +31,6 @@ namespace DavidBrowning.Controllers
          _clock = clock;
          _errorLogStore = errorLogStore;
          _options = options.Value;
-         _assetService = assetService;
          _webHostEnvironment = environment;
          _configuration = configuration;
 
@@ -92,7 +89,6 @@ namespace DavidBrowning.Controllers
       private readonly ISystemClock _clock;
       private readonly IErrorStore _errorLogStore;
       private readonly DiagnosticsOptions _options;
-      private readonly ISiteAssetService _assetService;
       private readonly IWebHostEnvironment _webHostEnvironment;
       private readonly IConfiguration _configuration;
 
