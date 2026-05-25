@@ -38,5 +38,61 @@
     "Description": "Azure hosting and platform services.",
     "SortOrder": 50,
     "IsActive": true
+  },
+  {
+    "Id": 6,
+    "Slug": "ef-core",
+    "DisplayName": "EF Core",
+    "Description": "Entity Framework Core data access.",
+    "SortOrder": 60,
+    "IsActive": true
+  },
+  {
+    "Id": 7,
+    "Slug": "powershell",
+    "DisplayName": "PowerShell",
+    "Description": "Automation and maintenance scripting.",
+    "SortOrder": 70,
+    "IsActive": true
+  },
+  {
+    "Id": 8,
+    "Slug": "cpp",
+    "DisplayName": "C++",
+    "Description": "Native C++ systems programming.",
+    "SortOrder": 80,
+    "IsActive": true
+  },
+  {
+    "Id": 9,
+    "Slug": "direct3d-12",
+    "DisplayName": "Direct3D 12",
+    "Description": "Low-level Direct3D rendering APIs.",
+    "SortOrder": 90,
+    "IsActive": true
+  },
+  {
+    "Id": 10,
+    "Slug": "docker",
+    "DisplayName": "Docker",
+    "Description": "Containerized development and services.",
+    "SortOrder": 100,
+    "IsActive": true
+  },
+  {
+    "Id": 11,
+    "Slug": "linux",
+    "DisplayName": "Linux",
+    "Description": "Linux server and tooling environment.",
+    "SortOrder": 110,
+    "IsActive": true
+  },
+  {
+    "Id": 12,
+    "Slug": "html-css",
+    "DisplayName": "HTML/CSS",
+    "Description": "Markup, styling, and front-end presentation.",
+    "SortOrder": 120,
+    "IsActive": true
   }
 ]

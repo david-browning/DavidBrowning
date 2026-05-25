@@ -4,5 +4,47 @@
     "PostId": 1,
     "RelationshipLabel": "Introductory writeup",
     "SortOrder": 10
+  },
+  {
+    "ProjectId": 1,
+    "PostId": 4,
+    "RelationshipLabel": "Seed data note",
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 4,
+    "PostId": 4,
+    "RelationshipLabel": "Design note",
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 4,
+    "PostId": 3,
+    "RelationshipLabel": "Paging reference",
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 5,
+    "PostId": 1,
+    "RelationshipLabel": "Site introduction",
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 5,
+    "PostId": 7,
+    "RelationshipLabel": "Layout testing note",
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 8,
+    "PostId": 6,
+    "RelationshipLabel": "Operational note",
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 7,
+    "PostId": 8,
+    "RelationshipLabel": "Retrospective",
+    "SortOrder": 10
   }
 ]

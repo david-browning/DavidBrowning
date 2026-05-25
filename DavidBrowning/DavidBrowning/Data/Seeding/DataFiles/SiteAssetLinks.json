@@ -4,5 +4,35 @@
     "SiteAssetId": 1,
     "Role": "HeroImage",
     "SortOrder": 10
+  },
+  {
+    "PostId": 3,
+    "SiteAssetId": 9,
+    "Role": "InlineImage",
+    "SortOrder": 10
+  },
+  {
+    "PostId": 4,
+    "SiteAssetId": 10,
+    "Role": "Attachment",
+    "SortOrder": 10
+  },
+  {
+    "PostId": 6,
+    "SiteAssetId": 8,
+    "Role": "HeroImage",
+    "SortOrder": 10
+  },
+  {
+    "PostId": 7,
+    "SiteAssetId": 5,
+    "Role": "InlineImage",
+    "SortOrder": 10
+  },
+  {
+    "PostId": 8,
+    "SiteAssetId": 7,
+    "Role": "HeroImage",
+    "SortOrder": 10
   }
 ]

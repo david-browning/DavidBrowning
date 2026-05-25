@@ -8,5 +8,95 @@
     "AltText": "Workbench-inspired screenshot placeholder for the personal website project.",
     "SizeBytes": 0,
     "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 2,
+    "AssetType": "Image",
+    "OriginalFileName": "release-dashboard-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/release-dashboard/hero.png",
+    "AltText": "Release dashboard placeholder with status columns and deployment checkpoints.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 3,
+    "AssetType": "Image",
+    "OriginalFileName": "qgl-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/queue-game-library/hero.png",
+    "AltText": "Rendering framework placeholder showing command queues and graphics resources.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 4,
+    "AssetType": "Image",
+    "OriginalFileName": "database-seeding-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/database-seeding-workbench/hero.png",
+    "AltText": "Seed data placeholder showing JSON records and relational tables.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 5,
+    "AssetType": "Image",
+    "OriginalFileName": "content-pipeline-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/content-pipeline/hero.png",
+    "AltText": "Content pipeline placeholder showing revisions, tags, and rendered output.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 6,
+    "AssetType": "Image",
+    "OriginalFileName": "zfs-backup-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/zfs-backup-script/hero.png",
+    "AltText": "Backup workflow placeholder showing datasets, snapshots, and retention windows.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 7,
+    "AssetType": "Image",
+    "OriginalFileName": "direct3d-sandbox-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/direct3d-render-sandbox/hero.png",
+    "AltText": "Rendering sandbox placeholder with test geometry and frame diagnostics.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 8,
+    "AssetType": "Image",
+    "OriginalFileName": "admin-error-log-hero.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "projects/admin-error-log/hero.png",
+    "AltText": "Administrative error log placeholder showing paged exception records.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 9,
+    "AssetType": "Image",
+    "OriginalFileName": "article-diagram-paging.png",
+    "BlobContainer": "site-assets",
+    "BlobName": "writing/why-paging-needs-ordering/paging-diagram.png",
+    "AltText": "Diagram showing ordered rows split into pages.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
+  },
+  {
+    "Id": 10,
+    "AssetType": "Code",
+    "OriginalFileName": "seed-sample.json",
+    "BlobContainer": "site-assets",
+    "BlobName": "writing/seed-data-with-intent/seed-sample.json",
+    "AltText": "Sample JSON seed-data file used in a writing post.",
+    "SizeBytes": 0,
+    "CreatedAtUtc": "2026-05-01T00:00:00Z"
   }
 ]

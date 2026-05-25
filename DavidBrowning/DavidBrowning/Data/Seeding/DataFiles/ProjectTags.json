@@ -22,5 +22,45 @@
     "Description": "Architecture-heavy project work.",
     "SortOrder": 30,
     "IsActive": true
+  },
+  {
+    "Id": 4,
+    "Slug": "automation",
+    "DisplayName": "Automation",
+    "Description": "Work that reduces repeated manual effort.",
+    "SortOrder": 40,
+    "IsActive": true
+  },
+  {
+    "Id": 5,
+    "Slug": "developer-tooling",
+    "DisplayName": "Developer Tooling",
+    "Description": "Tools built to improve engineering workflows.",
+    "SortOrder": 50,
+    "IsActive": true
+  },
+  {
+    "Id": 6,
+    "Slug": "content-systems",
+    "DisplayName": "Content Systems",
+    "Description": "Data-driven publishing and content-management work.",
+    "SortOrder": 60,
+    "IsActive": true
+  },
+  {
+    "Id": 7,
+    "Slug": "graphics",
+    "DisplayName": "Graphics",
+    "Description": "Rendering, simulation, or graphics-oriented systems.",
+    "SortOrder": 70,
+    "IsActive": true
+  },
+  {
+    "Id": 8,
+    "Slug": "database",
+    "DisplayName": "Database",
+    "Description": "Schema, persistence, and query-focused project work.",
+    "SortOrder": 80,
+    "IsActive": true
   }
 ]

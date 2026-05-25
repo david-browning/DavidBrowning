@@ -23,5 +23,110 @@
     "ProjectId": 1,
     "ProjectStackTagId": 5,
     "SortOrder": 50
+  },
+  {
+    "ProjectId": 1,
+    "ProjectStackTagId": 6,
+    "SortOrder": 60
+  },
+  {
+    "ProjectId": 2,
+    "ProjectStackTagId": 1,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 2,
+    "ProjectStackTagId": 3,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 2,
+    "ProjectStackTagId": 7,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 3,
+    "ProjectStackTagId": 8,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 3,
+    "ProjectStackTagId": 9,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 4,
+    "ProjectStackTagId": 1,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 4,
+    "ProjectStackTagId": 3,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 4,
+    "ProjectStackTagId": 6,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 5,
+    "ProjectStackTagId": 1,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 5,
+    "ProjectStackTagId": 2,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 5,
+    "ProjectStackTagId": 12,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 6,
+    "ProjectStackTagId": 7,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 6,
+    "ProjectStackTagId": 10,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 6,
+    "ProjectStackTagId": 11,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 7,
+    "ProjectStackTagId": 8,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 7,
+    "ProjectStackTagId": 9,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 8,
+    "ProjectStackTagId": 1,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 8,
+    "ProjectStackTagId": 2,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 8,
+    "ProjectStackTagId": 3,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 8,
+    "ProjectStackTagId": 6,
+    "SortOrder": 40
   }
 ]

@@ -8,5 +8,95 @@
     "ProjectId": 1,
     "ProjectTagId": 3,
     "SortOrder": 20
+  },
+  {
+    "ProjectId": 1,
+    "ProjectTagId": 6,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 2,
+    "ProjectTagId": 4,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 2,
+    "ProjectTagId": 5,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 2,
+    "ProjectTagId": 3,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 3,
+    "ProjectTagId": 3,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 3,
+    "ProjectTagId": 7,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 4,
+    "ProjectTagId": 8,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 4,
+    "ProjectTagId": 5,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 4,
+    "ProjectTagId": 6,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 5,
+    "ProjectTagId": 6,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 5,
+    "ProjectTagId": 1,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 5,
+    "ProjectTagId": 8,
+    "SortOrder": 30
+  },
+  {
+    "ProjectId": 6,
+    "ProjectTagId": 2,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 6,
+    "ProjectTagId": 4,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 7,
+    "ProjectTagId": 7,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 7,
+    "ProjectTagId": 3,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 8,
+    "ProjectTagId": 8,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 8,
+    "ProjectTagId": 2,
+    "SortOrder": 20
   }
 ]

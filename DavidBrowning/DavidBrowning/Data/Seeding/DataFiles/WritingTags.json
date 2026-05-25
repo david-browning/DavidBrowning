@@ -23,5 +23,30 @@
     "Id": 5,
     "DisplayName": "Retrospective",
     "Slug": "retrospective"
+  },
+  {
+    "Id": 6,
+    "DisplayName": "Database",
+    "Slug": "database"
+  },
+  {
+    "Id": 7,
+    "DisplayName": "Web Design",
+    "Slug": "web-design"
+  },
+  {
+    "Id": 8,
+    "DisplayName": "DevOps",
+    "Slug": "devops"
+  },
+  {
+    "Id": 9,
+    "DisplayName": "Testing",
+    "Slug": "testing"
+  },
+  {
+    "Id": 10,
+    "DisplayName": "Graphics",
+    "Slug": "graphics"
   }
 ]

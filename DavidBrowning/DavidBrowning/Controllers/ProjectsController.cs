@@ -245,6 +245,14 @@ namespace DavidBrowning.Controllers
          var all = await _projectStore.GetPublishedProjectsAsync(cancellationToken);
          return new IndexViewModel()
          {
+            PageTitle = "Projects",
+            HeroTitle = "Projects challenge us.",
+            HeroSubtitle = "Every project should teach something." +
+               "Sometimes it is a new technology stack." +
+               "Sometimes it is a better way to test, structure," +
+               "or reason about a system. Big or small, each project here is" +
+               "meant to stretch my understanding of engineering and leave" +
+               "me better than when I started.",
             AllProjects = all,
             FeaturedProjects = featured,
          };

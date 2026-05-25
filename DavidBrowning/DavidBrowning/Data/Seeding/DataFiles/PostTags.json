@@ -6,5 +6,69 @@
   {
     "PostId": 1,
     "WritingTagId": 3
+  },
+  {
+    "PostId": 2,
+    "WritingTagId": 1
+  },
+  {
+    "PostId": 2,
+    "WritingTagId": 4
+  },
+  {
+    "PostId": 3,
+    "WritingTagId": 6
+  },
+  {
+    "PostId": 3,
+    "WritingTagId": 9
+  },
+  {
+    "PostId": 4,
+    "WritingTagId": 6
+  },
+  {
+    "PostId": 4,
+    "WritingTagId": 8
+  },
+  {
+    "PostId": 4,
+    "WritingTagId": 9
+  },
+  {
+    "PostId": 5,
+    "WritingTagId": 1
+  },
+  {
+    "PostId": 5,
+    "WritingTagId": 4
+  },
+  {
+    "PostId": 6,
+    "WritingTagId": 3
+  },
+  {
+    "PostId": 6,
+    "WritingTagId": 8
+  },
+  {
+    "PostId": 7,
+    "WritingTagId": 7
+  },
+  {
+    "PostId": 7,
+    "WritingTagId": 9
+  },
+  {
+    "PostId": 8,
+    "WritingTagId": 2
+  },
+  {
+    "PostId": 8,
+    "WritingTagId": 10
+  },
+  {
+    "PostId": 8,
+    "WritingTagId": 5
   }
 ]

@@ -2,7 +2,7 @@
    Source-available for viewing only. No license granted. *@
 @model DavidBrowning.Models.ViewModels.Projects.IndexViewModel
 @{
-	ViewData["Title"] = "Projects";
+	ViewData["Title"] = Model.PageTitle;
 }
 
 <section class="wb-hero">
@@ -10,16 +10,9 @@
 		<div class="row g-4 align-items-center">
 			<div class="col-12">
 				@* Use these kickers if a page is broken into many sections *@
-				@* <p class="wb-kicker">Projects</p> *@
-				<h1>Projects</h1>
-				<p class="wb-lede">
-					Every project should teach something.
-					Sometimes it is a new technology stack.
-					Sometimes it is a better way to test, structure,
-					or reason about a system. Big or small, each project here is
-					meant to stretch my understanding of engineering and leave
-					me better than when I started.
-				</p>
+				<p class="wb-kicker">Projects</p>
+				<h1>@Model.HeroTitle</h1>
+				<p class="wb-lede">@Model.HeroSubtitle</p>
 			</div>
 		</div>
 	</div>
