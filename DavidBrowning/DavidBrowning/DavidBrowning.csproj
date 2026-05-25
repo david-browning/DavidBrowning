@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Content\" />
     <Folder Include="SQL\Tables\TableData\" />
   </ItemGroup>
 
@@ -20,6 +19,12 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+   <ItemGroup>
+  <None Update="ContentAssets\**\*.*">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />

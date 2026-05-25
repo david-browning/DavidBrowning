@@ -14,6 +14,7 @@ using DavidBrowning.Middleware;
 using DavidBrowning.Services;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Builder;
@@ -105,7 +106,6 @@ namespace DavidBrowning
 
          builder.Services.AddMemoryCache();
          builder.Services.AddSingleton<ISystemClock, SystemClock>();
-         builder.Services.AddSingleton<ISiteAssetService, DummySiteAssetService>();
          builder.Services.AddSingleton(typeof(ISlugService), typeof(BasicSlugService));
          builder.Services.AddSingleton(typeof(UrlBuilder));
 
@@ -114,6 +114,24 @@ namespace DavidBrowning
             typeof(ISlugLookupService<>),
             typeof(SlugLookupService<>));
 
+         var contentStoreProvider = builder.Configuration[
+            "Stores:ContentStore:Provider"] ?? _dummyProviderName;
+         if (string.Equals(contentStoreProvider, _dummyProviderName, StringComparison.OrdinalIgnoreCase))
+         {
+            builder.Services.AddSingleton<IContentService, DummyContentService>();
+         }
+         else if(string.Equals(contentStoreProvider, "Local", StringComparison.OrdinalIgnoreCase))
+         {
+            builder.Services.AddSingleton<IContentService, LocalContentService>();
+         }
+         else
+         {
+            throw new InvalidOperationException(
+               $"Unknown content store provider: {contentStoreProvider}");
+         }
+
+         builder.Services.AddScoped<IContentRenderer, BasicContentRenderer>();
+            
          builder.Services.AddControllersWithViews();
       }
 

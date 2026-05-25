@@ -10,6 +10,7 @@ using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Projects;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -28,10 +29,11 @@ namespace DavidBrowning.Controllers
          ISystemClock clock,
          IErrorStore errorLogStore,
          IOptions<DiagnosticsOptions> options,
-         ISiteAssetService assetService,
          IWebHostEnvironment environment,
          IConfiguration configuration,
 
+         IContentService contentService,
+         IContentRenderer contentRenderer,
          IProjectStore project,
          ISlugService slugService,
          ISlugLookupService<ProjectVisibility> projectLookup,
@@ -45,10 +47,11 @@ namespace DavidBrowning.Controllers
          _clock = clock;
          _errorLogStore = errorLogStore;
          _options = options.Value;
-         _assetService = assetService;
          _webHostEnvironment = environment;
          _configuration = configuration;
 
+         _contentService = contentService;
+         _renderer = contentRenderer;
          _projectStore = project;
          _slugService = slugService;
          _projectVisibilityLookup = projectLookup;
@@ -241,18 +244,21 @@ namespace DavidBrowning.Controllers
       private async Task<IndexViewModel> GetIndexModelAsync(
          CancellationToken cancellationToken)
       {
-         var featured = await _projectStore.GetFeaturedProjectsAsync(cancellationToken);
-         var all = await _projectStore.GetPublishedProjectsAsync(cancellationToken);
+         var featured = await _projectStore.GetFeaturedProjectsAsync(
+            cancellationToken);
+         var all = await _projectStore.GetPublishedProjectsAsync(
+            cancellationToken);
+         var heroSubtitleContent = await _contentService.GetContentAsync(
+            "Blurbs/Projects.md",
+            cancellationToken);
+         var heroSubtitleRendered = await _renderer.RenderAsync(
+            heroSubtitleContent, cancellationToken);
+
          return new IndexViewModel()
          {
             PageTitle = "Projects",
             HeroTitle = "Projects challenge us.",
-            HeroSubtitle = "Every project should teach something." +
-               "Sometimes it is a new technology stack." +
-               "Sometimes it is a better way to test, structure," +
-               "or reason about a system. Big or small, each project here is" +
-               "meant to stretch my understanding of engineering and leave" +
-               "me better than when I started.",
+            HeroSubtitle = heroSubtitleRendered,
             AllProjects = all,
             FeaturedProjects = featured,
          };
@@ -262,10 +268,11 @@ namespace DavidBrowning.Controllers
       private readonly ISystemClock _clock;
       private readonly IErrorStore _errorLogStore;
       private readonly DiagnosticsOptions _options;
-      private readonly ISiteAssetService _assetService;
       private readonly IWebHostEnvironment _webHostEnvironment;
       private readonly IConfiguration _configuration;
 
+      private readonly IContentService _contentService;
+      private readonly IContentRenderer _renderer;
       private readonly IProjectStore _projectStore;
       private readonly ISlugService _slugService;
       private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;

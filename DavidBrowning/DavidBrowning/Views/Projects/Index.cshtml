@@ -10,9 +10,11 @@
 		<div class="row g-4 align-items-center">
 			<div class="col-12">
 				@* Use these kickers if a page is broken into many sections *@
-				<p class="wb-kicker">Projects</p>
+				<p class="wb-kicker">@Model.PageTitle</p>
 				<h1>@Model.HeroTitle</h1>
-				<p class="wb-lede">@Model.HeroSubtitle</p>
+				<p class="wb-lede">
+					<partial name="_RenderedContent" model="@Model.HeroSubtitle" />
+				</p>
 			</div>
 		</div>
 	</div>

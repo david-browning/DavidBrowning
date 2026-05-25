@@ -41,6 +41,13 @@ namespace DavidBrowning.Middleware
             {
                await errorStore.InsertErrorAsync(error, context.RequestAborted);
             }
+            catch (OperationCanceledException)
+               when (context.RequestAborted.IsCancellationRequested)
+            {
+               // Request was canceled by client/request lifetime.
+               // Usually don't log as an application failure.
+               _logger.LogInformation("Request aborted");
+            }
             catch (Exception loggingException)
             {
                _logger.LogError(

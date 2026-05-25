@@ -8,7 +8,7 @@ namespace DavidBrowning.Models.ViewModels.About
 
       public required string HeroTitle { get; init; }
 
-      public required string HeroSubtitle { get; init; }
+      public required RenderedContent HeroSubtitle { get; init; }
 
       // Interests
 
