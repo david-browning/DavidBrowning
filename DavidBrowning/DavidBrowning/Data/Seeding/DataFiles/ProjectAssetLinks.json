@@ -1,10 +1,82 @@
 [
-   {
-      "ProjectId": 1,
-      "SiteAssetId": 1,
-      "ProjectAssetRoleId": 1,
-      "Caption": null,
-      "AltTextOverride": null,
-      "SortOrder": 10
-   }
+  {
+    "ProjectId": 1,
+    "SiteAssetId": 1,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 2,
+    "SiteAssetId": 2,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 3,
+    "SiteAssetId": 3,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 4,
+    "SiteAssetId": 4,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 5,
+    "SiteAssetId": 5,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 6,
+    "SiteAssetId": 6,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 7,
+    "SiteAssetId": 7,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 8,
+    "SiteAssetId": 8,
+    "ProjectAssetRoleId": 1,
+    "Caption": null,
+    "AltTextOverride": null,
+    "SortOrder": 10
+  },
+  {
+    "ProjectId": 4,
+    "SiteAssetId": 10,
+    "ProjectAssetRoleId": 3,
+    "Caption": "Example seed JSON used to validate the local data pipeline.",
+    "AltTextOverride": null,
+    "SortOrder": 20
+  },
+  {
+    "ProjectId": 8,
+    "SiteAssetId": 9,
+    "ProjectAssetRoleId": 2,
+    "Caption": "Paged layout test image reused as an admin-list placeholder.",
+    "AltTextOverride": null,
+    "SortOrder": 20
+  }
 ]
