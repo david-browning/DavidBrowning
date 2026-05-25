@@ -12,6 +12,11 @@ namespace DavidBrowning.Data.Stores.Projects
       Task<IReadOnlyList<Project>> GetPublishedProjectsAsync(
          CancellationToken cancellationToken = default);
 
+      Task<PagedResult<Project>> GetPagedPublishedProjectsAsync(
+         int page,
+         int pageSize,
+         CancellationToken cancellationToken = default);
+
       /// <summary>
       /// Get public projects that are marked with IsFeatued.
       /// </summary>

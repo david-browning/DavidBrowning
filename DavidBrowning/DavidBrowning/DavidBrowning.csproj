@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <Folder Include="Services\Content\" />
+    <Folder Include="SQL\Tables\TableData\" />
   </ItemGroup>
 
   <ItemGroup>

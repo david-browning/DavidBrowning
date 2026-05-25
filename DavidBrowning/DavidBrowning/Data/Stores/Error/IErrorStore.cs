@@ -3,6 +3,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.Error;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DavidBrowning.Data.Stores.Error
 {
@@ -17,7 +18,7 @@ namespace DavidBrowning.Data.Stores.Error
          int id,
          CancellationToken cancellationToken = default);
 
-      Task InsertErrorAsync(
+      Task<WebsiteError> InsertErrorAsync(
          WebsiteError error,
          CancellationToken cancellationToken = default);
    }
