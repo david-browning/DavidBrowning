@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -33,6 +34,45 @@ namespace DavidBrowning.Data.Stores.Projects
             .OrderBy(project => project.SortOrder)
             .ThenBy(project => project.Name)
             .ToListAsync(cancellationToken);
+      }
+
+      public async Task<PagedResult<Project>> GetPagedPublishedProjectsAsync(
+         int page,
+         int pageSize,
+         CancellationToken cancellationToken = default)
+      {
+         if (page < 1)
+         {
+            throw new ArgumentOutOfRangeException(
+               nameof(page),
+               "Page must be greater than or equal to 1.");
+         }
+
+         if (pageSize < 1)
+         {
+            throw new ArgumentOutOfRangeException(
+               nameof(pageSize),
+               "Page size must be greater than or equal to 1.");
+         }
+
+         var query = await BuildPublishedProjectQueryAsync(cancellationToken);
+         var totalCount =
+           await query.CountAsync(cancellationToken);
+
+         var projects = await query
+            .OrderBy(project => project.SortOrder)
+            .ThenBy(project => project.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+         return new PagedResult<Project>
+         { 
+            Items = projects,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+         };
       }
 
       public async Task<Project?> GetPublishedProjectBySlugAsync(

@@ -190,5 +190,19 @@ namespace DavidBrowning.Data.Stores.Writing
 
          return post;
       }
+
+      public Task<PagedResult<Post>> GetPagedPublishedPostsAsync(
+         int page,
+         int pageSize, 
+         CancellationToken cancellationToken = default)
+      {
+         return Task.FromResult(new PagedResult<Post>()
+         {
+            Items = _posts,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = _posts.Count,
+         });
+      }
    }
 }

@@ -263,12 +263,7 @@ namespace DavidBrowning
          string provider =
             builder.Configuration["Stores:ErrorStore:Provider"] ?? _dummyProviderName;
 
-         if (string.Equals(provider, _dummyProviderName, StringComparison.OrdinalIgnoreCase))
-         {
-            builder.Services.AddSingleton<IErrorStore, DummyErrorStore>();
-            return;
-         }
-         else if (string.Equals(provider, _sqlServerProviderName, StringComparison.OrdinalIgnoreCase))
+         if (string.Equals(provider, _sqlServerProviderName, StringComparison.OrdinalIgnoreCase))
          {
             builder.Services.AddScoped<IErrorStore, SqlErrorStore>();
             return;
@@ -303,12 +298,6 @@ namespace DavidBrowning
       {
          string provider =
             builder.Configuration["Stores:ProjectStore:Provider"] ?? _dummyProviderName;
-
-         if (string.Equals(provider, _dummyProviderName, StringComparison.OrdinalIgnoreCase))
-         {
-            builder.Services.AddSingleton<IProjectStore, DummyProjectStore>();
-            return;
-         }
 
          if (string.Equals(provider, _sqlServerProviderName, StringComparison.OrdinalIgnoreCase))
          {

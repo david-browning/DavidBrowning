@@ -16,6 +16,14 @@ namespace DavidBrowning.Data.Stores.Writing
          throw new NotImplementedException();
       }
 
+      public Task<PagedResult<Post>> GetPagedPublishedPostsAsync(
+         int page,
+         int pageSize,
+         CancellationToken cancellationToken = default)
+      {
+         throw new NotImplementedException();
+      }
+
       public Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
          CancellationToken cancellationToken = default)
       {
