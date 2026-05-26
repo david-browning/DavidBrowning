@@ -3,7 +3,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.Error;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DavidBrowning.Data.Stores.Error
 {

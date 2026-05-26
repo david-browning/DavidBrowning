@@ -10,10 +10,10 @@ namespace DavidBrowning.Services.Rendering
    public interface IContentRenderer
    {
       /// <summary>
-      /// Renders authored source content into displayable HTML content.
+      /// Renders a stored asset into displayable HTML content.
       /// </summary>
-      /// <param name="content">
-      /// The source content to render.
+      /// <param name="asset">
+      /// The stored asset to render.
       /// </param>
       /// <param name="cancellationToken">
       /// A token used to cancel the render operation.
@@ -22,7 +22,8 @@ namespace DavidBrowning.Services.Rendering
       /// The rendered content.
       /// </returns>
       Task<RenderedContent> RenderAsync(
-         StoredContent content,
+         StoredAsset content,
+         ContentRenderOptions? options = null,
          CancellationToken cancellationToken = default);
    }
 }

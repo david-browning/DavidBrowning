@@ -11,7 +11,7 @@ namespace DavidBrowning.Models.ViewModels.Projects
 
       public required string HeroTitle { get; init; }
 
-      public required RenderedContent HeroSubtitle { get; init; }
+      public required string HeroSubtitle { get; init; }
 
       public required IReadOnlyList<Project> AllProjects { get; set; }
 

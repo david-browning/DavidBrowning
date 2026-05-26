@@ -1,16 +1,17 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Projects;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
-using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -32,8 +33,7 @@ namespace DavidBrowning.Controllers
          IWebHostEnvironment environment,
          IConfiguration configuration,
 
-         IContentService contentService,
-         IContentRenderer contentRenderer,
+         IContentPipeline contentPipeline,
          IProjectStore project,
          ISlugService slugService,
          ISlugLookupService<ProjectVisibility> projectLookup,
@@ -50,8 +50,7 @@ namespace DavidBrowning.Controllers
          _webHostEnvironment = environment;
          _configuration = configuration;
 
-         _contentService = contentService;
-         _renderer = contentRenderer;
+         _contentPipeline = contentPipeline;
          _projectStore = project;
          _slugService = slugService;
          _projectVisibilityLookup = projectLookup;
@@ -248,17 +247,19 @@ namespace DavidBrowning.Controllers
             cancellationToken);
          var all = await _projectStore.GetPublishedProjectsAsync(
             cancellationToken);
-         var heroSubtitleContent = await _contentService.GetContentAsync(
-            "Blurbs/Projects.md",
+         var heroData = await _contentPipeline.GetJsonFileContentAsync<HeroData>(
+            "Heros/Projects.json",
             cancellationToken);
-         var heroSubtitleRendered = await _renderer.RenderAsync(
-            heroSubtitleContent, cancellationToken);
+         if (heroData == null)
+         {
+            throw new FileNotFoundException("The hero data could not be parsed.");
+         }
 
          return new IndexViewModel()
          {
             PageTitle = "Projects",
-            HeroTitle = "Projects challenge us.",
-            HeroSubtitle = heroSubtitleRendered,
+            HeroTitle = heroData.Title ?? "Missing Data",
+            HeroSubtitle = heroData.Subtitle ?? "Missing Data",
             AllProjects = all,
             FeaturedProjects = featured,
          };
@@ -271,8 +272,7 @@ namespace DavidBrowning.Controllers
       private readonly IWebHostEnvironment _webHostEnvironment;
       private readonly IConfiguration _configuration;
 
-      private readonly IContentService _contentService;
-      private readonly IContentRenderer _renderer;
+      private readonly IContentPipeline _contentPipeline;
       private readonly IProjectStore _projectStore;
       private readonly ISlugService _slugService;
       private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;

@@ -7,7 +7,9 @@ namespace DavidBrowning.Models.ViewModels
       Unknown = 0,
       Markdown = 1,
       Html = 2,
-      PlainText = 3
+      PlainText = 3,
+      Image = 4,
+      Json = 5,
    }
 
    public sealed class RenderedContent

@@ -1,5 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.Collections.Generic;
+
 namespace DavidBrowning.Models.ViewModels.About
 {
    public class IndexViewModel
@@ -8,9 +10,11 @@ namespace DavidBrowning.Models.ViewModels.About
 
       public required string HeroTitle { get; init; }
 
-      public required RenderedContent HeroSubtitle { get; init; }
+      public required string HeroSubtitle { get; init; }
 
-      // Interests
+      public required RenderedContent MeImage { get; init; }
+
+      public required IReadOnlyList<InterestSectionViewModel> Interests { get; init; }
 
       // Humor
    }

@@ -67,7 +67,7 @@ namespace DavidBrowning.Data.Stores.Projects
             .ToListAsync(cancellationToken);
 
          return new PagedResult<Project>
-         { 
+         {
             Items = projects,
             TotalCount = totalCount,
             Page = page,

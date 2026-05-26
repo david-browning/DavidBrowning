@@ -1,10 +1,14 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels.About;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Rendering;
@@ -28,8 +32,7 @@ namespace DavidBrowning.Controllers
          IWebHostEnvironment environment,
          IConfiguration configuration,
 
-         IContentService contentService,
-         IContentRenderer contentRenderer,
+         IContentPipeline contentPipeline,
          IProjectStore projectStore)
       {
          _logger = logger;
@@ -39,8 +42,7 @@ namespace DavidBrowning.Controllers
          _webHostEnvironment = environment;
          _configuration = configuration;
 
-         _contentService = contentService;
-         _renderer = contentRenderer;
+         _contentPipeline = contentPipeline;
          _projectStore = projectStore;
       }
 
@@ -62,17 +64,29 @@ namespace DavidBrowning.Controllers
       private async Task<IndexViewModel> GetIndexModelAsync(
          CancellationToken cancellationToken)
       {
-         var heroSubtitleContent = await _contentService.GetContentAsync(
-            "Blurbs/About.md",
+         var heroData = await _contentPipeline.GetJsonFileContentAsync<HeroData>(
+            "Heros/About.json", cancellationToken);
+         if(heroData == null)
+         {
+            throw new FileNotFoundException("The hero data could not be parsed.");
+         }
+
+         var profileImage = await _contentPipeline.GetRenderedContentAsync(
+            "Images/Me.jpg",
+            new ContentRenderOptions()
+            {
+               AltText = "David Browning",
+               CssClass = "wb-about-profile-image",
+            }, 
             cancellationToken);
-         var heroSubtitleRendered = await _renderer.RenderAsync(
-            heroSubtitleContent, cancellationToken);
 
          return new IndexViewModel()
          {
             PageTitle = "About",
-            HeroTitle = "About me.",
-            HeroSubtitle = heroSubtitleRendered,
+            HeroTitle = heroData.Title ?? "Missing Data",
+            HeroSubtitle = heroData.Subtitle ?? "Missing Data",
+            MeImage = profileImage,
+            Interests = new List<InterestSectionViewModel>(),
          };
       }
 
@@ -84,7 +98,6 @@ namespace DavidBrowning.Controllers
       private readonly IConfiguration _configuration;
 
       private readonly IProjectStore _projectStore;
-      private readonly IContentService _contentService;
-      private readonly IContentRenderer _renderer;
+      private readonly IContentPipeline _contentPipeline;
    }
 }
