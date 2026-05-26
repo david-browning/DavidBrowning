@@ -1,1 +1,0 @@
-﻿We are more than our résumés and portfolios. We are more than our grades and degrees. There are things that intrigue us, questions we keep returning to, and passions that shape how we see the world. This page is a little more about the person behind the work: what I care about, what I’m still learning, and what keeps me curious.

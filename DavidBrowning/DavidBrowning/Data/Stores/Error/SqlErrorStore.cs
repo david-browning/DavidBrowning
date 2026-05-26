@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.Error;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Data.Stores.Error
@@ -22,7 +21,7 @@ namespace DavidBrowning.Data.Stores.Error
       }
 
       public async Task<PagedResult<WebsiteError>> GetErrorsAsync(
-         int page, 
+         int page,
          int pageSize, CancellationToken cancellationToken = default)
       {
          if (page < 1)
@@ -62,7 +61,7 @@ namespace DavidBrowning.Data.Stores.Error
       }
 
       public Task<WebsiteError> GetErrorAsync(
-         int id, 
+         int id,
          CancellationToken cancellationToken = default)
       {
          return _context.WebsiteErrors

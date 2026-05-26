@@ -120,7 +120,7 @@ namespace DavidBrowning
          {
             builder.Services.AddSingleton<IContentService, DummyContentService>();
          }
-         else if(string.Equals(contentStoreProvider, "Local", StringComparison.OrdinalIgnoreCase))
+         else if (string.Equals(contentStoreProvider, "Local", StringComparison.OrdinalIgnoreCase))
          {
             builder.Services.AddSingleton<IContentService, LocalContentService>();
          }
@@ -130,8 +130,9 @@ namespace DavidBrowning
                $"Unknown content store provider: {contentStoreProvider}");
          }
 
-         builder.Services.AddScoped<IContentRenderer, BasicContentRenderer>();
-            
+         builder.Services.AddSingleton<IContentRenderer, BasicContentRenderer>();
+         builder.Services.AddSingleton<IContentPipeline, BasicContentPipeline>();
+
          builder.Services.AddControllersWithViews();
       }
 
