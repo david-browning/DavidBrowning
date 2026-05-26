@@ -4,27 +4,26 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DavidBrowning.Services.Assets
+namespace DavidBrowning.Services.Assets;
+
+public sealed class AzureBlobContentService : IContentService
 {
-   public sealed class AzureBlobContentService : IContentService
+   public Task<StoredAsset> GetAssetAsync(
+      string assetKey,
+      CancellationToken cancellationToken = default)
    {
-      public Task<StoredAsset> GetAssetAsync(
-         string assetKey,
-         CancellationToken cancellationToken = default)
-      {
-         throw new System.NotImplementedException();
-      }
+      throw new System.NotImplementedException();
+   }
 
-      public Task<Stream> OpenReadAsync(
-         string assetKey,
-         CancellationToken cancellationToken = default)
-      {
-         throw new System.NotImplementedException();
-      }
+   public Task<Stream> OpenReadAsync(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      throw new System.NotImplementedException();
+   }
 
-      public string GetAssetFileType(string assetKey)
-      {
-         return AssetHelpers.GetContentType(assetKey);
-      }
+   public string GetAssetFileType(string assetKey)
+   {
+      return AssetHelpers.GetContentType(assetKey);
    }
 }

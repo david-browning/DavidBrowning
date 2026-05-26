@@ -6,65 +6,64 @@ using DavidBrowning.Models.Projects;
 using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 
-namespace DavidBrowning.Data
+namespace DavidBrowning.Data;
+
+internal sealed partial class SiteDbContext : DbContext
 {
-   internal sealed partial class SiteDbContext : DbContext
+   public SiteDbContext(DbContextOptions<SiteDbContext> options)
+      : base(options)
    {
-      public SiteDbContext(DbContextOptions<SiteDbContext> options)
-         : base(options)
-      {
-      }
+   }
 
-      public DbSet<Post> Posts => Set<Post>();
+   public DbSet<Post> Posts => Set<Post>();
 
-      public DbSet<PostRevision> PostRevisions => Set<PostRevision>();
+   public DbSet<PostRevision> PostRevisions => Set<PostRevision>();
 
-      public DbSet<WritingTag> WritingTags => Set<WritingTag>();
+   public DbSet<WritingTag> WritingTags => Set<WritingTag>();
 
-      public DbSet<PostTag> PostTags => Set<PostTag>();
+   public DbSet<PostTag> PostTags => Set<PostTag>();
 
-      public DbSet<SiteAsset> SiteAssets => Set<SiteAsset>();
+   public DbSet<SiteAsset> SiteAssets => Set<SiteAsset>();
 
-      public DbSet<SiteAssetLink> SiteAssetLinks => Set<SiteAssetLink>();
+   public DbSet<SiteAssetLink> SiteAssetLinks => Set<SiteAssetLink>();
 
-      public DbSet<WebsiteError> WebsiteErrors => Set<WebsiteError>();
+   public DbSet<WebsiteError> WebsiteErrors => Set<WebsiteError>();
 
-      public DbSet<Project> Projects => Set<Project>();
+   public DbSet<Project> Projects => Set<Project>();
 
-      public DbSet<ProjectStatus> ProjectStatuses => Set<ProjectStatus>();
+   public DbSet<ProjectStatus> ProjectStatuses => Set<ProjectStatus>();
 
-      public DbSet<ProjectType> ProjectTypes => Set<ProjectType>();
+   public DbSet<ProjectType> ProjectTypes => Set<ProjectType>();
 
-      public DbSet<ProjectOrigin> ProjectOrigins => Set<ProjectOrigin>();
+   public DbSet<ProjectOrigin> ProjectOrigins => Set<ProjectOrigin>();
 
-      public DbSet<ProjectVisibility> ProjectVisibilities => Set<ProjectVisibility>();
+   public DbSet<ProjectVisibility> ProjectVisibilities => Set<ProjectVisibility>();
 
-      public DbSet<ProjectTag> ProjectTags => Set<ProjectTag>();
+   public DbSet<ProjectTag> ProjectTags => Set<ProjectTag>();
 
-      public DbSet<ProjectTagLink> ProjectTagLinks => Set<ProjectTagLink>();
+   public DbSet<ProjectTagLink> ProjectTagLinks => Set<ProjectTagLink>();
 
-      public DbSet<ProjectStackTag> ProjectStackTags => Set<ProjectStackTag>();
+   public DbSet<ProjectStackTag> ProjectStackTags => Set<ProjectStackTag>();
 
-      public DbSet<ProjectStackTagLink> ProjectStackTagLinks => Set<ProjectStackTagLink>();
+   public DbSet<ProjectStackTagLink> ProjectStackTagLinks => Set<ProjectStackTagLink>();
 
-      public DbSet<ProjectLinkType> ProjectLinkTypes => Set<ProjectLinkType>();
+   public DbSet<ProjectLinkType> ProjectLinkTypes => Set<ProjectLinkType>();
 
-      public DbSet<ProjectLink> ProjectLinks => Set<ProjectLink>();
+   public DbSet<ProjectLink> ProjectLinks => Set<ProjectLink>();
 
-      public DbSet<ProjectAssetRole> ProjectAssetRoles => Set<ProjectAssetRole>();
+   public DbSet<ProjectAssetRole> ProjectAssetRoles => Set<ProjectAssetRole>();
 
-      public DbSet<ProjectAssetLink> ProjectAssetLinks => Set<ProjectAssetLink>();
+   public DbSet<ProjectAssetLink> ProjectAssetLinks => Set<ProjectAssetLink>();
 
-      public DbSet<ProjectPost> ProjectPosts => Set<ProjectPost>();
+   public DbSet<ProjectPost> ProjectPosts => Set<ProjectPost>();
 
-      protected override void OnModelCreating(ModelBuilder modelBuilder)
-      {
-         base.OnModelCreating(modelBuilder);
+   protected override void OnModelCreating(ModelBuilder modelBuilder)
+   {
+      base.OnModelCreating(modelBuilder);
 
-         ConfigureErrors(modelBuilder);
-         ConfigureSiteAssets(modelBuilder);
-         ConfigureWriting(modelBuilder);
-         ConfigureProjects(modelBuilder);
-      }
+      ConfigureErrors(modelBuilder);
+      ConfigureSiteAssets(modelBuilder);
+      ConfigureWriting(modelBuilder);
+      ConfigureProjects(modelBuilder);
    }
 }

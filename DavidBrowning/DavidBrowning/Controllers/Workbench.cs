@@ -2,13 +2,12 @@
 // Source-available for viewing only. No license granted.
 using Microsoft.AspNetCore.Mvc;
 
-namespace DavidBrowning.Controllers
+namespace DavidBrowning.Controllers;
+
+public class Workbench : Controller
 {
-   public class Workbench : Controller
+   public IActionResult Index()
    {
-      public IActionResult Index()
-      {
-         return View();
-      }
+      return View();
    }
 }

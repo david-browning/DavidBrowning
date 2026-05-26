@@ -3,18 +3,17 @@
 using System.Collections.Generic;
 using DavidBrowning.Models.Projects;
 
-namespace DavidBrowning.Models.ViewModels.Projects
+namespace DavidBrowning.Models.ViewModels.Projects;
+
+public class IndexViewModel
 {
-   public class IndexViewModel
-   {
-      public required string PageTitle { get; init; }
+   public required string PageTitle { get; init; }
 
-      public required string HeroTitle { get; init; }
+   public required string HeroTitle { get; init; }
 
-      public required string HeroSubtitle { get; init; }
+   public required string HeroSubtitle { get; init; }
 
-      public required IReadOnlyList<Project> AllProjects { get; set; }
+   public required IReadOnlyList<Project> AllProjects { get; set; }
 
-      public required IReadOnlyList<Project> FeaturedProjects { get; set; }
-   }
+   public required IReadOnlyList<Project> FeaturedProjects { get; set; }
 }

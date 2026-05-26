@@ -4,21 +4,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.Error;
 
-namespace DavidBrowning.Data.Stores.Error
+namespace DavidBrowning.Data.Stores.Error;
+
+public interface IErrorStore
 {
-   public interface IErrorStore
-   {
-      Task<PagedResult<WebsiteError>> GetErrorsAsync(
-         int page,
-         int pageSize,
-         CancellationToken cancellationToken = default);
+   Task<PagedResult<WebsiteError>> GetErrorsAsync(
+      int page,
+      int pageSize,
+      CancellationToken cancellationToken = default);
 
-      Task<WebsiteError> GetErrorAsync(
-         int id,
-         CancellationToken cancellationToken = default);
+   Task<WebsiteError> GetErrorAsync(
+      int id,
+      CancellationToken cancellationToken = default);
 
-      Task<WebsiteError> InsertErrorAsync(
-         WebsiteError error,
-         CancellationToken cancellationToken = default);
-   }
+   Task<WebsiteError> InsertErrorAsync(
+      WebsiteError error,
+      CancellationToken cancellationToken = default);
 }
