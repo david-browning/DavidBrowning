@@ -2,13 +2,12 @@
 // Source-available for viewing only. No license granted.
 using System;
 
-namespace DavidBrowning.Services.Cache
+namespace DavidBrowning.Services.Cache;
+
+/// <summary>
+/// Options for caching data.
+/// </summary>
+public sealed class LookupCacheOptions
 {
-   /// <summary>
-   /// Options for caching data.
-   /// </summary>
-   public sealed class LookupCacheOptions
-   {
-      public TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(10);
-   }
+   public TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(10);
 }

@@ -2,16 +2,15 @@
 // Source-available for viewing only. No license granted.
 using System;
 
-namespace DavidBrowning.Services.Time
+namespace DavidBrowning.Services.Time;
+
+internal sealed class SystemClock : ISystemClock
 {
-   internal sealed class SystemClock : ISystemClock
+   public DateTime UtcNow
    {
-      public DateTime UtcNow
+      get
       {
-         get
-         {
-            return DateTime.UtcNow;
-         }
+         return DateTime.UtcNow;
       }
    }
 }

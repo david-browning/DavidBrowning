@@ -1,6 +1,5 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -19,85 +18,84 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DavidBrowning.Controllers
+namespace DavidBrowning.Controllers;
+
+[Route("about")]
+public class AboutController : Controller
 {
-   [Route("about")]
-   public class AboutController : Controller
+   public AboutController(
+      ILogger<WorkController> logger,
+      ISystemClock clock,
+      IErrorStore errorLogStore,
+      IOptions<DiagnosticsOptions> options,
+      IWebHostEnvironment environment,
+      IConfiguration configuration,
+
+      IContentPipeline contentPipeline,
+      IProjectStore projectStore)
    {
-      public AboutController(
-         ILogger<WorkController> logger,
-         ISystemClock clock,
-         IErrorStore errorLogStore,
-         IOptions<DiagnosticsOptions> options,
-         IWebHostEnvironment environment,
-         IConfiguration configuration,
+      _logger = logger;
+      _clock = clock;
+      _errorLogStore = errorLogStore;
+      _options = options.Value;
+      _webHostEnvironment = environment;
+      _configuration = configuration;
 
-         IContentPipeline contentPipeline,
-         IProjectStore projectStore)
-      {
-         _logger = logger;
-         _clock = clock;
-         _errorLogStore = errorLogStore;
-         _options = options.Value;
-         _webHostEnvironment = environment;
-         _configuration = configuration;
-
-         _contentPipeline = contentPipeline;
-         _projectStore = projectStore;
-      }
-
-      public async Task<IActionResult> Index(CancellationToken cancellationToken)
-      {
-         return View(await GetIndexModelAsync(cancellationToken));
-      }
-
-      /// <summary>
-      /// Returns a page with information about the site.
-      /// </summary>
-      /// <returns></returns>
-      [HttpGet("this")]
-      public IActionResult This()
-      {
-         return View();
-      }
-
-      private async Task<IndexViewModel> GetIndexModelAsync(
-         CancellationToken cancellationToken)
-      {
-         var heroData = await _contentPipeline.GetJsonFileContentAsync<HeroData>(
-            "Heros/About.json", cancellationToken);
-         if(heroData == null)
-         {
-            throw new FileNotFoundException("The hero data could not be parsed.");
-         }
-
-         var profileImage = await _contentPipeline.GetRenderedContentAsync(
-            "Images/Me.jpg",
-            new ContentRenderOptions()
-            {
-               AltText = "David Browning",
-               CssClass = "wb-about-profile-image",
-            }, 
-            cancellationToken);
-
-         return new IndexViewModel()
-         {
-            PageTitle = "About",
-            HeroTitle = heroData.Title ?? "Missing Data",
-            HeroSubtitle = heroData.Subtitle ?? "Missing Data",
-            MeImage = profileImage,
-            Interests = new List<InterestSectionViewModel>(),
-         };
-      }
-
-      private readonly ILogger<WorkController> _logger;
-      private readonly ISystemClock _clock;
-      private readonly IErrorStore _errorLogStore;
-      private readonly DiagnosticsOptions _options;
-      private readonly IWebHostEnvironment _webHostEnvironment;
-      private readonly IConfiguration _configuration;
-
-      private readonly IProjectStore _projectStore;
-      private readonly IContentPipeline _contentPipeline;
+      _contentPipeline = contentPipeline;
+      _projectStore = projectStore;
    }
+
+   public async Task<IActionResult> Index(CancellationToken cancellationToken)
+   {
+      return View(await GetIndexModelAsync(cancellationToken));
+   }
+
+   /// <summary>
+   /// Returns a page with information about the site.
+   /// </summary>
+   /// <returns></returns>
+   [HttpGet("this")]
+   public IActionResult This()
+   {
+      return View();
+   }
+
+   private async Task<IndexViewModel> GetIndexModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var heroData = await _contentPipeline.GetJsonFileContentAsync<HeroData>(
+         "Heros/About.json", cancellationToken);
+      if (heroData == null)
+      {
+         throw new FileNotFoundException("The hero data could not be parsed.");
+      }
+
+      var profileImage = await _contentPipeline.GetRenderedContentAsync(
+         "Images/Me.jpg",
+         new ContentRenderOptions()
+         {
+            AltText = "David Browning",
+            CssClass = "wb-about-profile-image",
+         },
+         cancellationToken);
+
+      return new IndexViewModel()
+      {
+         PageTitle = "About",
+         HeroTitle = heroData.Title ?? "Missing Data",
+         HeroSubtitle = heroData.Subtitle ?? "Missing Data",
+         MeImage = profileImage,
+         Interests = new List<InterestSectionViewModel>(),
+      };
+   }
+
+   private readonly ILogger<WorkController> _logger;
+   private readonly ISystemClock _clock;
+   private readonly IErrorStore _errorLogStore;
+   private readonly DiagnosticsOptions _options;
+   private readonly IWebHostEnvironment _webHostEnvironment;
+   private readonly IConfiguration _configuration;
+
+   private readonly IProjectStore _projectStore;
+   private readonly IContentPipeline _contentPipeline;
 }

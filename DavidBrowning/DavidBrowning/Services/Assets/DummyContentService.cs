@@ -6,38 +6,37 @@ using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.ViewModels;
 
-namespace DavidBrowning.Services.Assets
+namespace DavidBrowning.Services.Assets;
+
+public class DummyContentService : IContentService
 {
-   public class DummyContentService : IContentService
+   public Task<StoredAsset> GetAssetAsync(
+      string assetKey,
+      CancellationToken cancellationToken = default)
    {
-      public Task<StoredAsset> GetAssetAsync(
-         string assetKey,
-         CancellationToken cancellationToken = default)
+      var now = DateTimeOffset.UtcNow;
+      var ret = new StoredAsset()
       {
-         var now = DateTimeOffset.UtcNow;
-         var ret = new StoredAsset()
-         {
-            AssetKey = assetKey,
-            SourceFormat = ContentSourceFormat.PlainText,
-            Text = "Test Content",
-            ContentLength = 12,
-            EntityTag = AssetHelpers.GetEntityTag(assetKey, now, 12),
-            LastModifiedUtc = now,
-         };
+         AssetKey = assetKey,
+         SourceFormat = ContentSourceFormat.PlainText,
+         Text = "Test Content",
+         ContentLength = 12,
+         EntityTag = AssetHelpers.GetEntityTag(assetKey, now, 12),
+         LastModifiedUtc = now,
+      };
 
-         return Task.FromResult(ret);
-      }
+      return Task.FromResult(ret);
+   }
 
-      public Task<Stream> OpenReadAsync(
-         string assetKey,
-         CancellationToken cancellationToken = default)
-      {
-         throw new System.NotImplementedException();
-      }
+   public Task<Stream> OpenReadAsync(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      throw new System.NotImplementedException();
+   }
 
-      public string GetAssetFileType(string assetKey)
-      {
-         return AssetHelpers.GetContentType(assetKey);
-      }
+   public string GetAssetFileType(string assetKey)
+   {
+      return AssetHelpers.GetContentType(assetKey);
    }
 }
