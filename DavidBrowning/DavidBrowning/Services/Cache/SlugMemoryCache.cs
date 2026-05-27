@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace DavidBrowning.Services.Cache;
 
 public sealed class SlugMemoryCache<TLookup> : AsyncMemoryCache<TLookup> 
-   where TLookup : class, ISlugLookup
+   where TLookup : class, IQueryableSlug
 {
    public SlugMemoryCache(
       IOptions<SlugCacheOptions> options,

@@ -8,7 +8,7 @@ namespace DavidBrowning.Models;
 /// Specific class implementations that represent a row in a specific
 /// table can inherit this to "share" those common properties.
 /// </summary>
-public interface ISlugLookup
+public interface IQueryableSlug
 {
    int Id { get; }
 

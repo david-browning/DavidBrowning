@@ -13,15 +13,15 @@ namespace DavidBrowning.Services.Cache;
 /// 
 /// This one class can handle any lookup model that:
 /// - is mapped in SiteDbContext
-/// - implements ISlugLookup
+/// - implements IQueryableSlug
 /// 
 /// Example:
 /// SlugLookupService<ProjectVisibility> queries db_ProjectVisibilities.
 /// SlugLookupService<ProjectStatus> queries db_ProjectStatuses.
 /// </summary>
 public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
-   where TLookup : class, ISlugLookup 
-   //TLookup is a class that implements ISlugLookup
+   where TLookup : class, IQueryableSlug
+   //TLookup is a class that implements IQueryableSlug
 {
    public SlugLookupCache(
       SiteDbContext dbContext,
