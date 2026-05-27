@@ -22,7 +22,7 @@ public class BasicContentPipeline : IContentPipeline
       _contentStore = contentService;
    }
 
-   public async Task<RenderedContent> GetRenderedContentAsync(
+   public async Task<RenderedContent?> GetRenderedContentAsync(
       string assetKey,
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default)
@@ -32,40 +32,6 @@ public class BasicContentPipeline : IContentPipeline
       var rendered = await _contentRenderer.RenderAsync(
          asset, options, cancellationToken);
       return rendered;
-   }
-
-   public async Task<T> GetJsonFileContentAsync<T>(
-      string assetKey,
-      CancellationToken cancellationToken = default)
-   {
-      var asset = await _contentStore.GetAssetAsync(
-       assetKey, cancellationToken);
-      if (asset.SourceFormat != ContentSourceFormat.Json)
-      {
-         throw new InvalidOperationException(
-            $"{assetKey} is not a JSON file.");
-      }
-
-      if (asset.Text == null)
-      {
-         throw new InvalidOperationException(
-            $"JSON asset {assetKey} does not contain any text.");
-      }
-
-      var model = JsonSerializer.Deserialize<T>(
-         asset.Text,
-         new JsonSerializerOptions()
-         {
-            PropertyNameCaseInsensitive = true,
-         });
-
-      if (model == null)
-      {
-         throw new InvalidOperationException(
-            $"JSON asset {assetKey} could not be parsed as {typeof(T).Name}.");
-      }
-
-      return model;
    }
 
    private readonly ILogger<BasicContentPipeline> _logger;

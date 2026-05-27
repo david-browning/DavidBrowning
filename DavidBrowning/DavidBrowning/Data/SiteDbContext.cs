@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DavidBrowning.Data;
 
-internal sealed partial class SiteDbContext : DbContext
+public sealed partial class SiteDbContext : DbContext
 {
    public SiteDbContext(DbContextOptions<SiteDbContext> options)
       : base(options)

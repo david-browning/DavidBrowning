@@ -10,6 +10,7 @@ using DavidBrowning.Diagnostics;
 using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels.About;
 using DavidBrowning.Services.Assets;
+using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +32,7 @@ public class AboutController : Controller
       IWebHostEnvironment environment,
       IConfiguration configuration,
 
+      JsonCache cache,
       IContentPipeline contentPipeline,
       IProjectStore projectStore)
    {
@@ -41,6 +43,7 @@ public class AboutController : Controller
       _webHostEnvironment = environment;
       _configuration = configuration;
 
+      _jsonCache = cache;
       _contentPipeline = contentPipeline;
       _projectStore = projectStore;
    }
@@ -63,7 +66,7 @@ public class AboutController : Controller
    private async Task<IndexViewModel> GetIndexModelAsync(
       CancellationToken cancellationToken)
    {
-      var heroData = await _contentPipeline.GetJsonFileContentAsync<HeroData>(
+      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/About.json", cancellationToken);
       if (heroData == null)
       {
@@ -78,6 +81,10 @@ public class AboutController : Controller
             CssClass = "wb-about-profile-image",
          },
          cancellationToken);
+      if(profileImage == null)
+      {
+         throw new FileNotFoundException("The image is not found");
+      }
 
       return new IndexViewModel()
       {
@@ -96,6 +103,7 @@ public class AboutController : Controller
    private readonly IWebHostEnvironment _webHostEnvironment;
    private readonly IConfiguration _configuration;
 
+   private readonly JsonCache _jsonCache;
    private readonly IProjectStore _projectStore;
    private readonly IContentPipeline _contentPipeline;
 }

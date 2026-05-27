@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DavidBrowning.Data;
 
-internal sealed partial class SiteDbContext
+public sealed partial class SiteDbContext
 {
    private static void ConfigureProjects(ModelBuilder modelBuilder)
    {

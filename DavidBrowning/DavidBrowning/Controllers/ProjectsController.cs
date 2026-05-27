@@ -33,6 +33,7 @@ public class ProjectsController : Controller
       IWebHostEnvironment environment,
       IConfiguration configuration,
 
+      JsonCache jsonCache,
       IContentPipeline contentPipeline,
       IProjectStore project,
       ISlugService slugService,
@@ -50,6 +51,7 @@ public class ProjectsController : Controller
       _webHostEnvironment = environment;
       _configuration = configuration;
 
+      _jsonCache = jsonCache;
       _contentPipeline = contentPipeline;
       _projectStore = project;
       _slugService = slugService;
@@ -247,7 +249,7 @@ public class ProjectsController : Controller
          cancellationToken);
       var all = await _projectStore.GetPublishedProjectsAsync(
          cancellationToken);
-      var heroData = await _contentPipeline.GetJsonFileContentAsync<HeroData>(
+      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Projects.json",
          cancellationToken);
       if (heroData == null)
@@ -272,6 +274,7 @@ public class ProjectsController : Controller
    private readonly IWebHostEnvironment _webHostEnvironment;
    private readonly IConfiguration _configuration;
 
+   private readonly JsonCache _jsonCache;
    private readonly IContentPipeline _contentPipeline;
    private readonly IProjectStore _projectStore;
    private readonly ISlugService _slugService;

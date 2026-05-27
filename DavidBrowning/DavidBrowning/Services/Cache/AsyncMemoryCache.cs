@@ -4,28 +4,33 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Services.Cache.Estimators;
+using DavidBrowning.Services.Cache.Options;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
 
-public class AsyncMemoryCache : IAsyncCache
+public class AsyncMemoryCache<T> : IDisposable
 {
    public AsyncMemoryCache(
-      IMemoryCache memoryCache,
-      IOptions<CacheOptions> cacheOptions)
+      ICacheOptions cacheOptions,
+      ICacheSizeEstimator<T?> sizeEstimator)
    {
-      _memoryCache = memoryCache;
-      _cacheOptions = cacheOptions.Value;
+      _cacheOptions = cacheOptions;
+      _sizeEstimator = sizeEstimator;
+      _memoryCache = new MemoryCache(new MemoryCacheOptions()
+      {
+         SizeLimit = _cacheOptions.ObjectCacheSize,
+         TrackStatistics = _cacheOptions.TrackCacheStatistics,
+      });
    }
 
-   public async Task<T> GetOrCreateAsync<T>(
+   public async Task<T?> GetOrCreateAsync(
       string cacheKey,
       Func<CancellationToken, Task<T>> factory,
       CancellationToken cancellationToken = default)
    {
-      if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue) &&
-          cachedValue is not null)
+      if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
       {
          return cachedValue;
       }
@@ -36,20 +41,19 @@ public class AsyncMemoryCache : IAsyncCache
 
       try
       {
-         if (_memoryCache.TryGetValue(cacheKey, out cachedValue) &&
-             cachedValue is not null)
+         if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue2))
          {
-            return cachedValue;
+            return cachedValue2;
          }
 
          var fetchedValue = await factory(cancellationToken);
-         var size = CacheHelpers.EstimateSize<T>(fetchedValue);
+         var size = _sizeEstimator.EstimateSize(fetchedValue);
          MemoryCacheEntryOptions options = new()
          {
             Size = size,
-            SlidingExpiration = _cacheOptions.ContentCacheTimeout,
+            SlidingExpiration = _cacheOptions.CacheTimeout,
             AbsoluteExpirationRelativeToNow =
-               _cacheOptions.ContentCacheDuration,
+               _cacheOptions.CacheDuration,
          };
 
          _memoryCache.Set(cacheKey, fetchedValue, options);
@@ -74,7 +78,13 @@ public class AsyncMemoryCache : IAsyncCache
       }
    }
 
-   private readonly CacheOptions _cacheOptions;
+   public void Dispose()
+   {
+      _memoryCache.Dispose();
+   }
+
+   private readonly ICacheSizeEstimator<T?> _sizeEstimator;
+   private readonly ICacheOptions _cacheOptions;
    private readonly IMemoryCache _memoryCache;
 
    // Map each cache key to a semaphore.

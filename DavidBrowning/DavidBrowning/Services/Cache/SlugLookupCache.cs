@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using DavidBrowning.Data;
 using DavidBrowning.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
 
@@ -21,16 +19,15 @@ namespace DavidBrowning.Services.Cache;
 /// SlugLookupService<ProjectVisibility> queries db_ProjectVisibilities.
 /// SlugLookupService<ProjectStatus> queries db_ProjectStatuses.
 /// </summary>
-internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
-   where TLookup : class, ISlugLookup
+public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
+   where TLookup : class, ISlugLookup 
+   //TLookup is a class that implements ISlugLookup
 {
-   public SlugLookupService(
-     SiteDbContext dbContext,
-     IOptions<CacheOptions> options,
-     IAsyncCache asyncCache)
+   public SlugLookupCache(
+      SiteDbContext dbContext,
+      SlugMemoryCache<TLookup?> asyncCache)
    {
       _dbContext = dbContext;
-      _options = options.Value;
       _asyncCache = asyncCache;
    }
 
@@ -84,10 +81,9 @@ internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
 
    private string GetCacheKey(string type, string value)
    {
-      return $"lookup:{typeof(TLookup).FullName}:{type}:{value}";
+      return $"slug-lookup:{typeof(TLookup).FullName}:{type}:{value}";
    }
 
    private readonly SiteDbContext _dbContext;
-   private readonly CacheOptions _options;
-   private readonly IAsyncCache _asyncCache;
+   private readonly SlugMemoryCache<TLookup?> _asyncCache;
 }

@@ -15,36 +15,24 @@ public class CachedContentPipeline : IContentPipeline
    public CachedContentPipeline(
       ILogger<CachedContentPipeline> logger,
       IContentPipeline pipeline,
-      IAsyncCache asyncCache)
+      RenderedContentMemoryCache cache)
    {
       _logger = logger;
       _pipeline = pipeline;
-      _asyncCache = asyncCache;
+      _cache = cache;
    }
 
-   public async Task<RenderedContent> GetRenderedContentAsync(
+   public async Task<RenderedContent?> GetRenderedContentAsync(
       string assetKey,
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default)
    {
       var cacheKey = GetCacheKey(assetKey);
-      return await _asyncCache.GetOrCreateAsync(
+      return await _cache.GetOrCreateAsync(
          cacheKey,
          token => _pipeline.GetRenderedContentAsync(
-         assetKey, options, cancellationToken),
-         cancellationToken);
-   }
-
-   public async Task<T> GetJsonFileContentAsync<T>(
-      string assetKey,
-      CancellationToken cancellationToken = default)
-   {
-      var cacheKey = GetJsonCacheKey<T>(assetKey);
-      return await _asyncCache.GetOrCreateAsync(
-         cacheKey,
-         token => _pipeline.GetJsonFileContentAsync<T>(
-            assetKey, cancellationToken),
-         cancellationToken);
+            assetKey, options, token),
+            cancellationToken);
    }
 
    private string GetCacheKey(string assetKey)
@@ -52,13 +40,8 @@ public class CachedContentPipeline : IContentPipeline
       return $"content-asset:{assetKey}";
    }
 
-   private string GetJsonCacheKey<T>(string assetKey)
-   {
-      return $"json-content:{typeof(T).FullName}:{assetKey}";
-   }
-
    private readonly ILogger<CachedContentPipeline> _logger;
    private readonly IContentPipeline _pipeline;
-   private readonly IAsyncCache _asyncCache;
+   private readonly RenderedContentMemoryCache _cache;
 
 }
