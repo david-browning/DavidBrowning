@@ -17,7 +17,7 @@ namespace DavidBrowning.Services.Cache;
 /// ISlugLookupService<ProjectTag>
 /// </summary>
 public interface ISlugLookupService<TLookup>
-     where TLookup : class, ISlugLookup
+     where TLookup : class, IQueryableSlug
 {
    /// <summary>
    /// Gets the full lookup row by database Id.

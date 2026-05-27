@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Services.Cache.Estimators;
@@ -12,6 +13,8 @@ namespace DavidBrowning.Services.Cache;
 
 public class AsyncMemoryCache<T> : IDisposable
 {
+   internal int LockCount => _cacheLocks.Count;
+
    public AsyncMemoryCache(
       ICacheOptions cacheOptions,
       ICacheSizeEstimator<T?> sizeEstimator)
@@ -35,12 +38,13 @@ public class AsyncMemoryCache<T> : IDisposable
          return cachedValue;
       }
 
-      var cacheLock = _cacheLocks.GetOrAdd(
-         cacheKey, _ => new SemaphoreSlim(1, 1));
-      await cacheLock.WaitAsync(cancellationToken);
+      var cacheLock = AcquireCacheLock(cacheKey);
+      var enteredSemaphore = false;
 
       try
       {
+         await cacheLock.Semaphore.WaitAsync(cancellationToken);
+         enteredSemaphore = true;
          if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue2))
          {
             return cachedValue2;
@@ -52,8 +56,7 @@ public class AsyncMemoryCache<T> : IDisposable
          {
             Size = size,
             SlidingExpiration = _cacheOptions.CacheTimeout,
-            AbsoluteExpirationRelativeToNow =
-               _cacheOptions.CacheDuration,
+            AbsoluteExpirationRelativeToNow = _cacheOptions.CacheDuration,
          };
 
          _memoryCache.Set(cacheKey, fetchedValue, options);
@@ -61,25 +64,45 @@ public class AsyncMemoryCache<T> : IDisposable
       }
       finally
       {
-         cacheLock.Release();
-         // The dictionary could grow unbounded. We just keep adding semaphores
-         // whenever a new piece of content is requested. So one option is to 
-         // remove the semaphore from the dictionary once all but one request is
-         // using it.
-         // Only problem is that this operation is not atomic.
-         //if (cacheLock.CurrentCount == 1)
-         //{
-         //   _cacheLocks.TryRemove(
-         //      new KeyValuePair<string, SemaphoreSlim>(cacheKey, cacheLock));
-         //}
+         if (enteredSemaphore)
+         {
+            cacheLock.Semaphore.Release();
+         }
 
-         // TODO: Find a way to make removing items from the dictionary AND 
-         // checking if its the last one atomic.
+         if (cacheLock.ReleaseReference())
+         {
+            _cacheLocks.TryRemove(
+               new KeyValuePair<string, CacheLock>(cacheKey, cacheLock));
+            cacheLock.Dispose();
+         }
+      }
+   }
+
+   private CacheLock AcquireCacheLock(string cacheKey)
+   {
+      while (true)
+      {
+         var cacheLock = _cacheLocks.GetOrAdd(
+            cacheKey,
+            _ => new CacheLock());
+         if (cacheLock.TryAddReference())
+         {
+            return cacheLock;
+         }
+
+         _cacheLocks.TryRemove(
+            new KeyValuePair<string, CacheLock>(cacheKey, cacheLock));
       }
    }
 
    public void Dispose()
    {
+      foreach (var cacheLock in _cacheLocks.Values)
+      {
+         cacheLock.Dispose();
+      }
+
+      _cacheLocks.Clear();
       _memoryCache.Dispose();
    }
 
@@ -91,6 +114,6 @@ public class AsyncMemoryCache<T> : IDisposable
    // When that content is requested and the cache does not contain the asset,
    // lock the semaphore and cache the asset. Release the semaphore after 
    // caching and return the asset.
-   private readonly ConcurrentDictionary<string, SemaphoreSlim> _cacheLocks =
+   private readonly ConcurrentDictionary<string, CacheLock> _cacheLocks =
       new();
 }

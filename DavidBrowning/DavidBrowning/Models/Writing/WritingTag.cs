@@ -12,7 +12,7 @@ namespace DavidBrowning.Models.Writing;
 /// </summary>
 [PrimaryKey("Id")]
 [Index(nameof(Slug), IsUnique = true)]
-public sealed class WritingTag : ISlugLookup
+public sealed class WritingTag : IQueryableSlug
 {
    [Required, Key]
    public int Id { get; set; }

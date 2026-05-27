@@ -13,7 +13,7 @@ namespace DavidBrowning.Models.Projects;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Slug), IsUnique = true)]
-public sealed class ProjectOrigin : ISlugLookup
+public sealed class ProjectOrigin : IQueryableSlug
 {
    [Required, Key]
    public int Id { get; set; }
