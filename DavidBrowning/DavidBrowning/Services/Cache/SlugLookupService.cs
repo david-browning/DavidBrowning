@@ -44,10 +44,6 @@ internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
             .SingleOrDefaultAsync(row => row.Id == id, token),
-         new MemoryCacheEntryOptions()
-         {
-            AbsoluteExpirationRelativeToNow = _options.LookupCacheDuration
-         },
          cancellationToken);
    }
 
@@ -67,10 +63,6 @@ internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
             .SingleOrDefaultAsync(row => row.Slug == slug, token),
-         new MemoryCacheEntryOptions()
-         {
-            AbsoluteExpirationRelativeToNow = _options.LookupCacheDuration
-         },
          cancellationToken);
    }
 

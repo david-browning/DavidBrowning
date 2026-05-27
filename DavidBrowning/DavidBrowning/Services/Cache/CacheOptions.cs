@@ -13,4 +13,9 @@ public sealed class CacheOptions
    public TimeSpan LookupCacheDuration { get; set; } = TimeSpan.FromMinutes(10);
    public TimeSpan ContentCacheDuration { get; set; } = TimeSpan.FromMinutes(10);
    public TimeSpan ContentCacheTimeout { get; set; } = TimeSpan.FromMinutes(20);
+   
+   // Store up to 32MB of objects.
+   public long ObjectCacheSize { get; set; } = 1024 * 1024 * 32;
+
+   public bool TrackCacheStatistics { get; set; } = false;
 }

@@ -5,20 +5,23 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
 
 public class AsyncMemoryCache : IAsyncCache
 {
-   public AsyncMemoryCache(IMemoryCache memoryCache)
+   public AsyncMemoryCache(
+      IMemoryCache memoryCache,
+      IOptions<CacheOptions> cacheOptions)
    {
       _memoryCache = memoryCache;
+      _cacheOptions = cacheOptions.Value;
    }
 
    public async Task<T> GetOrCreateAsync<T>(
       string cacheKey,
       Func<CancellationToken, Task<T>> factory,
-      MemoryCacheEntryOptions options,
       CancellationToken cancellationToken = default)
    {
       if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue) &&
@@ -40,6 +43,15 @@ public class AsyncMemoryCache : IAsyncCache
          }
 
          var fetchedValue = await factory(cancellationToken);
+         var size = CacheHelpers.EstimateSize<T>(fetchedValue);
+         MemoryCacheEntryOptions options = new()
+         {
+            Size = size,
+            SlidingExpiration = _cacheOptions.ContentCacheTimeout,
+            AbsoluteExpirationRelativeToNow =
+               _cacheOptions.ContentCacheDuration,
+         };
+
          _memoryCache.Set(cacheKey, fetchedValue, options);
          return fetchedValue;
       }
@@ -62,6 +74,7 @@ public class AsyncMemoryCache : IAsyncCache
       }
    }
 
+   private readonly CacheOptions _cacheOptions;
    private readonly IMemoryCache _memoryCache;
 
    // Map each cache key to a semaphore.

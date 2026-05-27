@@ -106,7 +106,14 @@ public static partial class Program
 
    private static void ConfigureServices(WebApplicationBuilder builder)
    {
-      builder.Services.AddMemoryCache();
+      builder.Services.AddMemoryCache(setup =>
+      {
+         setup.TrackStatistics = builder.Configuration.GetValue<bool>(
+            $"{_cacheSectionName}:TrackCacheStatistics");
+         setup.SizeLimit = builder.Configuration.GetValue<long>(
+            $"{_contentStoreName}:ObjectCacheSize");
+      });
+
       builder.Services.AddSingleton<IAsyncCache, AsyncMemoryCache>();
       builder.Services.AddSingleton<ISystemClock, SystemClock>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
@@ -131,12 +138,6 @@ public static partial class Program
       {
          builder.Services.AddSingleton<IContentStore, AzureBlobContentStore>();
       }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(
-         _azureStorageBlobsProviderName))
-      {
-         builder.Services.AddSingleton<
-            IContentStore, AzureBlobContentStore>();
-      }
       else
       {
          throw new InvalidOperationException(
@@ -148,6 +149,8 @@ public static partial class Program
       var enableCache = builder.Configuration.GetValue<bool>(
          $"{_cacheSectionName}:EnableContentCache");
 
+      // Configure the rendering pipeline depending on whether caching is 
+      // enabled.
       if (enableCache)
       {
          builder.Services.AddSingleton<BasicContentPipeline>();
@@ -155,15 +158,13 @@ public static partial class Program
          {
             var cacheLogger = serviceProvider.GetRequiredService<
                ILogger<CachedContentPipeline>>();
-            var cacheOptions = serviceProvider.GetRequiredService<
-               IOptions<CacheOptions>>();
             IContentPipeline innerPipeline =
                serviceProvider.GetRequiredService<BasicContentPipeline>();
             var memoryCache =
                serviceProvider.GetRequiredService<IAsyncCache>();
 
             return new CachedContentPipeline(
-               cacheLogger, cacheOptions, innerPipeline, memoryCache);
+               cacheLogger, innerPipeline, memoryCache);
          });
       }
       else
