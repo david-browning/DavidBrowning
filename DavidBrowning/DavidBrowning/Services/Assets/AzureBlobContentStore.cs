@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DavidBrowning.Services.Assets;
 
-public sealed class AzureBlobContentService : IContentService
+public sealed class AzureBlobContentStore : IContentStore
 {
    public Task<StoredAsset> GetAssetAsync(
       string assetKey,
