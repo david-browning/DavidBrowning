@@ -8,7 +8,7 @@ using DavidBrowning.Models.ViewModels;
 
 namespace DavidBrowning.Services.Assets;
 
-public class DummyContentService : IContentService
+public class DummyContentStore : IContentStore
 {
    public Task<StoredAsset> GetAssetAsync(
       string assetKey,

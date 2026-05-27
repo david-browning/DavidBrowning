@@ -14,9 +14,9 @@ namespace DavidBrowning.Services.Assets;
 /// The root content folder is stored in the configuration file under
 /// Stores:ContentStore:LocalRoot
 /// </summary>
-public sealed class LocalContentService : IContentService
+public sealed class LocalContentStore : IContentStore
 {
-   public LocalContentService(
+   public LocalContentStore(
       IConfiguration configuration,
       IHostEnvironment hostEnvironment)
    {

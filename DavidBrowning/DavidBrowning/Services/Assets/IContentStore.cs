@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DavidBrowning.Services.Assets;
 
-public interface IContentService
+public interface IContentStore
 {
    /// <summary>
    /// Gets authored source content from the configured content store.

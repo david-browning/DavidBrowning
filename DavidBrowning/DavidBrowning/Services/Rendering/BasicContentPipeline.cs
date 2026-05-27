@@ -5,16 +5,16 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.ViewModels;
-using DavidBrowning.Services.Rendering;
+using DavidBrowning.Services.Assets;
 using Microsoft.Extensions.Logging;
 
-namespace DavidBrowning.Services.Assets;
+namespace DavidBrowning.Services.Rendering;
 
 public class BasicContentPipeline : IContentPipeline
 {
    public BasicContentPipeline(
       ILogger<BasicContentPipeline> logger,
-      IContentService contentService,
+      IContentStore contentService,
       IContentRenderer contentRenderer)
    {
       _logger = logger;
@@ -69,6 +69,6 @@ public class BasicContentPipeline : IContentPipeline
    }
 
    private readonly ILogger<BasicContentPipeline> _logger;
-   private readonly IContentService _contentStore;
+   private readonly IContentStore _contentStore;
    private readonly IContentRenderer _contentRenderer;
 }

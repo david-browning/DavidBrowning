@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using DavidBrowning.Data;
 using DavidBrowning.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
 
@@ -24,23 +26,28 @@ internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
 {
    public SlugLookupService(
      SiteDbContext dbContext,
-     ILookupCache lookupCache)
+     IOptions<CacheOptions> options,
+     IAsyncCache asyncCache)
    {
       _dbContext = dbContext;
-      _lookupCache = lookupCache;
+      _options = options.Value;
+      _asyncCache = asyncCache;
    }
 
-   public Task<TLookup?> GetByIdAsync(
+   public async Task<TLookup?> GetByIdAsync(
       int id,
       CancellationToken cancellationToken = default)
    {
       string cacheKey = GetCacheKey("by-id", id.ToString());
-      return _lookupCache.GetOrCreateAsync(
+      return await _asyncCache.GetOrCreateAsync(
          cacheKey,
-         async token =>
-            await _dbContext.Set<TLookup>()
-               .AsNoTracking()
-               .SingleOrDefaultAsync(row => row.Id == id, token),
+         token => _dbContext.Set<TLookup>()
+            .AsNoTracking()
+            .SingleOrDefaultAsync(row => row.Id == id, token),
+         new MemoryCacheEntryOptions()
+         {
+            AbsoluteExpirationRelativeToNow = _options.LookupCacheDuration
+         },
          cancellationToken);
    }
 
@@ -50,17 +57,20 @@ internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
    /// <param name="slug"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   public Task<TLookup?> GetBySlugAsync(
+   public async Task<TLookup?> GetBySlugAsync(
       string slug,
       CancellationToken cancellationToken = default)
    {
       string cacheKey = GetCacheKey("by-slug", slug);
-      return _lookupCache.GetOrCreateAsync(
+      return await _asyncCache.GetOrCreateAsync(
          cacheKey,
-         async token =>
-            await _dbContext.Set<TLookup>()
-               .AsNoTracking()
-               .SingleOrDefaultAsync(row => row.Slug == slug, token),
+         token => _dbContext.Set<TLookup>()
+            .AsNoTracking()
+            .SingleOrDefaultAsync(row => row.Slug == slug, token),
+         new MemoryCacheEntryOptions()
+         {
+            AbsoluteExpirationRelativeToNow = _options.LookupCacheDuration
+         },
          cancellationToken);
    }
 
@@ -86,5 +96,6 @@ internal sealed class SlugLookupService<TLookup> : ISlugLookupService<TLookup>
    }
 
    private readonly SiteDbContext _dbContext;
-   private readonly ILookupCache _lookupCache;
+   private readonly CacheOptions _options;
+   private readonly IAsyncCache _asyncCache;
 }

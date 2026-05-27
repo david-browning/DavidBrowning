@@ -29,7 +29,7 @@ public class ContentController : Controller
       IWebHostEnvironment environment,
       IConfiguration configuration,
 
-      IContentService contentService,
+      IContentStore contentService,
       IContentRenderer contentRenderer,
       IProjectStore projectStore)
    {
@@ -75,5 +75,5 @@ public class ContentController : Controller
    private readonly IWebHostEnvironment _webHostEnvironment;
    private readonly IConfiguration _configuration;
 
-   private readonly IContentService _contentService;
+   private readonly IContentStore _contentService;
 }

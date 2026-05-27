@@ -25,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DavidBrowning;
 
@@ -62,6 +63,8 @@ public static partial class Program
    {
       builder.Services.Configure<DiagnosticsOptions>(
          builder.Configuration.GetSection(_diagnosticsSectionName));
+      builder.Services.Configure<CacheOptions>(
+         builder.Configuration.GetSection(_cacheSectionName));
    }
 
    private static void ConfigureSecrets(WebApplicationBuilder builder)
@@ -103,35 +106,36 @@ public static partial class Program
 
    private static void ConfigureServices(WebApplicationBuilder builder)
    {
-      builder.Services.Configure<LookupCacheOptions>(
-         builder.Configuration.GetSection(_lookupCacheSectionName));
-
       builder.Services.AddMemoryCache();
+      builder.Services.AddSingleton<IAsyncCache, AsyncMemoryCache>();
       builder.Services.AddSingleton<ISystemClock, SystemClock>();
-      builder.Services.AddSingleton(
-         typeof(ISlugService), typeof(BasicSlugService));
-      builder.Services.AddSingleton(typeof(UrlBuilder));
+      builder.Services.AddSingleton<ISlugService, BasicSlugService>();
+      builder.Services.AddSingleton<UrlBuilder>();
 
-      builder.Services.AddSingleton<ILookupCache, BasicLookupCache>();
       builder.Services.AddScoped(
          typeof(ISlugLookupService<>),
          typeof(SlugLookupService<>));
 
+      // Configure how to get content
       string contentStoreProvider = GetConfiguredStoreProvider(
          builder, _contentStoreName, _dummyProviderName);
       if (contentStoreProvider.EqualsOrdinalIgnoreCase(_dummyProviderName))
       {
-         builder.Services.AddSingleton<IContentService, DummyContentService>();
+         builder.Services.AddSingleton<IContentStore, DummyContentStore>();
       }
       else if (contentStoreProvider.EqualsOrdinalIgnoreCase(_localProviderName))
       {
-         builder.Services.AddSingleton<IContentService, LocalContentService>();
+         builder.Services.AddSingleton<IContentStore, LocalContentStore>();
+      }
+      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(_azureStorageBlobsProviderName))
+      {
+         builder.Services.AddSingleton<IContentStore, AzureBlobContentStore>();
       }
       else if (contentStoreProvider.EqualsOrdinalIgnoreCase(
          _azureStorageBlobsProviderName))
       {
          builder.Services.AddSingleton<
-            IContentService, AzureBlobContentService>();
+            IContentStore, AzureBlobContentStore>();
       }
       else
       {
@@ -140,7 +144,32 @@ public static partial class Program
       }
 
       builder.Services.AddSingleton<IContentRenderer, BasicContentRenderer>();
-      builder.Services.AddSingleton<IContentPipeline, BasicContentPipeline>();
+
+      var enableCache = builder.Configuration.GetValue<bool>(
+         $"{_cacheSectionName}:EnableContentCache");
+
+      if (enableCache)
+      {
+         builder.Services.AddSingleton<BasicContentPipeline>();
+         builder.Services.AddSingleton<IContentPipeline>(serviceProvider =>
+         {
+            var cacheLogger = serviceProvider.GetRequiredService<
+               ILogger<CachedContentPipeline>>();
+            var cacheOptions = serviceProvider.GetRequiredService<
+               IOptions<CacheOptions>>();
+            IContentPipeline innerPipeline =
+               serviceProvider.GetRequiredService<BasicContentPipeline>();
+            var memoryCache =
+               serviceProvider.GetRequiredService<IAsyncCache>();
+
+            return new CachedContentPipeline(
+               cacheLogger, cacheOptions, innerPipeline, memoryCache);
+         });
+      }
+      else
+      {
+         builder.Services.AddSingleton<IContentPipeline, BasicContentPipeline>();
+      }
 
       builder.Services.AddControllersWithViews();
    }
@@ -255,10 +284,8 @@ public static partial class Program
 
    private static void ConfigureLookupServices(WebApplicationBuilder builder)
    {
-      builder.Services.Configure<LookupCacheOptions>(
+      builder.Services.Configure<CacheOptions>(
          builder.Configuration.GetSection(_lookupCacheSectionName));
-
-      builder.Services.AddSingleton<ILookupCache, BasicLookupCache>();
 
       string lookupProvider = GetConfiguredStoreProvider(
          builder, _lookupStoreName, _dummyProviderName);
@@ -451,6 +478,7 @@ public static partial class Program
       "{controller=Home}/{action=Index}/{id?}";
    private const string _defaultTablePrefix = "db_";
    private const string _diagnosticsSectionName = "Diagnostics";
+   private const string _cacheSectionName = "Cache";
    private const string _dummyProviderName = "Dummy";
    private const string _errorStoreName = "ErrorStore";
    private const string _inMemoryProviderName = "InMemory";
