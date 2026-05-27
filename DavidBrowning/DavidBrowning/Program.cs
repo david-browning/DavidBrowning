@@ -12,9 +12,12 @@ using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Extensions;
 using DavidBrowning.Middleware;
+using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Cache.Estimators;
+using DavidBrowning.Services.Cache.Options;
 using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
@@ -25,7 +28,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DavidBrowning;
 
@@ -63,8 +65,16 @@ public static partial class Program
    {
       builder.Services.Configure<DiagnosticsOptions>(
          builder.Configuration.GetSection(_diagnosticsSectionName));
-      builder.Services.Configure<CacheOptions>(
-         builder.Configuration.GetSection(_cacheSectionName));
+
+      builder.Services.Configure<JsonCacheOptions>(
+         builder.Configuration.GetSection($"{_cacheSectionName}:JsonCache"));
+
+      builder.Services.Configure<RenderedContentCacheOptions>(
+         builder.Configuration.GetSection(
+            $"{_cacheSectionName}:RenderedContentCache"));
+
+      builder.Services.Configure<SlugCacheOptions>(
+         builder.Configuration.GetSection($"{_cacheSectionName}:SlugCache"));
    }
 
    private static void ConfigureSecrets(WebApplicationBuilder builder)
@@ -106,15 +116,39 @@ public static partial class Program
 
    private static void ConfigureServices(WebApplicationBuilder builder)
    {
+      // Basic Services
       builder.Services.AddMemoryCache();
-      builder.Services.AddSingleton<IAsyncCache, AsyncMemoryCache>();
       builder.Services.AddSingleton<ISystemClock, SystemClock>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
       builder.Services.AddSingleton<UrlBuilder>();
 
-      builder.Services.AddScoped(
-         typeof(ISlugLookupService<>),
-         typeof(SlugLookupService<>));
+      // These services are used to estimate the size of objects for use in
+      // caching.
+      builder.Services.AddSingleton(
+         typeof(ICacheSizeEstimator<>),
+         typeof(DefaultCacheSizeEstimator<>));
+
+      builder.Services.AddSingleton(
+         typeof(ICacheSizeEstimator<string?>),
+         typeof(StringSizeEstimator));
+
+      builder.Services.AddSingleton<
+         ICacheSizeEstimator<byte[]?>,
+         ByteArraySizeEstimator>();
+
+      builder.Services.AddSingleton<
+         ICacheSizeEstimator<RenderedContent?>,
+         RenderedContentSizeEstimator>();
+
+      builder.Services.AddSingleton<
+         ICacheSizeEstimator<object?>,
+         SingleObjectSizeEstimator<object?>>();
+
+      // Add specialized caching services
+      builder.Services.AddSingleton<JsonCache>();
+      builder.Services.AddSingleton<JsonMemoryCache>();
+      builder.Services.AddSingleton<RenderedContentMemoryCache>();
+      builder.Services.AddSingleton(typeof(SlugMemoryCache<>));
 
       // Configure how to get content
       string contentStoreProvider = GetConfiguredStoreProvider(
@@ -131,23 +165,19 @@ public static partial class Program
       {
          builder.Services.AddSingleton<IContentStore, AzureBlobContentStore>();
       }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(
-         _azureStorageBlobsProviderName))
-      {
-         builder.Services.AddSingleton<
-            IContentStore, AzureBlobContentStore>();
-      }
       else
       {
          throw new InvalidOperationException(
             $"Unknown content store provider: {contentStoreProvider}");
       }
 
+      // Add the basic renderer.
       builder.Services.AddSingleton<IContentRenderer, BasicContentRenderer>();
 
+      // Configure the rendering pipeline depending on whether caching is 
+      // enabled.
       var enableCache = builder.Configuration.GetValue<bool>(
          $"{_cacheSectionName}:EnableContentCache");
-
       if (enableCache)
       {
          builder.Services.AddSingleton<BasicContentPipeline>();
@@ -155,15 +185,17 @@ public static partial class Program
          {
             var cacheLogger = serviceProvider.GetRequiredService<
                ILogger<CachedContentPipeline>>();
-            var cacheOptions = serviceProvider.GetRequiredService<
-               IOptions<CacheOptions>>();
+
             IContentPipeline innerPipeline =
                serviceProvider.GetRequiredService<BasicContentPipeline>();
+
             var memoryCache =
-               serviceProvider.GetRequiredService<IAsyncCache>();
+               serviceProvider.GetRequiredService<RenderedContentMemoryCache>();
 
             return new CachedContentPipeline(
-               cacheLogger, cacheOptions, innerPipeline, memoryCache);
+               cacheLogger,
+               innerPipeline,
+               memoryCache);
          });
       }
       else
@@ -284,9 +316,6 @@ public static partial class Program
 
    private static void ConfigureLookupServices(WebApplicationBuilder builder)
    {
-      builder.Services.Configure<CacheOptions>(
-         builder.Configuration.GetSection(_lookupCacheSectionName));
-
       string lookupProvider = GetConfiguredStoreProvider(
          builder, _lookupStoreName, _dummyProviderName);
 
@@ -294,7 +323,7 @@ public static partial class Program
       {
          builder.Services.AddScoped(
             typeof(ISlugLookupService<>),
-            typeof(SlugLookupService<>));
+            typeof(SlugLookupCache<>));
          return;
       }
 
