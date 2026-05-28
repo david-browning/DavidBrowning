@@ -382,6 +382,15 @@ a {
    --bs-btn-focus-shadow-rgb: 110, 168, 254;
 }
 
+.icon-accent {
+   color: var(--wb-accent);
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 2rem;
+   flex: 0 0 2rem;
+}
+
 /* ============================================================
    Layout Sections
    ============================================================ */

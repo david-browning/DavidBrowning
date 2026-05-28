@@ -2,12 +2,15 @@
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
+using DavidBrowning.Data.Stores.Uncategorized;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Models;
+using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.About;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
@@ -34,6 +37,7 @@ public class AboutController : Controller
 
       JsonCache cache,
       IContentPipeline contentPipeline,
+      IUncategorizedStore uncategorizedStore,
       IProjectStore projectStore)
    {
       _logger = logger;
@@ -45,6 +49,7 @@ public class AboutController : Controller
 
       _jsonCache = cache;
       _contentPipeline = contentPipeline;
+      _uncategorizedStore = uncategorizedStore;
       _projectStore = projectStore;
    }
 
@@ -86,13 +91,42 @@ public class AboutController : Controller
          throw new FileNotFoundException("The image is not found");
       }
 
+      var interests = await _uncategorizedStore.GetInterestsAsync();
+      List<InterestCardViewModel> interestCards = new();
+      foreach (var interest in interests)
+      {
+         var card = await GetInterestCardViewModelAsync(
+            interest, cancellationToken);
+         interestCards.Add(card);
+      }
+
+      //var interestCardTasks = interests
+      //   .Select(interest => GetInterestCardViewModel(
+      //      interest,
+      //      cancellationToken));
+      //var interestCards = await Task.WhenAll(interestCardTasks);
+
       return new IndexViewModel()
       {
          PageTitle = "About",
          HeroTitle = heroData.Title ?? "Missing Data",
          HeroSubtitle = heroData.Subtitle ?? "Missing Data",
+         AboutMe = heroData.Lede ?? "Missing Data",
          MeImage = profileImage,
-         Interests = new List<InterestSectionViewModel>(),
+         Interests = interestCards,
+      };
+   }
+
+   private async Task<InterestCardViewModel> GetInterestCardViewModelAsync(
+      Interest interest,
+      CancellationToken cancellationToken = default)
+   {
+      return new InterestCardViewModel()
+      {
+         Description = interest.Summary,
+         Title = interest.DisplayName,
+         IconCssClass = interest.IconCssClass,
+         //Image = await _contentPipeline.GetRenderedContentAsync(),
       };
    }
 
@@ -105,5 +139,6 @@ public class AboutController : Controller
 
    private readonly JsonCache _jsonCache;
    private readonly IProjectStore _projectStore;
+   private readonly IUncategorizedStore _uncategorizedStore;
    private readonly IContentPipeline _contentPipeline;
 }

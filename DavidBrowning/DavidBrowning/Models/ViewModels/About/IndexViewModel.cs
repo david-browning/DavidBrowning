@@ -12,9 +12,9 @@ public class IndexViewModel
 
    public required string HeroSubtitle { get; init; }
 
+   public required string AboutMe { get; init; }
+
    public required RenderedContent MeImage { get; init; }
 
-   public required IReadOnlyList<InterestSectionViewModel> Interests { get; init; }
-
-   // Humor
+   public required IReadOnlyList<InterestCardViewModel> Interests { get; init; }
 }
