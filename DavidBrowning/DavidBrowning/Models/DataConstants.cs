@@ -5,16 +5,11 @@ namespace DavidBrowning.Models;
 public sealed class DataConstants
 {
    public const int MaxSlugLength = 64;
-
    public const int MaxLabelLength = 128;
-
    public const int MaxAzureAssetLength = 256;
-
    public const int MaxMetadataLength = 512;
-
+   public const int MaxInterestSummaryLength = 768;
    public const int MaxNameLength = 256;
-
    public const int MaxUrlLength = 2048;
-
    public const int MaxIconCssClassLength = 128;
 }

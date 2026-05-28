@@ -9,6 +9,9 @@ public class HeroData
    [JsonPropertyName("title")]
    public string? Title { get; set; }
 
-   [JsonPropertyName("Subtitle")]
+   [JsonPropertyName("subtitle")]
    public string? Subtitle { get; set; }
+
+   [JsonPropertyName("lede")]
+   public string? Lede {  get; set; }
 }

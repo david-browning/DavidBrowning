@@ -17,7 +17,35 @@
 				</p>
 			</div>
 		</div>
+		<div class="row g-4 mt-4">
+			<div class="col-12 col-lg-8">
+				<p class="wb-lede mb-0">
+					@Model.AboutMe
+				</p>
+			</div>
+			<div class="col-12 col-lg-4">
+				<partial name="_RenderedContent" model="@Model.MeImage" />
+			</div>
+		</div>
 	</div>
 </section>
 
-<partial name="_RenderedContent" model="@Model.MeImage" />
+<section id="interests" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Interests</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+
+		<div class="row row-cols-1 g-4">
+			@foreach (var interest in Model.Interests)
+			{
+				<div class="col">
+					<partial name="_InterestCard" model="interest" />
+				</div>
+			}
+		</div>
+	</div>
+</section>

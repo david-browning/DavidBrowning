@@ -57,6 +57,8 @@ public sealed partial class SiteDbContext : DbContext
 
    public DbSet<ProjectPost> ProjectPosts => Set<ProjectPost>();
 
+   public DbSet<Interest> Interests => Set<Interest>();
+
    protected override void OnModelCreating(ModelBuilder modelBuilder)
    {
       base.OnModelCreating(modelBuilder);
