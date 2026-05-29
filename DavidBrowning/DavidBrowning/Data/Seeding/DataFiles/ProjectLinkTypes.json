@@ -1,12 +1,13 @@
 [
-  {
-    "Id": 1,
-    "Slug": "repository",
-    "DisplayName": "Repository",
-    "Description": "Source repository or code browser.",
-    "SortOrder": 10,
-    "IsActive": true
-  },
+   {
+      "Id": 1,
+      "Slug": "repository",
+      "DisplayName": "Repository",
+      "Description": "Source repository or code browser.",
+      "SortOrder": 10,
+      "IsActive": true,
+      "IconCssClass": "fa-brands fa-github"
+   },
   {
     "Id": 2,
     "Slug": "live-site",
@@ -21,6 +22,7 @@
     "DisplayName": "Documentation",
     "Description": "Documentation, notes, or reference material.",
     "SortOrder": 30,
-    "IsActive": true
+   "IsActive": true,
+   "IconCssClass": "fa-solid fa-file-lines"
   }
 ]

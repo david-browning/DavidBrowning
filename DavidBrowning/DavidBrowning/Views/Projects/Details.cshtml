@@ -1,3 +1,113 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Models.ViewModels.Projects.DetailsViewModel
+@{
+	ViewData["Title"] = Model.ProjectName;
+}
 
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col">
+				@* Use these kickers if a page is broken into many sections *@
+				<p class="wb-kicker">Projects</p>
+				<h1>
+					@Model.ProjectName
+				</h1>
+
+				<p class="wb-lede">
+					@Model.Description
+				</p>
+			</div>
+		</div>
+
+		<div class="row g-4">
+			<div class="col">
+				<aside class="wb-panel wb-panel-accent">
+					<p class="wb-card-meta">Tags:</p>
+					<ul class="wb-tag-list mt-4">
+						@foreach (var tag in Model.TagLinks)
+						{
+							<li class="wb-tag">
+								<span>@tag.ProjectTag!.DisplayName</span>
+							</li>
+						}
+					</ul>
+				</aside>
+			</div>
+
+			<div class="row g-4">
+				<div class="col">
+					<aside class="wb-panel wb-panel-accent">
+						<p class="wb-card-meta">Technologies:</p>
+						<ul class="wb-tag-list mt-4">
+							@foreach (var tag in Model.StackTagLinks)
+							{
+								var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+								{
+									Controller = "projects",
+									Endpoint = "stacks",
+									DisplayName = tag.ProjectStackTag!.DisplayName,
+									Slug = tag.ProjectStackTag!.Slug,
+								};
+								<partial name="_QueryTag" model="@m" />
+							}
+						</ul>
+					</aside>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="interests" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Project Details</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+
+		<div class="row row-cols-1 g-4">
+		</div>
+	</div>
+</section>
+
+<section id="interests" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Project Links</h2>
+			<p class="wb-lede">Links to project resources.</p>
+		</header>
+
+		<div class="row row-cols-1 g-4">
+			<div class="col">
+				<aside class="wb-panel wb-panel-accent">
+					<p class="wb-card-meta">Tags:</p>
+					<ul class="wb-tag-list mt-4">
+						@foreach (var link in Model.Links)
+						{
+							var linkClass = string.Empty;
+							if (link.IsPrimary)
+							{
+							}
+							<li class="wb-tag">
+								<a class="wb-footer-link link-danger @linkClass"
+								   href="@link.Url" target="_blank" rel="noopener noreferrer">
+									@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
+									{
+										<i class="@link.ProjectLinkType!.IconCssClass" aria-hidden="true"></i>
+									}
+									<span>@link.Label</span>
+								</a>
+							</li>
+						}
+					</ul>
+				</aside>
+			</div>
+		</div>
+	</div>
+</section>

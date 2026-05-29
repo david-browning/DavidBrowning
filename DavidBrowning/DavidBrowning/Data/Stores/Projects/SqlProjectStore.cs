@@ -85,6 +85,8 @@ internal sealed class SqlProjectStore : IProjectStore
 
       return await _dbContext.Projects
          .AsNoTracking()
+         .AsSplitQuery()
+         .Where(project => project.Slug == slug)
          .Include(project => project.ProjectStatus)
          .Include(project => project.ProjectVisibility)
          .Include(project => project.ProjectOrigin)
@@ -93,7 +95,9 @@ internal sealed class SqlProjectStore : IProjectStore
             .ThenInclude(link => link.ProjectTag)
          .Include(project => project.StackTagLinks)
             .ThenInclude(link => link.ProjectStackTag)
-         .SingleOrDefaultAsync(project => project.Slug == slug);
+         .Include(project => project.Links.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.ProjectLinkType)
+         .SingleOrDefaultAsync(cancellationToken);
    }
 
    public async Task<IReadOnlyList<Project>> GetFeaturedProjectsAsync(

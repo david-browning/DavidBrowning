@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DavidBrowning.Services.Cache.Estimators;
 using DavidBrowning.Services.Cache.Options;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Services.Cache;
 
@@ -16,9 +17,11 @@ public class AsyncMemoryCache<T> : IDisposable
    internal int LockCount => _cacheLocks.Count;
 
    public AsyncMemoryCache(
+      ILogger<AsyncMemoryCache<T>> logger,
       ICacheOptions cacheOptions,
       ICacheSizeEstimator<T?> sizeEstimator)
    {
+      _logger = logger;
       _cacheOptions = cacheOptions;
       _sizeEstimator = sizeEstimator;
       _memoryCache = new MemoryCache(new MemoryCacheOptions()
@@ -50,6 +53,7 @@ public class AsyncMemoryCache<T> : IDisposable
             return cachedValue2;
          }
 
+         _logger.LogInformation($"{cacheKey} is not cached. Caching...");
          var fetchedValue = await factory(cancellationToken);
          var size = _sizeEstimator.EstimateSize(fetchedValue);
          MemoryCacheEntryOptions options = new()
@@ -106,6 +110,7 @@ public class AsyncMemoryCache<T> : IDisposable
       _memoryCache.Dispose();
    }
 
+   private readonly ILogger<AsyncMemoryCache<T>> _logger;
    private readonly ICacheSizeEstimator<T?> _sizeEstimator;
    private readonly ICacheOptions _cacheOptions;
    private readonly IMemoryCache _memoryCache;

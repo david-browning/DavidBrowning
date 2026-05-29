@@ -3,17 +3,19 @@
 using DavidBrowning.Models;
 using DavidBrowning.Services.Cache.Estimators;
 using DavidBrowning.Services.Cache.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
 
-public sealed class SlugMemoryCache<TLookup> : AsyncMemoryCache<TLookup> 
+public sealed class SlugMemoryCache<TLookup> : AsyncMemoryCache<TLookup>
    where TLookup : class, IQueryableSlug
 {
    public SlugMemoryCache(
+      ILogger<AsyncMemoryCache<TLookup>> logger,
       IOptions<SlugCacheOptions> options,
       ICacheSizeEstimator<TLookup?> sizeEstimator)
-      : base(options.Value, sizeEstimator)
+      : base(logger, options.Value, sizeEstimator)
    {
    }
 }

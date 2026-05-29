@@ -3,6 +3,7 @@
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services.Cache.Estimators;
 using DavidBrowning.Services.Cache.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
@@ -10,9 +11,10 @@ namespace DavidBrowning.Services.Cache;
 public sealed class RenderedContentMemoryCache : AsyncMemoryCache<RenderedContent>
 {
    public RenderedContentMemoryCache(
+      ILogger<AsyncMemoryCache<RenderedContent>> logger,
       IOptions<RenderedContentCacheOptions> options,
       ICacheSizeEstimator<RenderedContent?> sizeEstimator)
-      : base(options.Value, sizeEstimator)
+      : base(logger, options.Value, sizeEstimator)
    {
    }
 }

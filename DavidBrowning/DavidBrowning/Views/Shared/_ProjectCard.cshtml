@@ -11,11 +11,10 @@
 
 }
 
-<article class="wb-card h-100">
+<article class="wb-card h-100 d-flex flex-column">
 	<p class="wb-card-meta">@Model.ProjectType!.DisplayName</p>
 	<h3>@Model.Name</h3>
 	<p class="wb-card-meta">Project Facts</p>
-
 	<div class="container">
 		<div class="row row-cols-2">
 			<div class="col">
@@ -32,6 +31,7 @@
 			</div>
 		</div>
 	</div>
+
 	<p class="text-secondary">
 		@Model.Description
 	</p>
@@ -40,18 +40,26 @@
 		@Model.ContributionSummary
 	</p>
 
-	<ul class="wb-tag-list mt-4">
-		@foreach (var tag in Model.StackTagLinks)
-		{
-			var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+	<div class="mt-4">
+		<ul class="wb-tag-list">
+			@foreach (var tag in Model.StackTagLinks)
 			{
-				Controller = "projects",
-				Endpoint = "stacks",
-				DisplayName = tag.ProjectStackTag!.DisplayName,
-				Slug = tag.ProjectStackTag!.Slug,
-			};
-			<partial name="_QueryTag" model="@m" />
-		}
-	</ul>
-	<a href="@urlBuilder.GetDetailsUrl(Model.Slug, "projects")">More</a>
+				var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+				{
+					Controller = "projects",
+					Endpoint = "stacks",
+					DisplayName = tag.ProjectStackTag!.DisplayName,
+					Slug = tag.ProjectStackTag!.Slug,
+				};
+
+				<partial name="_QueryTag" model="@m" />
+			}
+		</ul>
+	</div>
+
+	<div class="mt-auto pt-4">
+		<a href="@urlBuilder.GetDetailsUrl(Model.Slug, "projects")">
+			More
+		</a>
+	</div>
 </article>
