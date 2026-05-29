@@ -99,6 +99,7 @@ public class ProjectsController : Controller
       {
          PageTitle = $"Projects with {stack.DisplayName}",
          FilterName = stack.DisplayName,
+         Description = stack.Description,
          FilterSlug = normalizedSlug,
          Results = projects,
          ResultPartialName = "_ProjectCard",
@@ -138,6 +139,7 @@ public class ProjectsController : Controller
       {
          PageTitle = $"{status.DisplayName} Projects",
          FilterName = status.DisplayName,
+         Description = status.Description,
          FilterSlug = normalizedSlug,
          Results = projects,
          ResultPartialName = "_ProjectCard",
@@ -177,6 +179,7 @@ public class ProjectsController : Controller
       {
          PageTitle = $"Projects from {origin.DisplayName}",
          FilterName = origin.DisplayName,
+         Description = origin.Description,
          FilterSlug = normalizedSlug,
          Results = projects,
          ResultPartialName = "_ProjectCard"
@@ -215,6 +218,7 @@ public class ProjectsController : Controller
       {
          PageTitle = $"{type.DisplayName} Projects",
          FilterName = type.DisplayName,
+         Description = type.Description,
          FilterSlug = normalizedSlug,
          Results = projects,
          ResultPartialName = "_ProjectCard"
@@ -229,8 +233,8 @@ public class ProjectsController : Controller
    /// <param name="slug"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   [HttpGet("{slug}")]
-   public IActionResult Details(
+   [HttpGet("details/{slug}")]
+   public async Task<IActionResult> Details(
       string slug,
       CancellationToken cancellationToken)
    {
@@ -239,7 +243,15 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      return View();
+      var normalizedSlug = _slugService.CleanSlug(slug);
+      var project = await _projectStore.GetPublishedProjectBySlugAsync(
+         normalizedSlug, cancellationToken);
+      if (project == null)
+      {
+         return NotFound();
+      }
+
+      return View(new DetailsViewModel(project));
    }
 
    private async Task<IndexViewModel> GetIndexModelAsync(

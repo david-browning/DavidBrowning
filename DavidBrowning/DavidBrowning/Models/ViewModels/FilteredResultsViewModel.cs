@@ -12,6 +12,8 @@ public class FilteredResultsViewModel
 
    public required string FilterSlug { get; init; }
 
+   public string? Description { get; init; }
+
    public required string ResultPartialName { get; init; }
 
    public required IReadOnlyCollection<object> Results { get; init; }
