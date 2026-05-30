@@ -42,6 +42,8 @@ public sealed class Post
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? MetaDescription { get; set; }
 
+   public required PostStyles PostStyle { get; set; }
+
    /// <summary>
    /// The status of the post.
    /// Instead of having it be a foreign key, we'll just map it to an enum
