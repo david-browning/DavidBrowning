@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using DavidBrowning.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,16 +16,8 @@ public sealed partial class SiteDbContext
 
          entity.HasKey(asset => asset.Id);
 
-         entity.HasIndex(asset => new
-         {
-            asset.BlobContainer,
-            asset.BlobName
-         })
-         .IsUnique();
-
-         entity.Property(asset => asset.AssetType)
-            .HasConversion<byte>()
-            .IsRequired();
+         entity.HasIndex(asset => asset.AssetKey)
+            .IsUnique();
 
          entity.Property(asset => asset.CreatedAtUtc)
             .HasColumnType("datetime2(0)")
@@ -40,7 +33,7 @@ public sealed partial class SiteDbContext
          {
             link.PostId,
             link.SiteAssetId,
-            link.Role
+            link.Role,
          });
 
          entity.Property(link => link.Role)
@@ -67,7 +60,7 @@ public sealed partial class SiteDbContext
          {
             link.PostId,
             link.Role,
-            link.SortOrder
+            link.SortOrder,
          });
       });
    }

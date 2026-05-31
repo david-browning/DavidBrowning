@@ -1,5 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,18 +14,13 @@ public sealed class AzureBlobContentStore : IContentStore
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new System.NotImplementedException();
+      throw new NotImplementedException();
    }
 
    public Task<Stream> OpenReadAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new System.NotImplementedException();
-   }
-
-   public string GetAssetFileType(string assetKey)
-   {
-      return AssetHelpers.GetContentType(assetKey);
+      throw new NotImplementedException();
    }
 }

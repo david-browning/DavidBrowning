@@ -90,8 +90,7 @@ public sealed class Post
    /// <summary>
    /// Tags for the post. The list can be empty but not null.
    /// </summary>
-   public ICollection<PostTag> Tags { get; } =
-      new List<PostTag>();
+   public ICollection<PostTag> Tags { get; } = new List<PostTag>();
 
    /// <summary>
    /// Links to the assets attached to the post.

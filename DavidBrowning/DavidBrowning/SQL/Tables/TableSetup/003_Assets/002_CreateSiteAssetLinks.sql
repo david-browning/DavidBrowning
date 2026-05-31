@@ -10,6 +10,9 @@ CREATE TABLE dbo.db_SiteAssetLinks
     -- SocialImage = 3, GeneratedPdf = 4, Download = 5
     Role tinyint NOT NULL,
 
+    Caption nvarchar(512) NULL,
+    AltTextOverride nvarchar(512) NULL,
+
     SortOrder int NOT NULL
         CONSTRAINT DF_db_SiteAssetLinks_SortOrder DEFAULT (0),
 

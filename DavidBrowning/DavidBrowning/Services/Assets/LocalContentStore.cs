@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
 using System.IO;
 using System.Threading;
@@ -10,9 +11,7 @@ using Microsoft.Extensions.Hosting;
 namespace DavidBrowning.Services.Assets;
 
 /// <summary>
-/// A content store that gets content from the local machine.
-/// The root content folder is stored in the configuration file under
-/// Stores:ContentStore:LocalRoot
+/// Content store that gets content from the local machine.
 /// </summary>
 public sealed class LocalContentStore : IContentStore
 {
@@ -21,14 +20,15 @@ public sealed class LocalContentStore : IContentStore
       IHostEnvironment hostEnvironment)
    {
       var contentRoot = configuration["Stores:ContentStore:LocalRoot"];
-      if (string.IsNullOrEmpty(contentRoot))
+
+      if (string.IsNullOrWhiteSpace(contentRoot))
       {
          throw new InvalidOperationException(
             "The content store local root is not set.");
       }
 
-      _contentRoot = Path.GetFullPath(Path.Combine(
-         hostEnvironment.ContentRootPath, contentRoot));
+      _contentRoot = Path.GetFullPath(
+         Path.Combine(hostEnvironment.ContentRootPath, contentRoot));
    }
 
    public async Task<StoredAsset> GetAssetAsync(
@@ -36,34 +36,34 @@ public sealed class LocalContentStore : IContentStore
       CancellationToken cancellationToken = default)
    {
       var fullPath = GetAssetFullPath(assetKey);
+
       if (!File.Exists(fullPath))
       {
          throw new FileNotFoundException(
-            "File asset bit found. Asset keys are case-sensitive.",
+            "File asset not found. Asset keys are case-sensitive.",
             fullPath);
       }
 
-      var contentType = AssetHelpers.GetSourceFormat(fullPath);
-      string fileText = string.Empty;
-      if (AssetHelpers.IsTextSourceFormat(contentType))
+      var fileInfo = new FileInfo(fullPath);
+      var contentType = AssetHelpers.GetContentType(assetKey);
+
+      string? text = null;
+      if (AssetHelpers.IsTextContentType(contentType))
       {
-         fileText = await File.ReadAllTextAsync(fullPath, cancellationToken);
+         text = await File.ReadAllTextAsync(fullPath, cancellationToken);
       }
 
-      var fileInfo = new FileInfo(fullPath);
-      var fileModified = fileInfo.LastWriteTimeUtc;
-      var fileSize = fileInfo.Length;
-      var entityTag = AssetHelpers.GetEntityTag(
-         assetKey, fileModified, fileSize);
+      var lastModifiedUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
 
       return new StoredAsset()
       {
          AssetKey = assetKey,
-         SourceFormat = contentType,
-         Text = fileText,
-         ContentLength = fileSize,
-         EntityTag = entityTag,
-         LastModifiedUtc = fileModified,
+         ContentType = contentType,
+         Text = text,
+         ContentLength = fileInfo.Length,
+         EntityTag = AssetHelpers.GetEntityTag(
+            assetKey, lastModifiedUtc, fileInfo.Length),
+         LastModifiedUtc = lastModifiedUtc,
       };
    }
 
@@ -71,21 +71,20 @@ public sealed class LocalContentStore : IContentStore
       string assetKey,
       CancellationToken cancellationToken = default)
    {
+      cancellationToken.ThrowIfCancellationRequested();
+
       var fullPath = GetAssetFullPath(assetKey);
+
       if (!File.Exists(fullPath))
       {
          throw new FileNotFoundException(
-            "File asset bit found. Asset keys are case-sensitive.",
+            "File asset not found. Asset keys are case-sensitive.",
             fullPath);
       }
 
       Stream stream = File.OpenRead(fullPath);
-      return Task.FromResult(stream);
-   }
 
-   public string GetAssetFileType(string assetKey)
-   {
-      return AssetHelpers.GetContentType(assetKey);
+      return Task.FromResult(stream);
    }
 
    private string GetAssetFullPath(string assetKey)
@@ -99,7 +98,9 @@ public sealed class LocalContentStore : IContentStore
 
       if (assetKey.StartsWith('/') || assetKey.StartsWith('\\'))
       {
-         throw new ArgumentException("Asset keys cannot begin with a slash");
+         throw new ArgumentException(
+            "Asset keys cannot begin with a slash.",
+            nameof(assetKey));
       }
 
       if (Path.IsPathRooted(assetKey))
@@ -115,6 +116,23 @@ public sealed class LocalContentStore : IContentStore
 
       var fullPath = Path.GetFullPath(
          Path.Combine(_contentRoot, normalizedAssetKey));
+
+      var contentRoot = _contentRoot.TrimEnd(
+         Path.DirectorySeparatorChar,
+         Path.AltDirectorySeparatorChar);
+
+      contentRoot += Path.DirectorySeparatorChar;
+
+      var comparison = OperatingSystem.IsWindows()
+         ? StringComparison.OrdinalIgnoreCase
+         : StringComparison.Ordinal;
+
+      if (!fullPath.StartsWith(contentRoot, comparison))
+      {
+         throw new ArgumentException(
+            "Asset key escapes the configured content root.",
+            nameof(assetKey));
+      }
 
       return fullPath;
    }

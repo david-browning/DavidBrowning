@@ -1,10 +1,11 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using DavidBrowning.Models.ViewModels;
+using DavidBrowning.Extensions;
 
 namespace DavidBrowning.Services.Assets;
 
@@ -52,30 +53,30 @@ internal static class AssetHelpers
       return $"\"{hash}\"";
    }
 
-   public static bool IsTextSourceFormat(ContentSourceFormat sourceFormat)
+   public static bool IsTextContentType(string contentType)
    {
-      return sourceFormat == ContentSourceFormat.Markdown ||
-         sourceFormat == ContentSourceFormat.Html ||
-         sourceFormat == ContentSourceFormat.PlainText ||
-         sourceFormat == ContentSourceFormat.Json;
+      var mediaType = GetMediaType(contentType);
+
+      return mediaType.StartsWith(
+            "text/",
+            StringComparison.OrdinalIgnoreCase) ||
+         IsJsonContentType(mediaType);
    }
 
-   public static ContentSourceFormat GetSourceFormat(string fullPath)
+   public static bool IsJsonContentType(string contentType)
    {
-      var extension = Path.GetExtension(fullPath);
-      return extension.ToLowerInvariant() switch
-      {
-         ".md" => ContentSourceFormat.Markdown,
-         ".markdown" => ContentSourceFormat.Markdown,
-         ".html" => ContentSourceFormat.Html,
-         ".txt" => ContentSourceFormat.PlainText,
-         ".json" => ContentSourceFormat.Json,
-         ".jpg" => ContentSourceFormat.Image,
-         ".jpeg" => ContentSourceFormat.Image,
-         ".png" => ContentSourceFormat.Image,
-         ".webp" => ContentSourceFormat.Image,
-         ".gif" => ContentSourceFormat.Image,
-         _ => ContentSourceFormat.Unknown,
-      };
+      var mediaType = GetMediaType(contentType);
+
+      return mediaType.EqualsOrdinalIgnoreCase("application/json") ||
+         mediaType.EndsWith("+json", StringComparison.OrdinalIgnoreCase);
+   }
+
+   public static string GetMediaType(string contentType)
+   {
+      var separatorIndex = contentType.IndexOf(';');
+
+      return separatorIndex < 0
+         ? contentType.Trim()
+         : contentType[..separatorIndex].Trim();
    }
 }

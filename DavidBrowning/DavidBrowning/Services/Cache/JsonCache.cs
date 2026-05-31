@@ -1,21 +1,19 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services.Assets;
 
 namespace DavidBrowning.Services.Cache;
 
 public sealed class JsonCache
 {
-   public JsonCache(
-        IContentStore contentService,
-        JsonMemoryCache cache)
+   public JsonCache(IContentStore contentStore, JsonMemoryCache cache)
    {
-      _contentStore = contentService;
+      _contentStore = contentStore;
       _cache = cache;
    }
 
@@ -24,9 +22,10 @@ public sealed class JsonCache
       CancellationToken cancellationToken = default)
    {
       var cacheKey = GetJsonCacheKey<T>(assetKey);
+
       var cachedValue = await _cache.GetOrCreateAsync(
          cacheKey,
-         async token => await Deserialize<T>(assetKey, token),
+         token => DeserializeAsync<T>(assetKey, token),
          cancellationToken);
 
       if (cachedValue is T typedValue)
@@ -40,13 +39,14 @@ public sealed class JsonCache
          $"'{cachedValue?.GetType().FullName ?? "null"}'.");
    }
 
-   private async Task<T> Deserialize<T>(
+   private async Task<object> DeserializeAsync<T>(
       string assetKey,
-      CancellationToken cancellationToken = default)
+      CancellationToken cancellationToken)
    {
       var asset = await _contentStore.GetAssetAsync(
-       assetKey, cancellationToken);
-      if (asset.SourceFormat != ContentSourceFormat.Json)
+         assetKey, cancellationToken);
+
+      if (!AssetHelpers.IsJsonContentType(asset.ContentType))
       {
          throw new InvalidOperationException(
             $"{assetKey} is not a JSON file.");
@@ -65,16 +65,17 @@ public sealed class JsonCache
             PropertyNameCaseInsensitive = true,
          });
 
-      if (model == null)
+      if (model is null)
       {
          throw new InvalidOperationException(
-            $"JSON asset {assetKey} could not be parsed as {typeof(T).Name}.");
+            $"JSON asset {assetKey} could not be parsed as " +
+            $"{typeof(T).Name}.");
       }
 
       return model;
    }
 
-   private string GetJsonCacheKey<T>(string assetKey)
+   private static string GetJsonCacheKey<T>(string assetKey)
    {
       return $"json-content:{typeof(T).AssemblyQualifiedName}:{assetKey}";
    }

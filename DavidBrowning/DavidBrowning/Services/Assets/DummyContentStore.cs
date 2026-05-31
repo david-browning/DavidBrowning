@@ -1,24 +1,25 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Models.ViewModels;
 
 namespace DavidBrowning.Services.Assets;
 
-public class DummyContentStore : IContentStore
+public sealed class DummyContentStore : IContentStore
 {
    public Task<StoredAsset> GetAssetAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
       var now = DateTimeOffset.UtcNow;
-      var ret = new StoredAsset()
+
+      StoredAsset ret = new()
       {
          AssetKey = assetKey,
-         SourceFormat = ContentSourceFormat.PlainText,
+         ContentType = "text/plain",
          Text = "Test Content",
          ContentLength = 12,
          EntityTag = AssetHelpers.GetEntityTag(assetKey, now, 12),
@@ -32,11 +33,6 @@ public class DummyContentStore : IContentStore
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new System.NotImplementedException();
-   }
-
-   public string GetAssetFileType(string assetKey)
-   {
-      return AssetHelpers.GetContentType(assetKey);
+      throw new NotImplementedException();
    }
 }

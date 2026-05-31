@@ -184,9 +184,6 @@ public static partial class Program
          builder.Services.AddSingleton<BasicContentPipeline>();
          builder.Services.AddSingleton<IContentPipeline>(serviceProvider =>
          {
-            var cacheLogger = serviceProvider.GetRequiredService<
-               ILogger<CachedContentPipeline>>();
-
             IContentPipeline innerPipeline =
                serviceProvider.GetRequiredService<BasicContentPipeline>();
 
@@ -194,7 +191,6 @@ public static partial class Program
                serviceProvider.GetRequiredService<RenderedContentMemoryCache>();
 
             return new CachedContentPipeline(
-               cacheLogger,
                innerPipeline,
                memoryCache);
          });

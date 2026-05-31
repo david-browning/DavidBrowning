@@ -6,6 +6,7 @@ using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Models.ViewModels;
+using DavidBrowning.Models.ViewModels.Writing;
 using DavidBrowning.Models.Writing;
 using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Slugs;
@@ -75,7 +76,7 @@ public class WritingController : Controller
       }
 
       var results = await _writingStore.GetPublishedPostsByTagSlugAsync(
-            normalizedSlug, cancellationToken);
+         normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
          PageTitle = $"{tag.DisplayName} Posts",
@@ -104,9 +105,16 @@ public class WritingController : Controller
          return NotFound();
       }
 
-      await Task.CompletedTask;
-
-      return View();
+      var normalizedSlug = _slugService.CleanSlug(slug);
+      var post = await _writingStore.GetPublishedPostBySlugAsync(
+         normalizedSlug, cancellationToken);
+      if (post == null)
+      {
+         return NotFound();
+      }
+       
+      DetailsViewModel model = new DetailsViewModel(post);
+      return View(model);
    }
 
    private readonly ILogger<WritingController> _logger;

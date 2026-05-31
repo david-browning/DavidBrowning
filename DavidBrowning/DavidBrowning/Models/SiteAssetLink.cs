@@ -1,6 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using System.ComponentModel.DataAnnotations;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Models;
@@ -17,6 +18,19 @@ public sealed class SiteAssetLink
    public int PostId { get; set; }
 
    public Post? Post { get; set; }
+
+   /// <summary>
+   /// Optional post-specific caption for the asset.
+   /// </summary>
+   [StringLength(DataConstants.MaxMetadataLength)]
+   public string? Caption { get; set; }
+
+   /// <summary>
+   /// Optional post-specific alt text override.
+   /// If null, use the asset's default alt text.
+   /// </summary>
+   [StringLength(DataConstants.MaxMetadataLength)]
+   public string? AltTextOverride { get; set; }
 
    /// <summary>
    /// Foreign key to db_SiteAssets.

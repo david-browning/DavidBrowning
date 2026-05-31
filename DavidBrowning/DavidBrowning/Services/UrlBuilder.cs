@@ -38,6 +38,13 @@ public sealed class UrlBuilder
       return BuildSlugUrl(slug, controller, endpoint);
    }
 
+   public string GetContentUrl(
+      string assetKey,
+      string controller = "content")
+   {
+      return BuildSlugUrl(assetKey, controller, "get");
+   }
+
    private static string BuildSlugUrl(
       string slug,
       string controller,
