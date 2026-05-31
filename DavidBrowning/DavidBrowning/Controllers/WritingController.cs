@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models.ViewModels;
+using DavidBrowning.Models.Writing;
+using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +30,8 @@ public class WritingController : Controller
       IConfiguration configuration,
 
       IWritingStore writingStore,
-      ISlugService slugs)
+      ISlugService slugs,
+      ISlugLookupService<WritingTag> tagStore)
    {
       _logger = logger;
       _clock = clock;
@@ -38,6 +42,7 @@ public class WritingController : Controller
 
       _writingStore = writingStore;
       _slugService = slugs;
+      _tagLookup = tagStore;
    }
 
    public IActionResult Index()
@@ -52,16 +57,35 @@ public class WritingController : Controller
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
    [HttpGet("tags/{slug}")]
-   public async Task<IActionResult> Tag(string slug, CancellationToken cancellationToken)
+   public async Task<IActionResult> Tags(
+      string slug,
+      CancellationToken cancellationToken)
    {
       if (string.IsNullOrWhiteSpace(slug))
       {
          return NotFound();
       }
 
-      await Task.CompletedTask;
+      var normalizedSlug = _slugService.CleanSlug(slug);
+      var tag = await _tagLookup.GetBySlugAsync(
+         normalizedSlug, cancellationToken);
+      if (tag == null)
+      {
+         return NotFound();
+      }
 
-      return View();
+      var results = await _writingStore.GetPublishedPostsByTagSlugAsync(
+            normalizedSlug, cancellationToken);
+      FilteredResultsViewModel model = new()
+      {
+         PageTitle = $"{tag.DisplayName} Posts",
+         FilterName = tag.DisplayName,
+         FilterSlug = normalizedSlug,
+         Results = results,
+         ResultPartialName = "_PostCard"
+      };
+
+      return View("_FilteredResults", model);
    }
 
    /// <summary>
@@ -70,8 +94,10 @@ public class WritingController : Controller
    /// <param name="slug"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   [HttpGet("{slug}")]
-   public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
+   [HttpGet("details/{slug}")]
+   public async Task<IActionResult> Details(
+      string slug, 
+      CancellationToken cancellationToken)
    {
       if (string.IsNullOrWhiteSpace(slug))
       {
@@ -92,4 +118,5 @@ public class WritingController : Controller
 
    private readonly IWritingStore _writingStore;
    private readonly ISlugService _slugService;
+   private readonly ISlugLookupService<WritingTag> _tagLookup;
 }

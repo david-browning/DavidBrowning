@@ -97,7 +97,7 @@ public class ProjectsController : Controller
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
-         PageTitle = $"Projects with {stack.DisplayName}",
+         PageTitle = $"Projects built with {stack.DisplayName}",
          FilterName = stack.DisplayName,
          Description = stack.Description,
          FilterSlug = normalizedSlug,
@@ -222,6 +222,39 @@ public class ProjectsController : Controller
          FilterSlug = normalizedSlug,
          Results = projects,
          ResultPartialName = "_ProjectCard"
+      };
+
+      return View("_FilteredResults", model);
+   }
+
+   [HttpGet("tags/{slug}")]
+   public async Task<IActionResult> Tags(
+      string slug,
+      CancellationToken cancellationToken)
+   {
+      if (string.IsNullOrWhiteSpace(slug))
+      {
+         return NotFound();
+      }
+
+      var normalizedSlug = _slugService.CleanSlug(slug);
+      var tag = await _tagLookup.GetBySlugAsync(
+         normalizedSlug, cancellationToken);
+      if (tag == null)
+      {
+         return NotFound();
+      }
+
+      var projects = await _projectStore.GetPublishedProjectsByTagSlugAsync(
+         normalizedSlug, cancellationToken);
+      FilteredResultsViewModel model = new()
+      {
+         PageTitle = $"Projects tagged with \"{tag.DisplayName}\"",
+         FilterName = tag.DisplayName,
+         Description = tag.Description,
+         FilterSlug = normalizedSlug,
+         Results = projects,
+         ResultPartialName = "_ProjectCard",
       };
 
       return View("_FilteredResults", model);
