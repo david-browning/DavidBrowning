@@ -23,14 +23,65 @@
 
 		<div class="row g-4">
 			<div class="col">
+				<dl class="mb-0">
+					<dt>Status</dt>
+					<dd class="text-secondary">@Model.ProjectStatus</dd>
+				</dl>
+			</div>
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Type</dt>
+					<dd class="text-secondary">@Model.ProjectType</dd>
+				</dl>
+			</div>
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Origin</dt>
+					<dd class="text-secondary">@Model.ProjectOrigin</dd>
+				</dl>
+			</div>
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Duration</dt>
+					<dd class="text-secondary">@Model.DateDisplayText</dd>
+				</dl>
+			</div>
+		</div>
+
+		@if (!string.IsNullOrEmpty(Model.Role))
+		{
+			<div class="row g-4 cols-2">
+				<div class="col-4">
+					<dl class="mb-0">
+						<dt>Role</dt>
+						<dd class="text-secondary">@Model.Role</dd>
+					</dl>
+				</div>
+				<div class="col-8">
+					<dl class="mb-0">
+						<dt>Contribution</dt>
+						<dd class="text-secondary">@Model.ContributionSummary</dd>
+					</dl>
+				</div>
+			</div>
+		}
+
+		<div class="row g-4">
+			<div class="col">
 				<aside class="wb-panel wb-panel-accent">
 					<p class="wb-card-meta">Tags:</p>
 					<ul class="wb-tag-list mt-4">
 						@foreach (var tag in Model.TagLinks)
 						{
-							<li class="wb-tag">
-								<span>@tag.ProjectTag!.DisplayName</span>
-							</li>
+							var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+							{
+								Controller = "projects",
+								Endpoint = "tags",
+								DisplayName = tag.ProjectTag!.DisplayName,
+								Slug = tag.ProjectTag!.Slug,
+							};
+
+							<partial name="_QueryTag" model="@m" />
 						}
 					</ul>
 				</aside>
@@ -60,7 +111,7 @@
 	</div>
 </section>
 
-<section id="interests" class="wb-section">
+<section id="details" class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
 			@* Use these kickers if a page is broken into many sections *@
@@ -70,11 +121,40 @@
 		</header>
 
 		<div class="row row-cols-1 g-4">
+			@foreach (var asset in Model.AssetLinks)
+			{
+				DavidBrowning.Models.ViewModels.AssetBlockViewModel m = new(asset);
+				<partial name="_AssetBlock" model="@m" />
+			}
 		</div>
 	</div>
 </section>
 
-<section id="interests" class="wb-section">
+@if (!string.IsNullOrEmpty(Model.CaseStudyProblem))
+{
+	<section class="wb-section">
+		<div class="container">
+			<header class="wb-section-header">
+				<h2>Case Study</h2>
+			</header>
+			<div class="row row-cols-1 g-4">
+
+
+
+
+
+
+
+
+
+
+
+			</div>
+		</div>
+	</section>
+}
+
+<section id="links" class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
 			@* Use these kickers if a page is broken into many sections *@
@@ -111,3 +191,22 @@
 		</div>
 	</div>
 </section>
+
+@if (Model.RelatedPosts.Count > 0)
+{
+	<section id="related" class="wb-section">
+		<div class="container">
+			<header class="wb-section-header">
+				<h2>Also Read</h2>
+			</header>
+			<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5 g-4">
+				@foreach (var post in Model.RelatedPosts)
+				{
+					<div class="col">
+						<partial name="_FeaturedPostCard" model="post.Post" />
+					</div>
+				}
+			</div>
+		</div>
+	</section>
+}

@@ -91,12 +91,20 @@ internal sealed class SqlProjectStore : IProjectStore
          .Include(project => project.ProjectVisibility)
          .Include(project => project.ProjectOrigin)
          .Include(project => project.ProjectType)
+         .Include(project => project.AssetLinks.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.SiteAsset)
+         .Include(project => project.AssetLinks)
+            .ThenInclude(link => link.ProjectAssetRole)
          .Include(project => project.TagLinks)
             .ThenInclude(link => link.ProjectTag)
          .Include(project => project.StackTagLinks)
             .ThenInclude(link => link.ProjectStackTag)
          .Include(project => project.Links.OrderBy(link => link.SortOrder))
             .ThenInclude(link => link.ProjectLinkType)
+         .Include(project => project.RelatedPosts.OrderBy(post => post.SortOrder))
+            .ThenInclude(project => project.Post)
+               .ThenInclude(post => post!.Tags)
+                  .ThenInclude(tag => tag.WritingTag)
          .SingleOrDefaultAsync(cancellationToken);
    }
 
