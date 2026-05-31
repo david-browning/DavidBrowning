@@ -87,6 +87,7 @@ internal sealed class SqlProjectStore : IProjectStore
          .AsNoTracking()
          .AsSplitQuery()
          .Where(project => project.Slug == slug)
+         .Where(project => project.ProjectVisibilityId == publicId)
          .Include(project => project.ProjectStatus)
          .Include(project => project.ProjectVisibility)
          .Include(project => project.ProjectOrigin)

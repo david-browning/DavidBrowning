@@ -1,19 +1,18 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
-using DavidBrowning.Models.ViewModels;
 
 namespace DavidBrowning.Services.Assets;
 
 /// <summary>
-/// Represents a piece of content (Like text, an image, markdown) stored
-/// "somewhere".
+/// Represents content stored by an IContentStore.
 /// </summary>
 public sealed class StoredAsset
 {
    public required string AssetKey { get; init; }
 
-   public required string ContentType { get; set; }
+   public required string ContentType { get; init; }
 
    /// <summary>
    /// Size in bytes of the content.
@@ -21,8 +20,7 @@ public sealed class StoredAsset
    public long? ContentLength { get; init; }
 
    /// <summary>
-   /// File text. If this is a binary blob like an image, then this will
-   /// be empty.
+   /// File text. Null for binary assets such as images.
    /// </summary>
    public string? Text { get; init; }
 

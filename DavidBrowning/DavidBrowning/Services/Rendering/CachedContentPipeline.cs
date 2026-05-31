@@ -1,47 +1,51 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
+
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
-using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Services.Rendering;
 
-public class CachedContentPipeline : IContentPipeline
+public sealed class CachedContentPipeline : IContentPipeline
 {
    public CachedContentPipeline(
-      ILogger<CachedContentPipeline> logger,
       IContentPipeline pipeline,
       RenderedContentMemoryCache cache)
    {
-      _logger = logger;
       _pipeline = pipeline;
       _cache = cache;
    }
 
-   public async Task<RenderedContent?> GetRenderedContentAsync(
+   public Task<RenderedContent?> GetRenderedContentAsync(
       string assetKey,
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default)
    {
-      var cacheKey = GetCacheKey(assetKey);
-      return await _cache.GetOrCreateAsync(
+      var cacheKey = GetCacheKey(assetKey, options);
+
+      return _cache.GetOrCreateAsync(
          cacheKey,
          token => _pipeline.GetRenderedContentAsync(
             assetKey, options, token),
-            cancellationToken);
+         cancellationToken);
    }
 
-   private string GetCacheKey(string assetKey)
+   private static string GetCacheKey(
+      string assetKey,
+      ContentRenderOptions? options)
    {
-      return $"content-asset:{assetKey}";
+      var altText = options?.AltText ?? string.Empty;
+      var cssClass = options?.CssClass ?? string.Empty;
+
+      return
+         $"content-asset:{assetKey}:" +
+         $"alt:{altText.Length}:{altText}:" +
+         $"class:{cssClass.Length}:{cssClass}";
    }
 
-   private readonly ILogger<CachedContentPipeline> _logger;
    private readonly IContentPipeline _pipeline;
    private readonly RenderedContentMemoryCache _cache;
-
 }

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using DavidBrowning.Extensions;
-using DavidBrowning.Models.ViewModels;
 
 namespace DavidBrowning.Services.Assets;
 
@@ -60,10 +60,18 @@ internal static class AssetHelpers
       return mediaType.StartsWith(
             "text/",
             StringComparison.OrdinalIgnoreCase) ||
-         mediaType.EqualsOrdinalIgnoreCase("application/json");
+         IsJsonContentType(mediaType);
    }
 
-   private static string GetMediaType(string contentType)
+   public static bool IsJsonContentType(string contentType)
+   {
+      var mediaType = GetMediaType(contentType);
+
+      return mediaType.EqualsOrdinalIgnoreCase("application/json") ||
+         mediaType.EndsWith("+json", StringComparison.OrdinalIgnoreCase);
+   }
+
+   public static string GetMediaType(string contentType)
    {
       var separatorIndex = contentType.IndexOf(';');
 

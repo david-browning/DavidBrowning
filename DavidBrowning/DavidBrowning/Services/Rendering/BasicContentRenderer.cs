@@ -26,7 +26,7 @@ public sealed class BasicContentRenderer : IContentRenderer
    {
       cancellationToken.ThrowIfCancellationRequested();
 
-      var contentType = GetMediaType(content.ContentType);
+      var contentType = AssetHelpers.GetMediaType(content.ContentType);
 
       string html;
       if (contentType.EqualsOrdinalIgnoreCase(_htmlContentType))
@@ -140,15 +140,6 @@ public sealed class BasicContentRenderer : IContentRenderer
    private static string GetAssetUrl(string assetKey)
    {
       return $"/content/{assetKey}";
-   }
-
-   private static string GetMediaType(string contentType)
-   {
-      var separatorIndex = contentType.IndexOf(';');
-
-      return separatorIndex < 0
-         ? contentType.Trim()
-         : contentType[..separatorIndex].Trim();
    }
 
    private const string _htmlContentType = "text/html";
