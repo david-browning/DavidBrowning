@@ -116,23 +116,26 @@
 	</div>
 </section>
 
-<section id="details" class="wb-section">
-	<div class="container">
-		<header class="wb-section-header">
-			@* Use these kickers if a page is broken into many sections *@
-			@* <p class="wb-kicker">Projects</p> *@
-			<h2>Project Details</h2>
-			@* <p class="wb-lede"></p> *@
-		</header>
+@if (Model.AssetBlocks.Count > 0)
+{
+	<section id="details" class="wb-section">
+		<div class="container">
+			<header class="wb-section-header">
+				@* Use these kickers if a page is broken into many sections *@
+				@* <p class="wb-kicker">Projects</p> *@
+				<h2>Project Details</h2>
+				@* <p class="wb-lede"></p> *@
+			</header>
 
-		<div class="row row-cols-1 g-4">
-			@foreach (var asset in Model.AssetBlocks)
-			{
-				<partial name="_AssetBlock" model="@asset" />
-			}
+			<div class="row row-cols-1 g-4">
+				@foreach (var asset in Model.AssetBlocks)
+				{
+					<partial name="_AssetBlock" model="@asset" />
+				}
+			</div>
 		</div>
-	</div>
-</section>
+	</section>
+}
 
 @if (hasCaseStudy)
 {
@@ -176,43 +179,46 @@
 	</section>
 }
 
-<section id="links" class="wb-section">
-	<div class="container">
-		<header class="wb-section-header">
-			@* Use these kickers if a page is broken into many sections *@
-			@* <p class="wb-kicker">Projects</p> *@
-			<h2>Project Links</h2>
-			<p class="wb-lede">Links to project resources.</p>
-		</header>
+@if (Model.Links.Count > 0)
+{
+	<section id="links" class="wb-section">
+		<div class="container">
+			<header class="wb-section-header">
+				@* Use these kickers if a page is broken into many sections *@
+				@* <p class="wb-kicker">Projects</p> *@
+				<h2>Project Links</h2>
+				<p class="wb-lede">Links to project resources.</p>
+			</header>
 
-		<div class="row row-cols-1 g-4">
-			<div class="col">
-				<aside class="wb-panel wb-panel-accent">
-					<p class="wb-card-meta">Tags:</p>
-					<ul class="wb-tag-list mt-4">
-						@foreach (var link in Model.Links)
-						{
-							var linkClass = string.Empty;
-							if (link.IsPrimary)
+			<div class="row row-cols-1 g-4">
+				<div class="col">
+					<aside class="wb-panel wb-panel-accent">
+						<p class="wb-card-meta">Tags:</p>
+						<ul class="wb-tag-list mt-4">
+							@foreach (var link in Model.Links)
 							{
+								var linkClass = string.Empty;
+								if (link.IsPrimary)
+								{
+								}
+								<li class="wb-tag">
+									<a class="wb-footer-link link-danger @linkClass"
+									   href="@link.Url" target="_blank" rel="noopener noreferrer">
+										@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
+										{
+											<i class="@link.ProjectLinkType!.IconCssClass" aria-hidden="true"></i>
+										}
+										<span>@link.Label</span>
+									</a>
+								</li>
 							}
-							<li class="wb-tag">
-								<a class="wb-footer-link link-danger @linkClass"
-								   href="@link.Url" target="_blank" rel="noopener noreferrer">
-									@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
-									{
-										<i class="@link.ProjectLinkType!.IconCssClass" aria-hidden="true"></i>
-									}
-									<span>@link.Label</span>
-								</a>
-							</li>
-						}
-					</ul>
-				</aside>
+						</ul>
+					</aside>
+				</div>
 			</div>
 		</div>
-	</div>
-</section>
+	</section>
+}
 
 @if (Model.RelatedPosts.Count > 0)
 {
