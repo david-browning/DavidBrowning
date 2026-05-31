@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DavidBrowning.Models.Projects;
 
 namespace DavidBrowning.Models.ViewModels.Projects;
@@ -30,7 +31,11 @@ public class DetailsViewModel
       TagLinks = project.TagLinks;
       StackTagLinks = project.StackTagLinks;
       Links = project.Links;
-      AssetLinks = project.AssetLinks;
+      AssetBlocks = project.AssetLinks
+         .OrderBy(link => link.ProjectAssetRole!.SortOrder)
+         .ThenBy(link => link.SortOrder)
+         .Select(link => new AssetBlockViewModel(link))
+         .ToList();
       RelatedPosts = project.RelatedPosts;
    }
 
@@ -53,6 +58,6 @@ public class DetailsViewModel
    public required ICollection<ProjectTagLink> TagLinks { get; init; }
    public required ICollection<ProjectStackTagLink> StackTagLinks { get; init; }
    public required ICollection<ProjectLink> Links { get; init; }
-   public required ICollection<ProjectAssetLink> AssetLinks { get; init; }
+   public required IReadOnlyList<AssetBlockViewModel> AssetBlocks { get; init; }
    public required ICollection<ProjectPost> RelatedPosts { get; init; }
 }

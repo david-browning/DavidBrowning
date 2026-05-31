@@ -13,7 +13,7 @@ public sealed class StoredAsset
 {
    public required string AssetKey { get; init; }
 
-   public required ContentSourceFormat SourceFormat { get; init; }
+   public required string ContentType { get; set; }
 
    /// <summary>
    /// Size in bytes of the content.

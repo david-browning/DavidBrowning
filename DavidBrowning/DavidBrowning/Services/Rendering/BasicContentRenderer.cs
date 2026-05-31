@@ -1,7 +1,11 @@
-﻿using System;
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Extensions;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services.Assets;
 using Microsoft.Extensions.Logging;
@@ -10,8 +14,7 @@ namespace DavidBrowning.Services.Rendering;
 
 public sealed class BasicContentRenderer : IContentRenderer
 {
-   public BasicContentRenderer(
-      ILogger<BasicContentRenderer> logger)
+   public BasicContentRenderer(ILogger<BasicContentRenderer> logger)
    {
       _logger = logger;
    }
@@ -21,101 +24,94 @@ public sealed class BasicContentRenderer : IContentRenderer
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default)
    {
-      string html = string.Empty;
-      switch (content.SourceFormat)
+      cancellationToken.ThrowIfCancellationRequested();
+
+      var contentType = GetMediaType(content.ContentType);
+
+      string html;
+      if (contentType.EqualsOrdinalIgnoreCase(_htmlContentType))
       {
-         case ContentSourceFormat.Html:
-         {
-            html = GetHtml(content, options);
-            break;
-         }
-         case ContentSourceFormat.PlainText:
-         {
-            html = GetTextHtml(content, options);
-            break;
-         }
-         case ContentSourceFormat.Markdown:
-         {
-            html = GetMarkdownHtml(content, options);
-            break;
-         }
-         case ContentSourceFormat.Image:
-         {
-            html = GetImageHtml(content, options);
-            break;
-         }
-         default:
-         {
-            throw new InvalidOperationException(
-               $"Unsupported asset source format: {content.SourceFormat}.");
-         }
+         html = GetHtml(content);
+      }
+      else if (contentType.EqualsOrdinalIgnoreCase(_plainTextContentType))
+      {
+         html = GetTextHtml(content);
+      }
+      else if (contentType.EqualsOrdinalIgnoreCase(_markdownContentType))
+      {
+         html = GetMarkdownHtml(content);
+      }
+      else if (contentType.StartsWith(
+         _imageContentTypePrefix,
+         StringComparison.OrdinalIgnoreCase))
+      {
+         html = GetImageHtml(content, options);
+      }
+      else
+      {
+         throw new InvalidOperationException(
+            $"Unsupported asset content type: {content.ContentType}.");
       }
 
-      var ret = new RenderedContent()
+      RenderedContent ret = new()
       {
          AssetKey = content.AssetKey,
-         OriginalSourceFormat = content.SourceFormat,
+         OriginalContentType = content.ContentType,
          Html = html,
       };
 
       return Task.FromResult(ret);
    }
 
-   private string GetHtml(
-      StoredAsset content,
-      ContentRenderOptions? options)
+   private static string GetHtml(StoredAsset content)
    {
-      // TODO: Sanitize the HTML
+      // TODO: Sanitize the HTML.
       throw new InvalidOperationException(
          "Raw HTML content is not supported yet.");
    }
 
-   private string GetMarkdownHtml(
-      StoredAsset content,
-      ContentRenderOptions? options)
+   private static string GetMarkdownHtml(StoredAsset content)
    {
-      // TODO: Sanitize the HTML
+      // TODO: Render Markdown and sanitize the resulting HTML.
       throw new InvalidOperationException(
          "Markdown content is not supported yet.");
    }
 
-   private string GetTextHtml(
-      StoredAsset content,
-      ContentRenderOptions? options)
+   private static string GetTextHtml(StoredAsset content)
    {
-      return ParagaphitizeHtml(GetAssetText(content));
+      return ParagraphizeHtml(GetAssetText(content));
    }
 
    private string GetImageHtml(
       StoredAsset content,
       ContentRenderOptions? options)
    {
-      if (string.IsNullOrEmpty(options?.AltText))
+      if (options?.AltText is null)
       {
          _logger.LogWarning(
-            "Image assets should have the alt text option set.");
+            "Image asset {AssetKey} does not have alt text.",
+            content.AssetKey);
       }
 
       var src = WebUtility.HtmlEncode(GetAssetUrl(content.AssetKey));
-      var altText = WebUtility.HtmlEncode(options?.AltText);
+      var altText = WebUtility.HtmlEncode(options?.AltText ?? string.Empty);
 
-      var cssAttr = string.Empty;
-      if (options != null && !string.IsNullOrEmpty(options.CssClass))
+      var cssAttribute = string.Empty;
+      if (!string.IsNullOrWhiteSpace(options?.CssClass))
       {
-         cssAttr = WebUtility.HtmlEncode(options!.CssClass);
+         var cssClass = WebUtility.HtmlEncode(options.CssClass);
+         cssAttribute = $" class=\"{cssClass}\"";
       }
 
       return
-         $"<img src=\"{src}\" alt=\"{altText}\"" +
-         $"class=\"{cssAttr}\" loading=\"lazy\" decoding=\"async\" />";
+         $"<img src=\"{src}\" alt=\"{altText}\"{cssAttribute}" +
+         " loading=\"lazy\" decoding=\"async\" />";
    }
 
-   private string ParagaphitizeHtml(string text)
+   private static string ParagraphizeHtml(string text)
    {
-      // Encode the text
       var encoded = WebUtility.HtmlEncode(text);
 
-      // Split by newline
       var paragraphs = encoded.Split(
          new[] { "\r\n\r\n", "\n\n" },
          StringSplitOptions.RemoveEmptyEntries);
@@ -125,16 +121,14 @@ public sealed class BasicContentRenderer : IContentRenderer
          return string.Empty;
       }
 
-      // Put all the sections back together where each one is enclosed in a 
-      // paragraph tag.
       return string.Join(
          string.Empty,
          Array.ConvertAll(paragraphs, paragraph => $"<p>{paragraph}</p>"));
    }
 
-   private string GetAssetText(StoredAsset content)
+   private static string GetAssetText(StoredAsset content)
    {
-      if (content.Text == null)
+      if (content.Text is null)
       {
          throw new InvalidOperationException(
             $"{content.AssetKey} does not contain text.");
@@ -143,10 +137,24 @@ public sealed class BasicContentRenderer : IContentRenderer
       return content.Text;
    }
 
-   private string GetAssetUrl(string assetKey)
+   private static string GetAssetUrl(string assetKey)
    {
-      return $"content/{assetKey}";
+      return $"/content/{assetKey}";
    }
+
+   private static string GetMediaType(string contentType)
+   {
+      var separatorIndex = contentType.IndexOf(';');
+
+      return separatorIndex < 0
+         ? contentType.Trim()
+         : contentType[..separatorIndex].Trim();
+   }
+
+   private const string _htmlContentType = "text/html";
+   private const string _plainTextContentType = "text/plain";
+   private const string _markdownContentType = "text/markdown";
+   private const string _imageContentTypePrefix = "image/";
 
    private readonly ILogger<BasicContentRenderer> _logger;
 }

@@ -13,6 +13,7 @@ namespace DavidBrowning.Models;
 /// Reusable blob-backed asset that can be referenced by posts, projects, or future site content.
 /// </summary>
 [PrimaryKey(nameof(Id))]
+[Index(nameof(AssetKey), IsUnique = true)]
 [Index(nameof(BlobContainer), nameof(BlobName), IsUnique = true)]
 public sealed class SiteAsset
 {
@@ -32,18 +33,34 @@ public sealed class SiteAsset
    public string? OriginalFileName { get; set; }
 
    /// <summary>
+   /// Root-relative logical key used to locate the asset through the content
+   /// pipeline. Asset keys do not begin with a slash.
+   /// </summary>
+   [Required]
+   [StringLength(DataConstants.MaxAzureAssetLength)]
+   public required string AssetKey { get; set; }
+
+   /// <summary>
    /// Azure blob container containing the asset.
    /// </summary>
    [Required]
    [StringLength(DataConstants.MaxAzureAssetLength)]
-   public required string BlobContainer { get; set; }
+   public string? BlobContainer { get; set; }
 
    /// <summary>
    /// Name/path of the blob inside the container.
    /// </summary>
    [Required]
    [StringLength(DataConstants.MaxAzureAssetLength)]
-   public required string BlobName { get; set; }
+   public string? BlobName { get; set; }
+
+   /// <summary>
+   /// MIME type used when serving the asset.
+   /// Examples: image/png, image/jpeg, application/pdf.
+   /// </summary>
+   [Required]
+   [StringLength(DataConstants.MaxContentTypeLength)]
+   public required string ContentType { get; set; }
 
    /// <summary>
    /// Default alternate text for the asset.
@@ -61,6 +78,18 @@ public sealed class SiteAsset
    /// Stored in UTC.
    /// </summary>
    public required DateTime CreatedAtUtc { get; set; }
+
+   /// <summary>
+   /// Intrinsic width of an image asset in pixels.
+   /// Null for non-image assets or when dimensions are unknown.
+   /// </summary>
+   public int? WidthPixels { get; set; }
+
+   /// <summary>
+   /// Intrinsic height of an image asset in pixels.
+   /// Null for non-image assets or when dimensions are unknown.
+   /// </summary>
+   public int? HeightPixels { get; set; }
 
    public ICollection<SiteAssetLink> PostLinks { get; } = new List<SiteAssetLink>();
 

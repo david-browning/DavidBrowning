@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Models.ViewModels;
 
 namespace DavidBrowning.Services.Assets;
 
@@ -18,7 +17,7 @@ public class DummyContentStore : IContentStore
       var ret = new StoredAsset()
       {
          AssetKey = assetKey,
-         SourceFormat = ContentSourceFormat.PlainText,
+         ContentType = "text/plain",
          Text = "Test Content",
          ContentLength = 12,
          EntityTag = AssetHelpers.GetEntityTag(assetKey, now, 12),

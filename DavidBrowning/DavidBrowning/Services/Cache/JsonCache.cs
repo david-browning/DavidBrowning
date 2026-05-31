@@ -4,6 +4,7 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Extensions;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services.Assets;
 
@@ -46,7 +47,7 @@ public sealed class JsonCache
    {
       var asset = await _contentStore.GetAssetAsync(
        assetKey, cancellationToken);
-      if (asset.SourceFormat != ContentSourceFormat.Json)
+      if (!asset.ContentType.EqualsOrdinalIgnoreCase("application/json"))
       {
          throw new InvalidOperationException(
             $"{assetKey} is not a JSON file.");

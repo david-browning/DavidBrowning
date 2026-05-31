@@ -43,23 +43,23 @@ public sealed class LocalContentStore : IContentStore
             fullPath);
       }
 
-      var contentType = AssetHelpers.GetSourceFormat(fullPath);
+      var fileInfo = new FileInfo(fullPath);
+      var fileModified = fileInfo.LastWriteTimeUtc;
+      var fileSize = fileInfo.Length;
+      var contentType = AssetHelpers.GetContentType(fileInfo.Extension);
       string fileText = string.Empty;
-      if (AssetHelpers.IsTextSourceFormat(contentType))
+      if (AssetHelpers.IsTextContentType(contentType))
       {
          fileText = await File.ReadAllTextAsync(fullPath, cancellationToken);
       }
 
-      var fileInfo = new FileInfo(fullPath);
-      var fileModified = fileInfo.LastWriteTimeUtc;
-      var fileSize = fileInfo.Length;
       var entityTag = AssetHelpers.GetEntityTag(
          assetKey, fileModified, fileSize);
 
       return new StoredAsset()
       {
          AssetKey = assetKey,
-         SourceFormat = contentType,
+         ContentType = contentType,
          Text = fileText,
          ContentLength = fileSize,
          EntityTag = entityTag,

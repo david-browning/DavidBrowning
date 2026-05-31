@@ -1,5 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models.Projects;
 
@@ -9,38 +11,59 @@ public sealed class AssetBlockViewModel
 {
    public AssetBlockViewModel()
    {
-
    }
 
    [SetsRequiredMembers]
-   public AssetBlockViewModel(ProjectAssetLink projectAsset)
+   public AssetBlockViewModel(ProjectAssetLink link)
    {
-      AssetType = projectAsset.SiteAsset!.AssetType;
-      AltText = !string.IsNullOrEmpty(projectAsset.AltTextOverride) ?
-         projectAsset.AltTextOverride : projectAsset.SiteAsset!.AltText;
+      var asset = link.SiteAsset ??
+         throw new InvalidOperationException(
+            "Project asset link is missing its site asset.");
+
+      AssetKey = asset.AssetKey;
+      AssetType = asset.AssetType;
+      AltText = link.AltTextOverride ?? asset.AltText;
+      Caption = link.Caption;
+      RoleSlug = link.ProjectAssetRole?.Slug;
+      RoleDisplayName = link.ProjectAssetRole?.DisplayName;
+      SortOrder = link.SortOrder;
+      WidthPixels = asset.WidthPixels;
+      HeightPixels = asset.HeightPixels;
    }
 
    [SetsRequiredMembers]
-   public AssetBlockViewModel(SiteAssetLink siteAsset)
+   public AssetBlockViewModel(SiteAssetLink link)
    {
-      AssetType = siteAsset.SiteAsset!.AssetType;
-      Caption = siteAsset.SiteAsset!.AltText;
-      AltText = siteAsset.SiteAsset!.AltText;
+      var asset = link.SiteAsset ??
+         throw new InvalidOperationException(
+            "Post asset link is missing its site asset.");
+
+      AssetKey = asset.AssetKey;
+      AssetType = asset.AssetType;
+      AltText = link.AltTextOverride ?? asset.AltText;
+      Caption = link.Caption;
+      RoleSlug = link.Role.ToString();
+      RoleDisplayName = link.Role.ToString();
+      SortOrder = link.SortOrder;
+      WidthPixels = asset.WidthPixels;
+      HeightPixels = asset.HeightPixels;
    }
 
-   [SetsRequiredMembers]
-   public AssetBlockViewModel(SiteAsset asset)
-   {
-      AltText = asset.AltText;
-   }
+   public required string AssetKey { get; init; }
 
-   public required SiteAssetType AssetType { get; set; }
+   public required SiteAssetType AssetType { get; init; }
 
-   public string? Caption { get; set; }
+   public string? RoleSlug { get; init; }
 
-   public string? AltText { get; set; }
+   public string? RoleDisplayName { get; init; }
 
-   public string? Description { get; set; }
+   public string? Caption { get; init; }
 
-   public string? Slug { get; set; }
+   public string? AltText { get; init; }
+
+   public int SortOrder { get; init; }
+
+   public int? WidthPixels { get; init; }
+
+   public int? HeightPixels { get; init; }
 }

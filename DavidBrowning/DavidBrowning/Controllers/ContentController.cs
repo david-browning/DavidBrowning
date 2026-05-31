@@ -63,7 +63,7 @@ public class ContentController : Controller
          assetKey, cancellationToken);
       return File(
          fileStream: stream,
-         contentType: _contentService.GetAssetFileType(assetKey),
+         contentType: asset.ContentType,
          lastModified: asset.LastModifiedUtc,
          entityTag: new EntityTagHeaderValue(asset.EntityTag));
    }

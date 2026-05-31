@@ -3,6 +3,11 @@
 @model DavidBrowning.Models.ViewModels.Projects.DetailsViewModel
 @{
 	ViewData["Title"] = Model.ProjectName;
+	var hasCaseStudy =
+	   !string.IsNullOrWhiteSpace(Model.CaseStudyProblem) ||
+	   !string.IsNullOrWhiteSpace(Model.CaseStudySolution) ||
+	   !string.IsNullOrWhiteSpace(Model.CaseStudyResult) ||
+	   !string.IsNullOrWhiteSpace(Model.CaseStudyTradeoffs);
 }
 
 <section class="wb-hero">
@@ -121,35 +126,52 @@
 		</header>
 
 		<div class="row row-cols-1 g-4">
-			@foreach (var asset in Model.AssetLinks)
+			@foreach (var asset in Model.AssetBlocks)
 			{
-				DavidBrowning.Models.ViewModels.AssetBlockViewModel m = new(asset);
-				<partial name="_AssetBlock" model="@m" />
+				<partial name="_AssetBlock" model="@asset" />
 			}
 		</div>
 	</div>
 </section>
 
-@if (!string.IsNullOrEmpty(Model.CaseStudyProblem))
+@if (hasCaseStudy)
 {
 	<section class="wb-section">
-		<div class="container">
-			<header class="wb-section-header">
-				<h2>Case Study</h2>
-			</header>
-			<div class="row row-cols-1 g-4">
+		<p class="wb-section-kicker">Case Study</p>
+		<h2>How the project came together</h2>
 
+		<div class="wb-case-study">
+			@if (!string.IsNullOrWhiteSpace(Model.CaseStudyProblem))
+			{
+				<article class="wb-case-study-section">
+					<h3>Problem</h3>
+					<p>@Model.CaseStudyProblem</p>
+				</article>
+			}
 
+			@if (!string.IsNullOrWhiteSpace(Model.CaseStudySolution))
+			{
+				<article class="wb-case-study-section">
+					<h3>Approach</h3>
+					<p>@Model.CaseStudySolution</p>
+				</article>
+			}
 
+			@if (!string.IsNullOrWhiteSpace(Model.CaseStudyResult))
+			{
+				<article class="wb-case-study-section">
+					<h3>Result</h3>
+					<p>@Model.CaseStudyResult</p>
+				</article>
+			}
 
-
-
-
-
-
-
-
-			</div>
+			@if (!string.IsNullOrWhiteSpace(Model.CaseStudyTradeoffs))
+			{
+				<article class="wb-case-study-section">
+					<h3>Tradeoffs</h3>
+					<p>@Model.CaseStudyTradeoffs</p>
+				</article>
+			}
 		</div>
 	</section>
 }

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using DavidBrowning.Extensions;
 using DavidBrowning.Models.ViewModels;
 
 namespace DavidBrowning.Services.Assets;
@@ -52,30 +53,22 @@ internal static class AssetHelpers
       return $"\"{hash}\"";
    }
 
-   public static bool IsTextSourceFormat(ContentSourceFormat sourceFormat)
+   public static bool IsTextContentType(string contentType)
    {
-      return sourceFormat == ContentSourceFormat.Markdown ||
-         sourceFormat == ContentSourceFormat.Html ||
-         sourceFormat == ContentSourceFormat.PlainText ||
-         sourceFormat == ContentSourceFormat.Json;
+      var mediaType = GetMediaType(contentType);
+
+      return mediaType.StartsWith(
+            "text/",
+            StringComparison.OrdinalIgnoreCase) ||
+         mediaType.EqualsOrdinalIgnoreCase("application/json");
    }
 
-   public static ContentSourceFormat GetSourceFormat(string fullPath)
+   private static string GetMediaType(string contentType)
    {
-      var extension = Path.GetExtension(fullPath);
-      return extension.ToLowerInvariant() switch
-      {
-         ".md" => ContentSourceFormat.Markdown,
-         ".markdown" => ContentSourceFormat.Markdown,
-         ".html" => ContentSourceFormat.Html,
-         ".txt" => ContentSourceFormat.PlainText,
-         ".json" => ContentSourceFormat.Json,
-         ".jpg" => ContentSourceFormat.Image,
-         ".jpeg" => ContentSourceFormat.Image,
-         ".png" => ContentSourceFormat.Image,
-         ".webp" => ContentSourceFormat.Image,
-         ".gif" => ContentSourceFormat.Image,
-         _ => ContentSourceFormat.Unknown,
-      };
+      var separatorIndex = contentType.IndexOf(';');
+
+      return separatorIndex < 0
+         ? contentType.Trim()
+         : contentType[..separatorIndex].Trim();
    }
 }

@@ -12,4 +12,5 @@ public sealed class DataConstants
    public const int MaxNameLength = 256;
    public const int MaxUrlLength = 2048;
    public const int MaxIconCssClassLength = 128;
+   public const int MaxContentTypeLength = 128;
 }
