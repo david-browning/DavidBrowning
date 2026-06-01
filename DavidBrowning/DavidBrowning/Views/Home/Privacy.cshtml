@@ -1,14 +1,33 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Models.ViewModels.Home.PrivacyViewModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+	ViewData["Title"] = Model.Title;
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>
-    Technical logs and error diagnostics
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col">
+				<p class="wb-kicker">Last Updated @Model.LastUpdateDisplayDate</p>
+				<h1>@Model.Title</h1>
+				<p class="wb-lede">
+					@Model.Description
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
 
-    This site may collect standard technical information when pages are requested or when an error occurs. This may include the requested URL, timestamp, browser user agent, referrer, IP address, and error details such as exception type and stack trace. I use this information to operate, debug, secure, and improve the site.
-
-    I do not use this information for advertising, and I do not sell it.
-</p>
+@foreach(var s in Model.Sections)
+{
+	<section class="wb-section">
+		<div class="container">
+			<p class="wb-kicker">@s.Subtitle</p>
+			<h2>@s.Title</h2>
+			<p class="wb-lede">
+				@s.Lede
+			</p>
+		</div>
+	</section>
+}

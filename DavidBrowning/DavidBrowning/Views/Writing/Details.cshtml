@@ -1,8 +1,74 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
+@inject DavidBrowning.Services.Time.IDateTimeDisplayService dateFormatter
 @model DavidBrowning.Models.ViewModels.Writing.DetailsViewModel
 @{
 	ViewData["Title"] = Model.Title;
 }
 
-@Model.Title
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col">
+				<p class="wb-kicker">@Model.PostStyleDisplayName</p>
+				<h1>@Model.Title</h1>
+				<p class="wb-lede">@Model.Subtitle</p>
+			</div>
+		</div>
+		<div class="row g-4">
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Published</dt>
+					<dd class="text-secondary">
+						@if (Model.PublishedDateUtc is not null)
+						{
+							<time datetime="@Model.PublishedDateUtc.Value.ToString("O")">
+								@dateFormatter.FormatDate(Model.PublishedDateUtc.Value)
+							</time>
+						}
+					</dd>
+				</dl>
+			</div>
+			<div class="col">
+				<dl class="mb-0">
+					<dt>Written By</dt>
+					<dd class="text-secondary">@Model.CreatedBy</dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+	<div class="row g-4">
+		<div class="col">
+			<aside class="wb-panel wb-panel-accent">
+				<p class="wb-card-meta">Tags:</p>
+				<ul class="wb-tag-list mt-4">
+					@foreach (var tag in Model.TagLinks)
+					{
+						var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+						{
+							Controller = "writing",
+							Endpoint = "tags",
+							DisplayName = tag.WritingTag!.DisplayName,
+							Slug = tag.WritingTag!.Slug,
+						};
+
+						<partial name="_QueryTag" model="@m" />
+					}
+				</ul>
+			</aside>
+		</div>
+	</div>
+</section>
+
+<section id="components" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* <p class="wb-kicker">01 / Panels</p> *@
+			@* <h2></h2> *@
+			@* <p class="wb-lede"></p> *@
+		</header>
+		<div class="row g-4"> 
+			@Model.Content
+		</div>
+	</div>
+</section>
