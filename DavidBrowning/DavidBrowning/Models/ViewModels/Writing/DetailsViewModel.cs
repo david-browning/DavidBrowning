@@ -17,7 +17,9 @@ public class DetailsViewModel
       Subtitle = post.Subtitle;
       Summary = post.Summary;
       MetaDescription = post.MetaDescription;
-      PostStyle = post.PostStyle;
+      PostStyleDisplayName = post.PostStyle?.DisplayName ??
+         throw new InvalidOperationException(
+            "Post is missing its post style.");
       PublishedDateUtc = post.PublishedDateUtc;
       CurrentRevisionId = post.CurrentRevisionId;
       ContentFormat = post.CurrentRevision!.ContentFormat;
@@ -39,7 +41,7 @@ public class DetailsViewModel
 
    public string? MetaDescription { get; set; }
 
-   public required PostStyles PostStyle { get; set; }
+   public required string PostStyleDisplayName { get; set; }
 
    public DateTime? PublishedDateUtc { get; set; }
 

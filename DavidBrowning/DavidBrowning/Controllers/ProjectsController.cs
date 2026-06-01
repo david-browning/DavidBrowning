@@ -295,8 +295,7 @@ public class ProjectsController : Controller
       var all = await _projectStore.GetPublishedProjectsAsync(
          cancellationToken);
       var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/Projects.json",
-         cancellationToken);
+         "Heros/Projects.json", cancellationToken);
       if (heroData == null)
       {
          throw new FileNotFoundException("The hero data could not be parsed.");

@@ -1,10 +1,12 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Writing;
 using DavidBrowning.Models.Writing;
@@ -30,6 +32,7 @@ public class WritingController : Controller
       IWebHostEnvironment environment,
       IConfiguration configuration,
 
+      JsonCache jsonCache,
       IWritingStore writingStore,
       ISlugService slugs,
       ISlugLookupService<WritingTag> tagStore)
@@ -41,14 +44,15 @@ public class WritingController : Controller
       _webHostEnvironment = environment;
       _configuration = configuration;
 
+      _jsonCache = jsonCache;
       _writingStore = writingStore;
       _slugService = slugs;
       _tagLookup = tagStore;
    }
 
-   public IActionResult Index()
+   public async Task<IActionResult> Index(CancellationToken cancellationToken)
    {
-      return View();
+      return View(await GetIndexModelAsync(cancellationToken));
    }
 
    /// <summary>
@@ -117,6 +121,29 @@ public class WritingController : Controller
       return View(model);
    }
 
+   private async Task<IndexViewModel> GetIndexModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var featured = await _writingStore.GetFeaturedPostsAsync(
+         cancellationToken);
+      var all = await _writingStore.GetPublishedPostsAsync(cancellationToken);
+      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+         "Heros/Writing.json", cancellationToken);
+      if (heroData == null)
+      {
+         throw new FileNotFoundException("The hero data could not be parsed.");
+      }
+
+      return new IndexViewModel()
+      {
+         PageTitle = "Writings",
+         HeroTitle = heroData.Title ?? "Missing Data",
+         HeroSubtitle = heroData.Subtitle ?? "Missing Data",
+         AllPosts = all,
+         FeaturedPosts = featured,
+      };
+   }
+
    private readonly ILogger<WritingController> _logger;
    private readonly ISystemClock _clock;
    private readonly IErrorStore _errorLogStore;
@@ -124,6 +151,7 @@ public class WritingController : Controller
    private readonly IWebHostEnvironment _webHostEnvironment;
    private readonly IConfiguration _configuration;
 
+   private readonly JsonCache _jsonCache;
    private readonly IWritingStore _writingStore;
    private readonly ISlugService _slugService;
    private readonly ISlugLookupService<WritingTag> _tagLookup;

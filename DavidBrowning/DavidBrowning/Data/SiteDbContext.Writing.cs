@@ -10,10 +10,32 @@ public sealed partial class SiteDbContext
 {
    private static void ConfigureWriting(ModelBuilder modelBuilder)
    {
+      ConfigurePostStyles(modelBuilder);
       ConfigurePosts(modelBuilder);
       ConfigurePostRevisions(modelBuilder);
       ConfigureWritingTags(modelBuilder);
       ConfigurePostTags(modelBuilder);
+   }
+
+   private static void ConfigurePostStyles(ModelBuilder modelBuilder)
+   {
+      modelBuilder.Entity<PostStyle>(entity =>
+      {
+         entity.ToTable("db_PostStyles");
+
+         entity.HasKey(style => style.Id);
+
+         entity.HasIndex(style => style.Slug)
+            .IsUnique();
+
+         entity.Property(style => style.SortOrder)
+            .HasDefaultValue(0)
+            .IsRequired();
+
+         entity.Property(style => style.IsActive)
+            .HasDefaultValue(true)
+            .IsRequired();
+      });
    }
 
    private static void ConfigurePosts(ModelBuilder modelBuilder)
@@ -44,6 +66,11 @@ public sealed partial class SiteDbContext
          entity.Property(post => post.PublishedDateUtc)
             .HasColumnType("datetime2(0)");
 
+         entity.HasOne(post => post.PostStyle)
+            .WithMany(style => style.Posts)
+            .HasForeignKey(post => post.PostStyleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
          entity.HasMany(post => post.Revisions)
             .WithOne(revision => revision.Post)
             .HasForeignKey(revision => revision.PostId)
@@ -53,6 +80,8 @@ public sealed partial class SiteDbContext
             .WithMany()
             .HasForeignKey(post => post.CurrentRevisionId)
             .OnDelete(DeleteBehavior.Restrict);
+
+         entity.HasIndex(post => post.PostStyleId);
       });
    }
 
