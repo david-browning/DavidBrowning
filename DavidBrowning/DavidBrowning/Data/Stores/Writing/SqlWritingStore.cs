@@ -113,6 +113,7 @@ internal class SqlWritingStore : IWritingStore
    {
       return _dbContext.Posts
          .AsNoTracking()
+         .Include(post => post.PostStyle)
          .Include(post => post.CurrentRevision)
          .Include(post => post.Tags)
             .ThenInclude(postTag => postTag.WritingTag)
@@ -126,6 +127,7 @@ internal class SqlWritingStore : IWritingStore
    {
       return _dbContext.Posts
          .AsNoTracking()
+         .Include(post => post.PostStyle)
          .Include(post => post.CurrentRevision)
          .Include(post => post.Tags)
             .ThenInclude(postTag => postTag.WritingTag)

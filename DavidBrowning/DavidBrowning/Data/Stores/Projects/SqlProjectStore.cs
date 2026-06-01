@@ -106,6 +106,9 @@ internal sealed class SqlProjectStore : IProjectStore
             .ThenInclude(project => project.Post)
                .ThenInclude(post => post!.Tags)
                   .ThenInclude(tag => tag.WritingTag)
+         .Include(project => project.RelatedPosts)
+            .ThenInclude(project => project.Post)
+               .ThenInclude(post => post!.PostStyle)
          .SingleOrDefaultAsync(cancellationToken);
    }
 

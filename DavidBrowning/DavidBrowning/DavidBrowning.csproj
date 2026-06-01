@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <Folder Include="ContentAssets\Images\" />
-    <Folder Include="SQL\Tables\TableData\" />
   </ItemGroup>
 
   <ItemGroup>

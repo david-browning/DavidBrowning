@@ -5,4 +5,57 @@
 	ViewData["Title"] = "Writing";
 }
 
-Things I've written
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col">
+				@* Use these kickers if a page is broken into many sections *@
+				<p class="wb-kicker">@Model.PageTitle</p>
+				<h1>@Model.HeroTitle</h1>
+				<p class="wb-lede">
+					@Model.HeroSubtitle"
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+<section id="featured" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Featured Posts</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+		<div class="wb-featured-grid">
+			@foreach (var project in Model.FeaturedPosts)
+			{
+				<div class="col">
+					<partial name="_FeaturedPostCard" model="project" />
+				</div>
+			}
+		</div>
+	</div>
+</section>
+
+<section id="all" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>All Posts</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+
+		<div class="row row-cols-1 g-4">
+			@foreach (var project in Model.AllPosts)
+			{
+				<div class="col">
+					<partial name="_PostCard" model="project" />
+				</div>
+			}
+		</div>
+	</div>
+</section>

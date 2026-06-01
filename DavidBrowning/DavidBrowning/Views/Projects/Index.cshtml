@@ -28,13 +28,7 @@
 			<h2>Featured Projects</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>
-
-		@*
-			row-cols-1     = 1 card per row by default
-			row-cols-md-2  = 2 cards per row on medium screens
-			row-cols-xl-4  = 4 cards per row on extra-large screens
-		*@
-		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5 g-4">
+		<div class="wb-featured-grid">
 			@foreach (var project in Model.FeaturedProjects)
 			{
 				<div class="col">

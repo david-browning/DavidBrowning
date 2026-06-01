@@ -1,0 +1,26 @@
+[
+   {
+      "Id": 1,
+      "Slug": "blog",
+      "DisplayName": "Blog",
+      "Description": "A full-length writing post with a traditional article structure.",
+      "SortOrder": 10,
+      "IsActive": true
+   },
+   {
+      "Id": 2,
+      "Slug": "quip",
+      "DisplayName": "Quip",
+      "Description": "A short observation, aside, or compact idea.",
+      "SortOrder": 20,
+      "IsActive": true
+   },
+   {
+      "Id": 3,
+      "Slug": "blurb",
+      "DisplayName": "Blurb",
+      "Description": "A brief writing post that is more developed than a quip.",
+      "SortOrder": 30,
+      "IsActive": true
+   }
+]
