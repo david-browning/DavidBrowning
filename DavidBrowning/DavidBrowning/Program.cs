@@ -13,6 +13,7 @@ using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Extensions;
 using DavidBrowning.Middleware;
+using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Services;
 using DavidBrowning.Services.Assets;
@@ -76,6 +77,9 @@ public static partial class Program
 
       builder.Services.Configure<SlugCacheOptions>(
          builder.Configuration.GetSection($"{_cacheSectionName}:SlugCache"));
+
+      builder.Services.Configure<DateTimeDisplayOptions>(
+         builder.Configuration.GetSection("DateTimeDisplayOptions"));
    }
 
    private static void ConfigureSecrets(WebApplicationBuilder builder)
@@ -122,6 +126,8 @@ public static partial class Program
       builder.Services.AddSingleton<ISystemClock, SystemClock>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
       builder.Services.AddSingleton<UrlBuilder>();
+      builder.Services.AddSingleton<
+         IDateTimeDisplayService, BasicDateTimeDisplayService>();
 
       // These services are used to estimate the size of objects for use in
       // caching.

@@ -1,9 +1,14 @@
 // Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models.ViewModels.Home;
+using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +29,8 @@ public class HomeController : Controller
       IConfiguration configuration,
 
       IProjectStore projectStore,
-      IWritingStore writingStore)
+      IWritingStore writingStore,
+      JsonCache jsonCache)
    {
       _logger = logger;
       _clock = clock;
@@ -35,6 +41,7 @@ public class HomeController : Controller
 
       _projectStore = projectStore;
       _writingStore = writingStore;
+      _jsonCache = jsonCache;
    }
 
    public IActionResult Index()
@@ -42,9 +49,21 @@ public class HomeController : Controller
       return View();
    }
 
-   public IActionResult Privacy()
+   public async Task<IActionResult> Privacy(CancellationToken cancellationToken)
    {
-      return View();
+      return View(await GetPrivacyModelAsync(cancellationToken));
+   }
+
+   private async Task<PrivacyViewModel> GetPrivacyModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var data = await _jsonCache.GetJsonFileContentAsync<PrivacyViewModel>(
+         "Heros/Privacy.json", cancellationToken);
+      if (data == null) {
+         throw new FileNotFoundException("Missing privacy data");
+      }
+
+      return data;
    }
 
    private readonly ILogger<HomeController> _logger;
@@ -56,4 +75,5 @@ public class HomeController : Controller
 
    private readonly IProjectStore _projectStore;
    private readonly IWritingStore _writingStore;
+   private readonly JsonCache _jsonCache;
 }

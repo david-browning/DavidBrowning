@@ -1,8 +1,14 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Models;
+using DavidBrowning.Models.ViewModels.Work;
+using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +31,8 @@ public class WorkController : Controller
       IConfiguration configuration,
 
       IProjectStore projectStore,
-      ISlugService slugs)
+      ISlugService slugs,
+      JsonCache jsonCache)
    {
       _logger = logger;
       _clock = clock;
@@ -36,11 +43,12 @@ public class WorkController : Controller
 
       _projectStore = projectStore;
       _slugService = slugs;
+      _jsonCache = jsonCache;
    }
 
-   public IActionResult Index()
+   public async Task<IActionResult> Index(CancellationToken cancellationToken)
    {
-      return View();
+      return View(await GetIndexModelAsync(cancellationToken));
    }
 
    /// <summary>
@@ -85,6 +93,24 @@ public class WorkController : Controller
       return View();
    }
 
+   private async Task<IndexViewModel> GetIndexModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+         "Heros/Work.json");
+      if (hero == null)
+      {
+         throw new FileNotFoundException("Hero data missing");
+      }
+
+      return new()
+      {
+         PageTitle = "Work",
+         HeroTitle = hero.Title ?? "Missing Data",
+         HeroSubtitle = hero.Subtitle ?? "Missing Data",
+      };
+   }
+
    private readonly ILogger<WorkController> _logger;
    private readonly ISystemClock _clock;
    private readonly IErrorStore _errorLogStore;
@@ -94,4 +120,5 @@ public class WorkController : Controller
 
    private readonly IProjectStore _projectStore;
    private readonly ISlugService _slugService;
+   private readonly JsonCache _jsonCache;
 }

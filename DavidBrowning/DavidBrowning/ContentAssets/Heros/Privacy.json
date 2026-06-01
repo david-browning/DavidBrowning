@@ -1,0 +1,22 @@
+{
+   "Title": "Privacy Policy",
+   "Description": "Lorem ipsum-style test prose for checking how list pages behave when content gets uneven.",
+   "LastUpdated": "June 1, 2026",
+   "Sections": [
+      {
+         "Subtitle": "Technical logs and error diagnostics",
+         "Title": "Technical logs and error diagnostics",
+         "Lede": "This site may collect standard technical information when pages are requested or when an error occurs. This may include the requested URL, timestamp, browser user agent, referrer, IP address, and error details such as exception type and stack trace. I use this information to operate, debug, secure, and improve the site. I do not use this information for advertising, and I do not sell it."
+      },
+      {
+         "Subtitle": "Cookie Policy",
+         "Title": "Cookie Policy",
+         "Lede": "Info about cookies."
+      },
+      {
+         "Subtitle": "Copyright",
+         "Title": "Copyright",
+         "Lede": "Blah blah blah"
+      }
+   ]
+}

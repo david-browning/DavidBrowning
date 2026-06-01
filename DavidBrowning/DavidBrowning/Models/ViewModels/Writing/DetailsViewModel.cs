@@ -43,7 +43,7 @@ public class DetailsViewModel
 
    public required string PostStyleDisplayName { get; set; }
 
-   public DateTime? PublishedDateUtc { get; set; }
+   public DateTimeOffset? PublishedDateUtc { get; set; }
 
 
    public int? CurrentRevisionId { get; set; }
