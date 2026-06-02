@@ -10,6 +10,7 @@ CREATE TABLE dbo.db_SiteAssetLinks
     -- SocialImage = 3, GeneratedPdf = 4, Download = 5
     Role tinyint NOT NULL,
 
+    ReferenceKey nvarchar(64) NULL,
     Caption nvarchar(512) NULL,
     AltTextOverride nvarchar(512) NULL,
 
@@ -34,3 +35,7 @@ ON dbo.db_SiteAssetLinks(SiteAssetId);
 
 CREATE INDEX IX_db_SiteAssetLinks_PostId_Role_SortOrder
 ON dbo.db_SiteAssetLinks(PostId, Role, SortOrder);
+
+CREATE UNIQUE INDEX UX_db_SiteAssetLinks_PostId_ReferenceKey
+   ON dbo.db_SiteAssetLinks (PostId, ReferenceKey)
+   WHERE ReferenceKey IS NOT NULL;

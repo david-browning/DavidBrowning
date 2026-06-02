@@ -68,7 +68,9 @@
 			@* <p class="wb-lede"></p> *@
 		</header>
 		<div class="row g-4"> 
-			@Model.Content
+			<article class="wb-post-body wb-content">
+				<partial name="_RenderedContent" model="Model.Body" />
+			</article>
 		</div>
 	</div>
 </section>

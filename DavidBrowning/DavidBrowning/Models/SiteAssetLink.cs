@@ -19,6 +19,9 @@ public sealed class SiteAssetLink
 
    public Post? Post { get; set; }
 
+   [StringLength(DataConstants.MaxMetadataLength)]
+   public string? ReferenceKey { get; set; }
+
    /// <summary>
    /// Optional post-specific caption for the asset.
    /// </summary>

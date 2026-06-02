@@ -8,4 +8,6 @@ public sealed class ContentRenderOptions
    public string? AltText { get; init; }
 
    public string? CssClass { get; init; }
+
+   public string? Caption { get; init; }
 }

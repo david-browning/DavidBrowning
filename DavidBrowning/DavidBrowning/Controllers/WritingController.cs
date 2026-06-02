@@ -1,6 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
@@ -11,6 +13,7 @@ using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Writing;
 using DavidBrowning.Models.Writing;
 using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +36,7 @@ public class WritingController : Controller
       IConfiguration configuration,
 
       JsonCache jsonCache,
+      IPostContentRenderer postRendered,
       IWritingStore writingStore,
       ISlugService slugs,
       ISlugLookupService<WritingTag> tagStore)
@@ -45,6 +49,7 @@ public class WritingController : Controller
       _configuration = configuration;
 
       _jsonCache = jsonCache;
+      _postRendered = postRendered;
       _writingStore = writingStore;
       _slugService = slugs;
       _tagLookup = tagStore;
@@ -109,16 +114,20 @@ public class WritingController : Controller
          return NotFound();
       }
 
-      var normalizedSlug = _slugService.CleanSlug(slug);
       var post = await _writingStore.GetPublishedPostBySlugAsync(
-         normalizedSlug, cancellationToken);
-      if (post == null)
+         slug, cancellationToken);
+
+      if (post is null)
       {
          return NotFound();
       }
-       
-      DetailsViewModel model = new DetailsViewModel(post);
-      return View(model);
+
+      var revision = post.CurrentRevision ??
+         throw new InvalidOperationException(
+            "Published post is missing its current revision.");
+      var body = await _postRendered.RenderAsync(
+         revision, post.AssetLinks.ToList(), cancellationToken);
+      return View(new DetailsViewModel(post, body));
    }
 
    private async Task<IndexViewModel> GetIndexModelAsync(
@@ -155,4 +164,5 @@ public class WritingController : Controller
    private readonly IWritingStore _writingStore;
    private readonly ISlugService _slugService;
    private readonly ISlugLookupService<WritingTag> _tagLookup;
+   private readonly IPostContentRenderer _postRendered;
 }

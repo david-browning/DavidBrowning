@@ -1,38 +1,74 @@
 [
-  {
-    "PostId": 1,
-    "SiteAssetId": 1,
-    "Role": "HeroImage",
-    "SortOrder": 10
-  },
-  {
-    "PostId": 3,
-    "SiteAssetId": 9,
-    "Role": "InlineImage",
-    "SortOrder": 10
-  },
-  {
-    "PostId": 4,
-    "SiteAssetId": 10,
-    "Role": "Attachment",
-    "SortOrder": 10
-  },
-  {
-    "PostId": 6,
-    "SiteAssetId": 8,
-    "Role": "HeroImage",
-    "SortOrder": 10
-  },
-  {
-    "PostId": 7,
-    "SiteAssetId": 5,
-    "Role": "InlineImage",
-    "SortOrder": 10
-  },
-  {
-    "PostId": 8,
-    "SiteAssetId": 7,
-    "Role": "HeroImage",
-    "SortOrder": 10
-  }
+   {
+      "PostId": 1,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 2,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 3,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 4,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 5,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 6,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 7,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   },
+   {
+      "PostId": 8,
+      "SiteAssetId": 11,
+      "ReferenceKey": "test-image",
+      "Role": "InlineImage",
+      "Caption": "Temporary shared image used to test embedded post assets.",
+      "AltTextOverride": null,
+      "SortOrder": 10
+   }
 ]
