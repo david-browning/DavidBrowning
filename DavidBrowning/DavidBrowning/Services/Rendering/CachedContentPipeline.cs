@@ -34,15 +34,17 @@ public sealed class CachedContentPipeline : IContentPipeline
    }
 
    private static string GetCacheKey(
-      string assetKey,
-      ContentRenderOptions? options)
+   string assetKey,
+   ContentRenderOptions? options)
    {
       var altText = options?.AltText ?? string.Empty;
+      var caption = options?.Caption ?? string.Empty;
       var cssClass = options?.CssClass ?? string.Empty;
 
       return
          $"content-asset:{assetKey}:" +
          $"alt:{altText.Length}:{altText}:" +
+         $"caption:{caption.Length}:{caption}:" +
          $"class:{cssClass.Length}:{cssClass}";
    }
 

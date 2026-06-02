@@ -108,5 +108,16 @@
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
       "WidthPixels": null,
       "HeightPixels": null
+   },
+   {
+      "Id": 11,
+      "AssetKey": "images/me.jpg",
+      "ContentType": "image/jpeg",
+      "OriginalFileName": "me.jpg",
+      "AltText": "Portrait photograph of David Browning.",
+      "SizeBytes": 0,
+      "CreatedAtUtc": "2026-06-01T00:00:00Z",
+      "WidthPixels": null,
+      "HeightPixels": null
    }
 ]

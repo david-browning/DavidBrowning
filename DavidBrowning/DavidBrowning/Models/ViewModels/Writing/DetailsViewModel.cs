@@ -11,7 +11,7 @@ namespace DavidBrowning.Models.ViewModels.Writing;
 public class DetailsViewModel
 {
    [SetsRequiredMembers]
-   public DetailsViewModel(Post post)
+   public DetailsViewModel(Post post, RenderedContent body)
    {
       Title = post.Title;
       Subtitle = post.Subtitle;
@@ -20,13 +20,21 @@ public class DetailsViewModel
       PostStyleDisplayName = post.PostStyle?.DisplayName ??
          throw new InvalidOperationException(
             "Post is missing its post style.");
+
       PublishedDateUtc = post.PublishedDateUtc;
-      CurrentRevisionId = post.CurrentRevisionId;
-      ContentFormat = post.CurrentRevision!.ContentFormat;
-      RenderMode = post.CurrentRevision!.RenderMode;
-      CreatedBy = post.CurrentRevision!.CreatedBy;
-      Content = post.CurrentRevision!.Content;
+
+      var revision = post.CurrentRevision ??
+         throw new InvalidOperationException(
+            "Post is missing its current revision.");
+
+      CurrentRevisionId = revision.Id;
+      ContentFormat = revision.ContentFormat;
+      RenderMode = revision.RenderMode;
+      CreatedBy = revision.CreatedBy;
+      Body = body;
+
       TagLinks = post.Tags;
+
       AssetBlocks = post.AssetLinks
          .OrderBy(link => link.SortOrder)
          .Select(link => new AssetBlockViewModel(link))
@@ -54,7 +62,7 @@ public class DetailsViewModel
 
    public string? CreatedBy { get; set; }
 
-   public string? Content { get; set; }
+   public required RenderedContent Body { get; set; }
 
 
    public required ICollection<PostTag> TagLinks { get; init; }
