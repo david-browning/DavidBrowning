@@ -15,12 +15,20 @@
     "SortOrder": 20,
     "IsActive": true
   },
-  {
-    "Id": 3,
-    "Slug": "diagram",
-    "DisplayName": "Diagram",
-    "Description": "Diagram explaining architecture, flow, or structure.",
-    "SortOrder": 30,
-    "IsActive": true
-  }
+   {
+      "Id": 3,
+      "Slug": "diagram",
+      "DisplayName": "Diagram",
+      "Description": "Diagram explaining architecture, flow, or structure.",
+      "SortOrder": 30,
+      "IsActive": true
+   },
+   {
+      "Id": 4,
+      "Slug": "details-content",
+      "DisplayName": "Details Content",
+      "Description": "Markdown content rendered as the primary project details body.",
+      "SortOrder": 40,
+      "IsActive": true
+   }
 ]

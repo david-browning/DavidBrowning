@@ -11,7 +11,7 @@ namespace DavidBrowning.Models.ViewModels.Projects;
 public class DetailsViewModel
 {
    [SetsRequiredMembers]
-   public DetailsViewModel(Project project)
+   public DetailsViewModel(Project project, RenderedContent? body)
    {
       ProjectName = project.Name;
       Description = project.Description;
@@ -32,6 +32,7 @@ public class DetailsViewModel
          .Select(link => new AssetBlockViewModel(link))
          .ToList();
       RelatedPosts = project.RelatedPosts;
+      this.Body = body;
    }
 
    public required string ProjectName { get; init; }
@@ -44,6 +45,8 @@ public class DetailsViewModel
 
    public string? Role { get; init; }
    public string? ContributionSummary { get; init; }
+
+   public RenderedContent? Body { get; init; }
 
    public required ICollection<ProjectTagLink> TagLinks { get; init; }
    public required ICollection<ProjectStackTagLink> StackTagLinks { get; init; }

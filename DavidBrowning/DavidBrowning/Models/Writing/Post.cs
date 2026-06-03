@@ -98,10 +98,4 @@ public sealed class Post
    /// Tags for the post. The list can be empty but not null.
    /// </summary>
    public ICollection<PostTag> Tags { get; } = new List<PostTag>();
-
-   /// <summary>
-   /// Links to the assets attached to the post.
-   /// </summary>
-   public ICollection<PostAssetLink> AssetLinks { get; } =
-      new List<PostAssetLink>();
 }

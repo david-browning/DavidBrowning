@@ -119,5 +119,16 @@
       "CreatedAtUtc": "2026-06-01T00:00:00Z",
       "WidthPixels": null,
       "HeightPixels": null
+   },
+   {
+      "Id": 12,
+      "AssetKey": "projects/personal-website/details.md",
+      "ContentType": "text/markdown",
+      "OriginalFileName": "details.md",
+      "AltText": null,
+      "SizeBytes": 0,
+      "CreatedAtUtc": "2026-06-03T00:00:00Z",
+      "WidthPixels": null,
+      "HeightPixels": null
    }
 ]

@@ -1,18 +1,18 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels;
-using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Services.Rendering;
 
-public interface IPostContentRenderer
+public interface IMarkdownDocumentRenderer
 {
    Task<RenderedContent> RenderAsync(
-      PostRevision revision,
-      IReadOnlyCollection<PostRevisionAssetLink> assetLinks,
+      string documentKey,
+      string markdown,
+      IReadOnlyCollection<LinkedAssetReference> assetLinks,
       CancellationToken cancellationToken = default);
 }

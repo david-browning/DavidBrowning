@@ -72,8 +72,8 @@ public sealed class SiteAsset
    /// </summary>
    public required DateTime CreatedAtUtc { get; set; }
 
-   public ICollection<PostAssetLink> PostLinks { get; } =
-      new List<PostAssetLink>();
+   public ICollection<PostRevisionAssetLink> PostRevisionLinks { get; } =
+      new List<PostRevisionAssetLink>();
 
    public ICollection<ProjectAssetLink> ProjectLinks { get; } =
       new List<ProjectAssetLink>();

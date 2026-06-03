@@ -33,11 +33,6 @@ public class DetailsViewModel
       Body = body;
 
       TagLinks = post.Tags;
-
-      AssetBlocks = post.AssetLinks
-         .OrderBy(link => link.SortOrder)
-         .Select(link => new AssetBlockViewModel(link))
-         .ToList();
    }
 
    public required string Title { get; set; }
@@ -63,6 +58,4 @@ public class DetailsViewModel
 
 
    public required ICollection<PostTag> TagLinks { get; init; }
-
-   public required IReadOnlyList<AssetBlockViewModel> AssetBlocks { get; init; }
 }

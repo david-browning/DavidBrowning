@@ -16,11 +16,6 @@ CREATE TABLE dbo.db_Projects
     Role nvarchar(256) NULL,
     ContributionSummary nvarchar(512) NULL,
 
-    Problem nvarchar(max) NULL,
-    Solution nvarchar(max) NULL,
-    Result nvarchar(max) NULL,
-    Tradeoffs nvarchar(max) NULL,
-
     IsFeatured bit NOT NULL
         CONSTRAINT DF_db_Projects_IsFeatured DEFAULT (0),
 

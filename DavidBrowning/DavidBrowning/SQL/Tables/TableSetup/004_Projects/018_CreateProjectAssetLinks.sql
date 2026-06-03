@@ -5,7 +5,7 @@ CREATE TABLE dbo.db_ProjectAssetLinks
     ProjectId int NOT NULL,
     SiteAssetId int NOT NULL,
     ProjectAssetRoleId int NOT NULL,
-
+    ReferenceKey nvarchar(64) NULL,
     Caption nvarchar(512) NULL,
     AltTextOverride nvarchar(512) NULL,
 
@@ -35,3 +35,7 @@ ON dbo.db_ProjectAssetLinks(SiteAssetId);
 
 CREATE INDEX IX_db_ProjectAssetLinks_ProjectId_Role_SortOrder
 ON dbo.db_ProjectAssetLinks(ProjectId, ProjectAssetRoleId, SortOrder);
+
+CREATE UNIQUE INDEX UX_db_ProjectAssetLinks_ProjectId_ReferenceKey
+   ON dbo.db_ProjectAssetLinks (ProjectId, ReferenceKey)
+   WHERE ReferenceKey IS NOT NULL;

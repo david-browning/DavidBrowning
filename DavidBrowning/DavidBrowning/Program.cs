@@ -208,6 +208,7 @@ public static partial class Program
 
       // The post renderer relies on whatever content pipeline is injected.
       builder.Services.AddSingleton<IPostContentRenderer, MarkdownPostContentRenderer>();
+      builder.Services.AddSingleton<IProjectContentRenderer, MarkdownProjectContentRenderer>();
 
       builder.Services.AddControllersWithViews();
    }

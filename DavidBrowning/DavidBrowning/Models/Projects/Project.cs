@@ -37,7 +37,7 @@ public sealed class Project
 
    /// <summary>
    /// Short card/list description for the project.
-   /// Longer case-study sections live in Problem/Solution/Result/Tradeoffs.
+   /// Longer details content can be stored as a linked Markdown asset.
    /// </summary>
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? Description { get; set; }
