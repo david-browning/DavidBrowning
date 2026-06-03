@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DavidBrowning.Extensions;
 using DavidBrowning.Models.Projects;
 
 namespace DavidBrowning.Models.ViewModels.Projects;
@@ -27,6 +28,9 @@ public class DetailsViewModel
       StackTagLinks = project.StackTagLinks;
       Links = project.Links;
       AssetBlocks = project.AssetLinks
+         .Where(link =>
+            !link.ProjectAssetRole!.Slug.EqualsOrdinalIgnoreCase(
+               "details-content"))
          .OrderBy(link => link.ProjectAssetRole!.SortOrder)
          .ThenBy(link => link.SortOrder)
          .Select(link => new AssetBlockViewModel(link))
