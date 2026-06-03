@@ -104,19 +104,12 @@ public sealed partial class SiteDbContext
             .HasConversion<byte>()
             .IsRequired();
 
-         entity.Property(revision => revision.RenderMode)
-            .HasConversion<byte>()
-            .IsRequired();
-
          entity.Property(revision => revision.CreatedAtUtc)
             .HasColumnType("datetime2(0)")
             .HasDefaultValueSql("sysutcdatetime()")
             .IsRequired();
 
          entity.Property(revision => revision.Content)
-            .HasColumnType("nvarchar(max)");
-
-         entity.Property(revision => revision.CachedHtml)
             .HasColumnType("nvarchar(max)");
       });
    }

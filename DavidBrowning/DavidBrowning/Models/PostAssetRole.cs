@@ -2,7 +2,7 @@
 // Source-available for viewing only. No license granted.
 namespace DavidBrowning.Models;
 
-public enum SiteAssetRole : byte
+public enum PostAssetRole : byte
 {
    Attachment = 0,
    HeroImage = 1,

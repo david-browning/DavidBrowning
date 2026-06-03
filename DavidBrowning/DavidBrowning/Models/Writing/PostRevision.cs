@@ -41,13 +41,6 @@ public sealed class PostRevision
    /// </summary>
    public required ContentFormat ContentFormat { get; set; }
 
-   /// <summary>
-   /// How to render the content.
-   /// Instead of having it be a foreign key, we'll just map it to an enum
-   /// in code.
-   /// </summary>
-   public required RenderMode RenderMode { get; set; }
-
    [Required]
    [StringLength(DataConstants.MaxNameLength)]
    public required string CreatedBy { get; set; }
@@ -58,10 +51,4 @@ public sealed class PostRevision
    /// A revision may or may not have text.
    /// </summary>
    public string? Content { get; set; }
-
-   /// <summary>
-   /// Cached HTML so that the code doesn't need to be reconstructed 
-   /// every time someone renders the page.
-   /// </summary>
-   public string? CachedHtml { get; set; }
 }

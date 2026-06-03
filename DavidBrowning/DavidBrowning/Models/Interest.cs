@@ -49,15 +49,6 @@ public sealed class Interest : IQueryableSlug
    public string? IconCssClass { get; set; }
 
    /// <summary>
-   /// Foreign key to db_SiteAssets.
-   /// Optional visual asset used when rendering the interest card.
-   /// </summary>
-   public int? SiteAssetId { get; set; }
-
-   [ForeignKey(nameof(SiteAssetId))]
-   public SiteAsset? SiteAsset { get; set; }
-
-   /// <summary>
    /// Manual ordering for interest lists.
    /// Lower numbers appear earlier.
    /// </summary>

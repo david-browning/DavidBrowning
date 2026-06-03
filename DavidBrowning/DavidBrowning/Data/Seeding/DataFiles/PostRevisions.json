@@ -4,87 +4,71 @@
       "PostId": 1,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
       "Content": "# Welcome to the Workbench\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 2,
       "PostId": 2,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-02T00:00:00Z",
       "Content": "# Configuration Is an API\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 3,
       "PostId": 3,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-03T00:00:00Z",
       "Content": "# Why Paging Needs Ordering\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 4,
       "PostId": 4,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-04T00:00:00Z",
       "Content": "# Seed Data with Intent\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 5,
       "PostId": 5,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-05T00:00:00Z",
       "Content": "# The Four Fs of Code\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 6,
       "PostId": 6,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-06T00:00:00Z",
       "Content": "# Notes on Error Visibility\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 7,
       "PostId": 7,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-07T00:00:00Z",
       "Content": "# Layout Pressure Testing\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    },
    {
       "Id": 8,
       "PostId": 8,
       "RevisionNumber": 1,
       "ContentFormat": "Markdown",
-      "RenderMode": "Markdown",
       "CreatedBy": "SeedData",
       "CreatedAtUtc": "2026-05-08T00:00:00Z",
       "Content": "# Rendering Sandbox Retrospective\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n{{asset:test-image}}\n\n Integer porta, neque at fermentum dignissim, magna neque luctus orci, sed cursus justo neque at augue.\n\n## Working notes\n\nThis seed article exists to make the layout do real work. It includes enough text to wrap, enough structure to test headings, and enough repetition to make spacing mistakes visible. Curabitur non sem vitae justo gravida cursus. Donec a turpis sed ipsum tristique hendrerit.\n\n## Practical shape\n\nA useful test page should not be perfectly symmetrical. Some paragraphs are short. Others run longer so cards, previews, and detail pages have to prove that they can handle uneven content without looking accidental.\n",
-      "CachedHtml": null
    }
 ]

@@ -29,7 +29,6 @@ public class DetailsViewModel
 
       CurrentRevisionId = revision.Id;
       ContentFormat = revision.ContentFormat;
-      RenderMode = revision.RenderMode;
       CreatedBy = revision.CreatedBy;
       Body = body;
 
@@ -58,8 +57,6 @@ public class DetailsViewModel
    
    public ContentFormat? ContentFormat { get; set; }
    
-   public RenderMode? RenderMode { get; set; }
-
    public string? CreatedBy { get; set; }
 
    public required RenderedContent Body { get; set; }

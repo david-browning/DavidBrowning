@@ -23,11 +23,6 @@ public class DetailsViewModel
       Role = project.Role;
       ContributionSummary = project.ContributionSummary;
 
-      CaseStudyProblem = project.Problem;
-      CaseStudySolution = project.Solution;
-      CaseStudyResult = project.Result;
-      CaseStudyTradeoffs = project.Tradeoffs;
-
       TagLinks = project.TagLinks;
       StackTagLinks = project.StackTagLinks;
       Links = project.Links;
@@ -49,11 +44,6 @@ public class DetailsViewModel
 
    public string? Role { get; init; }
    public string? ContributionSummary { get; init; }
-
-   public string? CaseStudyProblem { get; init; }
-   public string? CaseStudySolution { get; init; }
-   public string? CaseStudyResult { get; init; }
-   public string? CaseStudyTradeoffs { get; init; }
 
    public required ICollection<ProjectTagLink> TagLinks { get; init; }
    public required ICollection<ProjectStackTagLink> StackTagLinks { get; init; }

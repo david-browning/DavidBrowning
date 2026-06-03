@@ -27,7 +27,7 @@ public sealed partial class SiteDbContext : DbContext
 
    public DbSet<SiteAsset> SiteAssets => Set<SiteAsset>();
 
-   public DbSet<SiteAssetLink> SiteAssetLinks => Set<SiteAssetLink>();
+   public DbSet<PostAssetLink> PostAssetLinks => Set<PostAssetLink>();
 
    public DbSet<WebsiteError> WebsiteErrors => Set<WebsiteError>();
 

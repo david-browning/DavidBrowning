@@ -5,7 +5,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://github.com/david-browning/DavidBrowning",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -14,7 +13,6 @@
     "ProjectLinkTypeId": 2,
     "Label": "Live Site",
     "Url": "https://davidbrowning.com",
-    "IsPrimary": false,
     "SortOrder": 20
   },
   {
@@ -23,7 +21,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Architecture Notes",
     "Url": "https://davidbrowning.com/writing/site-architecture-notes",
-    "IsPrimary": false,
     "SortOrder": 30
   },
   {
@@ -32,7 +29,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/release-dashboard/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -41,7 +37,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Notes",
     "Url": "https://example.com/release-dashboard/notes",
-    "IsPrimary": false,
     "SortOrder": 20
   },
   {
@@ -50,7 +45,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/queue-game-library/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -59,7 +53,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Notes",
     "Url": "https://example.com/queue-game-library/notes",
-    "IsPrimary": false,
     "SortOrder": 20
   },
   {
@@ -68,7 +61,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/database-seeding-workbench/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -77,7 +69,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Notes",
     "Url": "https://example.com/database-seeding-workbench/notes",
-    "IsPrimary": false,
     "SortOrder": 20
   },
   {
@@ -86,7 +77,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/content-pipeline/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -95,7 +85,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Notes",
     "Url": "https://example.com/content-pipeline/notes",
-    "IsPrimary": false,
     "SortOrder": 20
   },
   {
@@ -104,7 +93,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/zfs-backup-script/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -113,7 +101,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Notes",
     "Url": "https://example.com/zfs-backup-script/notes",
-    "IsPrimary": false,
     "SortOrder": 20
   },
   {
@@ -122,7 +109,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/direct3d-render-sandbox/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -140,7 +126,6 @@
     "ProjectLinkTypeId": 1,
     "Label": "Repository",
     "Url": "https://example.com/admin-error-log/repository",
-    "IsPrimary": true,
     "SortOrder": 10
   },
   {
@@ -149,7 +134,6 @@
     "ProjectLinkTypeId": 3,
     "Label": "Notes",
     "Url": "https://example.com/admin-error-log/notes",
-    "IsPrimary": false,
     "SortOrder": 20
   }
 ]

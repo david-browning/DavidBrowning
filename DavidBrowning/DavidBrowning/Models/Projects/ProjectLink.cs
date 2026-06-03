@@ -49,11 +49,6 @@ public sealed class ProjectLink
    public required string Url { get; set; }
 
    /// <summary>
-   /// Whether this link should be treated as the primary call-to-action.
-   /// </summary>
-   public bool IsPrimary { get; set; }
-
-   /// <summary>
    /// Manual display ordering for links within a project.
    /// </summary>
    public int SortOrder { get; set; }

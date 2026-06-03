@@ -22,19 +22,15 @@ public sealed class AssetBlockViewModel
 
       AssetKey = asset.AssetKey;
       ContentType = asset.ContentType;
-      OriginalFileName = asset.OriginalFileName;
       AltText = link.AltTextOverride ?? asset.AltText;
       Caption = link.Caption;
       RoleSlug = role.Slug;
-      RoleDisplayName = role.DisplayName;
-      SortOrder = link.SortOrder;
-      SizeBytes = asset.SizeBytes;
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
    }
 
    [SetsRequiredMembers]
-   public AssetBlockViewModel(SiteAssetLink link)
+   public AssetBlockViewModel(PostAssetLink link)
    {
       var asset = link.SiteAsset ??
          throw new InvalidOperationException(
@@ -42,13 +38,9 @@ public sealed class AssetBlockViewModel
 
       AssetKey = asset.AssetKey;
       ContentType = asset.ContentType;
-      OriginalFileName = asset.OriginalFileName;
       AltText = link.AltTextOverride ?? asset.AltText;
       Caption = link.Caption;
       RoleSlug = GetRoleSlug(link.Role);
-      RoleDisplayName = GetRoleDisplayName(link.Role);
-      SortOrder = link.SortOrder;
-      SizeBytes = asset.SizeBytes;
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
    }
@@ -57,49 +49,26 @@ public sealed class AssetBlockViewModel
 
    public required string ContentType { get; init; }
 
-   public string? OriginalFileName { get; init; }
-
    public required string RoleSlug { get; init; }
-
-   public required string RoleDisplayName { get; init; }
 
    public string? Caption { get; init; }
 
    public string? AltText { get; init; }
 
-   public int SortOrder { get; init; }
-
-   public long SizeBytes { get; init; }
-
    public int? WidthPixels { get; init; }
 
    public int? HeightPixels { get; init; }
 
-   private static string GetRoleSlug(SiteAssetRole role)
+   private static string GetRoleSlug(PostAssetRole role)
    {
       return role switch
       {
-         SiteAssetRole.Attachment => "attachment",
-         SiteAssetRole.HeroImage => "hero-image",
-         SiteAssetRole.InlineImage => "inline-image",
-         SiteAssetRole.SocialImage => "social-image",
-         SiteAssetRole.GeneratedPdf => "generated-pdf",
-         SiteAssetRole.Download => "download",
-         _ => throw new InvalidOperationException(
-            $"Unsupported site asset role: {role}."),
-      };
-   }
-
-   private static string GetRoleDisplayName(SiteAssetRole role)
-   {
-      return role switch
-      {
-         SiteAssetRole.Attachment => "Attachment",
-         SiteAssetRole.HeroImage => "Hero Image",
-         SiteAssetRole.InlineImage => "Inline Image",
-         SiteAssetRole.SocialImage => "Social Image",
-         SiteAssetRole.GeneratedPdf => "Generated PDF",
-         SiteAssetRole.Download => "Download",
+         PostAssetRole.Attachment => "attachment",
+         PostAssetRole.HeroImage => "hero-image",
+         PostAssetRole.InlineImage => "inline-image",
+         PostAssetRole.SocialImage => "social-image",
+         PostAssetRole.GeneratedPdf => "generated-pdf",
+         PostAssetRole.Download => "download",
          _ => throw new InvalidOperationException(
             $"Unsupported site asset role: {role}."),
       };
