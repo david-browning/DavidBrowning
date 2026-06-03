@@ -88,5 +88,14 @@
       "AltTextOverride": null,
       "SortOrder": 20,
       "ReferenceKey": null
+   },
+   {
+      "ProjectId": 1,
+      "SiteAssetId": 12,
+      "ProjectAssetRoleId": 4,
+      "Caption": null,
+      "AltTextOverride": null,
+      "SortOrder": 10,
+      "ReferenceKey": null
    }
 ]

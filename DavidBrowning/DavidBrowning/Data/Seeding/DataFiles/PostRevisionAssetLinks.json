@@ -1,6 +1,6 @@
 [
    {
-      "PostId": 1,
+      "PostRevisionId": 1,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -9,7 +9,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 2,
+      "PostRevisionId": 2,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -18,7 +18,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 3,
+      "PostRevisionId": 3,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -27,7 +27,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 4,
+      "PostRevisionId": 4,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -36,7 +36,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 5,
+      "PostRevisionId": 5,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -45,7 +45,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 6,
+      "PostRevisionId": 6,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -54,7 +54,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 7,
+      "PostRevisionId": 7,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
@@ -63,7 +63,7 @@
       "SortOrder": 10
    },
    {
-      "PostId": 8,
+      "PostRevisionId": 8,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
       "Role": "InlineImage",
