@@ -50,6 +50,13 @@ public sealed class ProjectAssetLink
    public string? AltTextOverride { get; set; }
 
    /// <summary>
+   /// Stable author-facing key used to reference the linked asset from project
+   /// content. Example: architecture-diagram.
+   /// </summary>
+   [StringLength(DataConstants.MaxSlugLength)]
+   public string? ReferenceKey { get; set; }
+
+   /// <summary>
    /// Manual display ordering for assets within the same role.
    /// </summary>
    public int SortOrder { get; set; }

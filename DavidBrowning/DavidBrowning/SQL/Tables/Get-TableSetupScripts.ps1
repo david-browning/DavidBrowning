@@ -15,7 +15,7 @@ Scans a TableSetup directory containing numbered child folders, such as:
 Each child folder contains numbered SQL files, such as:
 
     001_CreateSiteAssets.sql
-    002_CreateSiteAssetLinks.sql
+    002_CreatePostAssetLinks.sql
 
 The script sorts folders by their numeric prefix, then sorts SQL files inside
 each folder by their numeric prefix. It writes FileInfo objects to the pipeline

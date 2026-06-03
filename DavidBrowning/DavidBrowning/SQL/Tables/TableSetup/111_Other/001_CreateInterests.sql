@@ -12,8 +12,6 @@ CREATE TABLE dbo.db_Interests
 
    IconCssClass nvarchar(128) NULL,
 
-   SiteAssetId int NULL,
-
    SortOrder int NOT NULL
       CONSTRAINT DF_db_Interests_SortOrder DEFAULT (0),
 
@@ -29,14 +27,7 @@ CREATE TABLE dbo.db_Interests
    CONSTRAINT PK_db_Interests PRIMARY KEY (Id),
 
    CONSTRAINT UQ_db_Interests_Slug UNIQUE (Slug),
-
-   CONSTRAINT FK_db_Interests_db_SiteAssets_SiteAssetId
-      FOREIGN KEY (SiteAssetId)
-      REFERENCES dbo.db_SiteAssets(Id)
 );
 
 CREATE INDEX IX_db_Interests_IsActive_SortOrder
 ON dbo.db_Interests(IsActive, SortOrder);
-
-CREATE INDEX IX_db_Interests_SiteAssetId
-ON dbo.db_Interests(SiteAssetId);

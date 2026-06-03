@@ -102,6 +102,6 @@ public sealed class Post
    /// <summary>
    /// Links to the assets attached to the post.
    /// </summary>
-   public ICollection<SiteAssetLink> AssetLinks { get; } =
-      new List<SiteAssetLink>();
+   public ICollection<PostAssetLink> AssetLinks { get; } =
+      new List<PostAssetLink>();
 }

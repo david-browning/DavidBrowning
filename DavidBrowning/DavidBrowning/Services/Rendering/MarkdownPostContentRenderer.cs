@@ -27,10 +27,15 @@ public sealed partial class MarkdownPostContentRenderer : IPostContentRenderer
 
    public async Task<RenderedContent> RenderAsync(
       PostRevision revision,
-      IReadOnlyCollection<SiteAssetLink> assetLinks,
+      IReadOnlyCollection<PostAssetLink> assetLinks,
       CancellationToken cancellationToken = default)
    {
       cancellationToken.ThrowIfCancellationRequested();
+      if (revision.ContentFormat != ContentFormat.Markdown)
+      {
+         throw new InvalidOperationException(
+            $"Unsupported post content format: {revision.ContentFormat}.");
+      }
 
       var source = revision.Content ??
          throw new InvalidOperationException(

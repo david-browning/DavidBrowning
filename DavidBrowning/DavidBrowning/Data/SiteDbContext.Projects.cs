@@ -93,18 +93,6 @@ public sealed partial class SiteDbContext
          entity.HasIndex(project => project.Slug)
             .IsUnique();
 
-         entity.Property(project => project.Problem)
-            .HasColumnType("nvarchar(max)");
-
-         entity.Property(project => project.Solution)
-            .HasColumnType("nvarchar(max)");
-
-         entity.Property(project => project.Result)
-            .HasColumnType("nvarchar(max)");
-
-         entity.Property(project => project.Tradeoffs)
-            .HasColumnType("nvarchar(max)");
-
          entity.Property(project => project.IsFeatured)
             .HasDefaultValue(false)
             .IsRequired();
@@ -258,10 +246,6 @@ public sealed partial class SiteDbContext
          entity.ToTable("db_ProjectLinks");
 
          entity.HasKey(link => link.Id);
-
-         entity.Property(link => link.IsPrimary)
-            .HasDefaultValue(false)
-            .IsRequired();
 
          entity.Property(link => link.SortOrder)
             .HasDefaultValue(0)

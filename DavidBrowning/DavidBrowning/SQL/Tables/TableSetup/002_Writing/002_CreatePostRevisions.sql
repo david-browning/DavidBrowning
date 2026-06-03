@@ -10,18 +10,12 @@ CREATE TABLE dbo.db_PostRevisions
     -- PlainText = 0, Markdown = 1, Html = 2, Latex = 3, ExternalBlob = 4
     ContentFormat tinyint NOT NULL,
 
-    -- PostRenderMode enum:
-    -- Article = 0, TechnicalNote = 1, CodeHeavy = 2,
-    -- Longform = 3, Paper = 4, Gallery = 5
-    RenderMode tinyint NOT NULL,
-
     CreatedBy nvarchar(256) NOT NULL,
 
     CreatedAtUtc datetime2(0) NOT NULL
         CONSTRAINT DF_db_PostRevisions_CreatedAtUtc DEFAULT (sysutcdatetime()),
 
     Content nvarchar(max) NULL,
-    CachedHtml nvarchar(max) NULL,
 
     CONSTRAINT PK_db_PostRevisions PRIMARY KEY (Id),
 

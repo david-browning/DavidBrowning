@@ -7,10 +7,10 @@ using DavidBrowning.Models.Writing;
 namespace DavidBrowning.Models;
 
 /// <summary>
-/// Maps to db_SiteAssetLinks.
+/// Maps to db_PostAssetLinks.
 /// Connects a writing post to a reusable site asset.
 /// </summary>
-public sealed class SiteAssetLink
+public sealed class PostAssetLink
 {
    /// <summary>
    /// Foreign key to db_Posts.
@@ -19,7 +19,7 @@ public sealed class SiteAssetLink
 
    public Post? Post { get; set; }
 
-   [StringLength(DataConstants.MaxMetadataLength)]
+   [StringLength(DataConstants.MaxSlugLength)]
    public string? ReferenceKey { get; set; }
 
    /// <summary>
@@ -45,7 +45,7 @@ public sealed class SiteAssetLink
    /// <summary>
    /// Describes how the post uses this asset.
    /// </summary>
-   public SiteAssetRole Role { get; set; }
+   public PostAssetRole Role { get; set; }
 
    /// <summary>
    /// Manual display ordering for assets with the same role.

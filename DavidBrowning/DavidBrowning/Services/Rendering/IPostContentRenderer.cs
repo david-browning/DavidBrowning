@@ -13,6 +13,6 @@ public interface IPostContentRenderer
 {
    Task<RenderedContent> RenderAsync(
       PostRevision revision,
-      IReadOnlyCollection<SiteAssetLink> assetLinks,
+      IReadOnlyCollection<PostAssetLink> assetLinks,
       CancellationToken cancellationToken = default);
 }

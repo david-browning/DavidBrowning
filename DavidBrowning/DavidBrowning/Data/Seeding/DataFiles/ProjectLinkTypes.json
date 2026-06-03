@@ -8,21 +8,21 @@
       "IsActive": true,
       "IconCssClass": "fa-brands fa-github"
    },
-  {
-    "Id": 2,
-    "Slug": "live-site",
-    "DisplayName": "Live Site",
-    "Description": "Publicly hosted application or website.",
-    "SortOrder": 20,
-    "IsActive": true
-  },
-  {
-    "Id": 3,
-    "Slug": "documentation",
-    "DisplayName": "Documentation",
-    "Description": "Documentation, notes, or reference material.",
-    "SortOrder": 30,
-   "IsActive": true,
-   "IconCssClass": "fa-solid fa-file-lines"
-  }
+   {
+      "Id": 2,
+      "Slug": "live-site",
+      "DisplayName": "Live Site",
+      "Description": "Publicly hosted application or website.",
+      "SortOrder": 20,
+      "IsActive": true
+   },
+   {
+      "Id": 3,
+      "Slug": "documentation",
+      "DisplayName": "Documentation",
+      "Description": "Documentation, notes, or reference material.",
+      "SortOrder": 30,
+      "IsActive": true,
+      "IconCssClass": "fa-solid fa-file-lines"
+   }
 ]

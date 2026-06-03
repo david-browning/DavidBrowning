@@ -25,9 +25,9 @@ public sealed partial class SiteDbContext
             .IsRequired();
       });
 
-      modelBuilder.Entity<SiteAssetLink>(entity =>
+      modelBuilder.Entity<PostAssetLink>(entity =>
       {
-         entity.ToTable("db_SiteAssetLinks");
+         entity.ToTable("db_PostAssetLinks");
 
          entity.HasKey(link => new
          {

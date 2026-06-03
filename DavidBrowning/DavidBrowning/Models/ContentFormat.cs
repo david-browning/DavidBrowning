@@ -11,6 +11,4 @@ public enum ContentFormat : byte
    PlainText = 0,
    Markdown = 1,
    Html = 2,
-   Latex = 3,
-   ExternalBlob = 4
 }

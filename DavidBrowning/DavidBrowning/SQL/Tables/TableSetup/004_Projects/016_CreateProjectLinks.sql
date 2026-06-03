@@ -9,9 +9,6 @@ CREATE TABLE dbo.db_ProjectLinks
     Label nvarchar(128) NOT NULL,
     Url nvarchar(2048) NOT NULL,
 
-    IsPrimary bit NOT NULL
-        CONSTRAINT DF_db_ProjectLinks_IsPrimary DEFAULT (0),
-
     SortOrder int NOT NULL
         CONSTRAINT DF_db_ProjectLinks_SortOrder DEFAULT (0),
 

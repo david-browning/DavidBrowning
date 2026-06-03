@@ -91,27 +91,7 @@ public sealed class Project
    /// </summary>
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? ContributionSummary { get; set; }
-
-   /// <summary>
-   /// Case-study section: the problem, motivation, or reason the project exists.
-   /// </summary>
-   public string? Problem { get; set; }
-
-   /// <summary>
-   /// Case-study section: what you built or how you approached the problem.
-   /// </summary>
-   public string? Solution { get; set; }
-
-   /// <summary>
-   /// Case-study section: outcome, current state, or result.
-   /// </summary>
-   public string? Result { get; set; }
-
-   /// <summary>
-   /// Case-study section: tradeoffs, constraints, and decisions.
-   /// </summary>
-   public string? Tradeoffs { get; set; }
-
+  
    /// <summary>
    /// Whether this project should be highlighted on landing pages.
    /// </summary>
