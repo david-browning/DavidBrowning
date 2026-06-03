@@ -12,6 +12,7 @@ using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Projects;
 using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
+using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
 using Microsoft.AspNetCore.Hosting;
@@ -37,6 +38,7 @@ public class ProjectsController : Controller
       IContentPipeline contentPipeline,
       IProjectStore project,
       ISlugService slugService,
+      IProjectContentRenderer projectRenderer,
       ISlugLookupService<ProjectVisibility> projectLookup,
       ISlugLookupService<ProjectStackTag> stackLookup,
       ISlugLookupService<ProjectOrigin> originLookup,
@@ -61,6 +63,7 @@ public class ProjectsController : Controller
       _typeLookup = typeLookup;
       _statusLookup = statusLookup;
       _tagLookup = tagLookup;
+      _projectContentRenderer = projectRenderer;
    }
 
    public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -284,7 +287,10 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      return View(new DetailsViewModel(project));
+      var body = await _projectContentRenderer.RenderAsync(
+         project, cancellationToken);
+
+      return View(new DetailsViewModel(project, body));
    }
 
    private async Task<IndexViewModel> GetIndexModelAsync(
@@ -322,6 +328,7 @@ public class ProjectsController : Controller
    private readonly IContentPipeline _contentPipeline;
    private readonly IProjectStore _projectStore;
    private readonly ISlugService _slugService;
+   private readonly IProjectContentRenderer _projectContentRenderer;
    private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;
    private readonly ISlugLookupService<ProjectStackTag> _stackLookup;
    private readonly ISlugLookupService<ProjectOrigin> _originLookup;

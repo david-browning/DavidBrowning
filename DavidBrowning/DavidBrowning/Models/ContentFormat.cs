@@ -3,8 +3,7 @@
 namespace DavidBrowning.Models;
 
 /// <summary>
-/// What kind of content the writing source is. The content can be rendered 
-/// differently by choosing a rendering mode.
+/// Describes the source syntax used by authored content.
 /// </summary>
 public enum ContentFormat : byte
 {

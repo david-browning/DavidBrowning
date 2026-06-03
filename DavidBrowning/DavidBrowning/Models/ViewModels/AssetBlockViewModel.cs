@@ -24,13 +24,12 @@ public sealed class AssetBlockViewModel
       ContentType = asset.ContentType;
       AltText = link.AltTextOverride ?? asset.AltText;
       Caption = link.Caption;
-      RoleSlug = role.Slug;
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
    }
 
    [SetsRequiredMembers]
-   public AssetBlockViewModel(PostAssetLink link)
+   public AssetBlockViewModel(PostRevisionAssetLink link)
    {
       var asset = link.SiteAsset ??
          throw new InvalidOperationException(
@@ -40,7 +39,6 @@ public sealed class AssetBlockViewModel
       ContentType = asset.ContentType;
       AltText = link.AltTextOverride ?? asset.AltText;
       Caption = link.Caption;
-      RoleSlug = GetRoleSlug(link.Role);
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
    }
@@ -49,8 +47,6 @@ public sealed class AssetBlockViewModel
 
    public required string ContentType { get; init; }
 
-   public required string RoleSlug { get; init; }
-
    public string? Caption { get; init; }
 
    public string? AltText { get; init; }
@@ -58,19 +54,4 @@ public sealed class AssetBlockViewModel
    public int? WidthPixels { get; init; }
 
    public int? HeightPixels { get; init; }
-
-   private static string GetRoleSlug(PostAssetRole role)
-   {
-      return role switch
-      {
-         PostAssetRole.Attachment => "attachment",
-         PostAssetRole.HeroImage => "hero-image",
-         PostAssetRole.InlineImage => "inline-image",
-         PostAssetRole.SocialImage => "social-image",
-         PostAssetRole.GeneratedPdf => "generated-pdf",
-         PostAssetRole.Download => "download",
-         _ => throw new InvalidOperationException(
-            $"Unsupported site asset role: {role}."),
-      };
-   }
 }

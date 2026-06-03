@@ -126,7 +126,7 @@ public class WritingController : Controller
          throw new InvalidOperationException(
             "Published post is missing its current revision.");
       var body = await _postRendered.RenderAsync(
-         revision, post.AssetLinks.ToList(), cancellationToken);
+         revision, revision.AssetLinks.ToList(), cancellationToken);
       return View(new DetailsViewModel(post, body));
    }
 

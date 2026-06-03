@@ -332,6 +332,14 @@ public sealed partial class SiteDbContext
             link.ProjectAssetRoleId,
             link.SortOrder
          });
+
+         entity.HasIndex(link => new
+         {
+            link.ProjectId,
+            link.ReferenceKey,
+         })
+            .IsUnique()
+            .HasFilter("[ReferenceKey] IS NOT NULL");
       });
    }
 

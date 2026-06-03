@@ -14,98 +14,52 @@ using Markdig;
 
 namespace DavidBrowning.Services.Rendering;
 
-public sealed partial class MarkdownPostContentRenderer : IPostContentRenderer
+public sealed class MarkdownPostContentRenderer : IPostContentRenderer
 {
-   public MarkdownPostContentRenderer(IContentPipeline content)
+   public MarkdownPostContentRenderer(
+      IMarkdownDocumentRenderer markdownRenderer)
    {
-      _pipeline = content;
-      _markdown = new MarkdownPipelineBuilder()
-         .DisableHtml()
-         .UseAdvancedExtensions()
-         .Build();
+      _markdownRenderer = markdownRenderer;
    }
 
-   public async Task<RenderedContent> RenderAsync(
+   public Task<RenderedContent> RenderAsync(
       PostRevision revision,
-      IReadOnlyCollection<PostAssetLink> assetLinks,
+      IReadOnlyCollection<PostRevisionAssetLink> assetLinks,
       CancellationToken cancellationToken = default)
    {
-      cancellationToken.ThrowIfCancellationRequested();
       if (revision.ContentFormat != ContentFormat.Markdown)
       {
          throw new InvalidOperationException(
             $"Unsupported post content format: {revision.ContentFormat}.");
       }
 
-      var source = revision.Content ??
+      var markdown = revision.Content ??
          throw new InvalidOperationException(
             $"Post revision {revision.Id} does not contain content.");
 
-      var replacements = new Dictionary<string, string>();
-
-      foreach (Match match in AssetTokenRegex().Matches(source))
-      {
-         var referenceKey = match.Groups["key"].Value;
-         var link = assetLinks.SingleOrDefault(link =>
-            string.Equals(
-               link.ReferenceKey,
-               referenceKey,
-               StringComparison.OrdinalIgnoreCase));
-
-         if (link is null)
+      var references = assetLinks
+         .Select(link =>
          {
-            throw new InvalidOperationException(
-               $"Post revision {revision.Id} references missing asset " +
-               $"'{referenceKey}'.");
-         }
+            var asset = link.SiteAsset ??
+               throw new InvalidOperationException(
+                  $"Linked asset '{link.ReferenceKey}' is missing.");
 
-         var asset = link.SiteAsset ?? throw new InvalidOperationException(
-            $"Post asset link '{referenceKey}' is missing its asset.");
+            return new LinkedAssetReference()
+            {
+               ReferenceKey = link.ReferenceKey,
+               AssetKey = asset.AssetKey,
+               AltText = link.AltTextOverride ?? asset.AltText,
+               Caption = link.Caption,
+            };
+         })
+         .ToList();
 
-         var placeholder = $"%%ASSET_BLOCK_{replacements.Count}%%";
-
-         ContentRenderOptions options = new()
-         {
-            AltText = link.AltTextOverride ?? asset.AltText,
-            Caption = link.Caption,
-            CssClass = "wb-post-asset",
-         };
-
-         var renderedAsset =
-            await _pipeline.GetRenderedContentAsync(
-               asset.AssetKey, options, cancellationToken);
-         if(renderedAsset == null)
-         {
-            throw new InvalidOperationException(
-               $"Could not render {asset.AssetKey}");
-         }
-
-         replacements[placeholder] = renderedAsset.Html;
-         source = source.Replace(
-            match.Value, placeholder, StringComparison.Ordinal);
-      }
-
-      var html = Markdown.ToHtml(source, _markdown);
-      foreach (var replacement in replacements)
-      {
-         html = html.Replace(
-            $"<p>{replacement.Key}</p>",
-            replacement.Value,
-            StringComparison.Ordinal);
-      }
-
-      return new()
-      {
-         AssetKey = $"post-revision:{revision.Id}",
-         OriginalContentType = "text/markdown",
-         Html = html,
-      };
+      return _markdownRenderer.RenderAsync(
+         $"post-revision:{revision.Id}",
+         markdown,
+         references,
+         cancellationToken);
    }
 
-   private readonly IContentPipeline _pipeline;
-   private readonly MarkdownPipeline _markdown;
-   [GeneratedRegex(
-      @"^\{\{asset:(?<key>[a-z0-9][a-z0-9-]*)\}\}$",
-      RegexOptions.Multiline)]
-   private static partial Regex AssetTokenRegex();
+   private readonly IMarkdownDocumentRenderer _markdownRenderer;
 }

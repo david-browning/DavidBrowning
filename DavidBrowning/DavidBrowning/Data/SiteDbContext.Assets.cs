@@ -25,32 +25,23 @@ public sealed partial class SiteDbContext
             .IsRequired();
       });
 
-      modelBuilder.Entity<PostAssetLink>(entity =>
+      modelBuilder.Entity<PostRevisionAssetLink>(entity =>
       {
-         entity.ToTable("db_PostAssetLinks");
+         entity.ToTable("db_PostRevisionAssetLinks");
 
          entity.HasKey(link => new
          {
-            link.PostId,
+            link.PostRevisionId,
             link.SiteAssetId,
-            link.Role,
          });
 
-         entity.Property(link => link.Role)
-            .HasConversion<byte>()
-            .IsRequired();
-
-         entity.Property(link => link.SortOrder)
-            .HasDefaultValue(0)
-            .IsRequired();
-
-         entity.HasOne(link => link.Post)
-            .WithMany(post => post.AssetLinks)
-            .HasForeignKey(link => link.PostId)
+         entity.HasOne(link => link.PostRevision)
+            .WithMany(revision => revision.AssetLinks)
+            .HasForeignKey(link => link.PostRevisionId)
             .OnDelete(DeleteBehavior.Cascade);
 
          entity.HasOne(link => link.SiteAsset)
-            .WithMany(asset => asset.PostLinks)
+            .WithMany(asset => asset.PostRevisionLinks)
             .HasForeignKey(link => link.SiteAssetId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -58,10 +49,10 @@ public sealed partial class SiteDbContext
 
          entity.HasIndex(link => new
          {
-            link.PostId,
-            link.Role,
-            link.SortOrder,
-         });
+            link.PostRevisionId,
+            link.ReferenceKey,
+         })
+            .IsUnique();
       });
    }
 }

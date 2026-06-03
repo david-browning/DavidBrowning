@@ -26,7 +26,7 @@ CREATE TABLE dbo.db_Interests
 
    CONSTRAINT PK_db_Interests PRIMARY KEY (Id),
 
-   CONSTRAINT UQ_db_Interests_Slug UNIQUE (Slug),
+   CONSTRAINT UQ_db_Interests_Slug UNIQUE (Slug)
 );
 
 CREATE INDEX IX_db_Interests_IsActive_SortOrder

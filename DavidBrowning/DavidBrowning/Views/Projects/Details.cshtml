@@ -111,6 +111,13 @@
 	</div>
 </section>
 
+@if (Model.Body is not null)
+{
+	<section class="wb-section">
+		<partial name="_RenderedContent" model="Model.Body" />
+	</section>
+}
+
 @if (Model.AssetBlocks.Count > 0)
 {
 	<section id="details" class="wb-section">

@@ -1,0 +1,16 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.ViewModels;
+
+namespace DavidBrowning.Services.Rendering;
+
+public sealed class MarkdownProjectContentRenderer : IProjectContentRenderer
+{
+   public Task<RenderedContent?> RenderAsync(
+      Project project, 
+      CancellationToken cancellationToken = default)
+   {
+      throw new System.NotImplementedException();
+   }
+}
