@@ -17,7 +17,7 @@ public class BasicContentPipeline : IContentPipeline
       _contentStore = contentService;
    }
 
-   public async Task<RenderedContent?> GetRenderedContentAsync(
+   public async Task<RenderedContent> GetRenderedContentAsync(
       string assetKey,
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default)

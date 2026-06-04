@@ -10,9 +10,9 @@ namespace DavidBrowning.Services.Cache.Options;
 public interface ICacheOptions
 {
    TimeSpan CacheDuration { get; set; }
-   
+
    TimeSpan CacheTimeout { get; set; }
-   
+
    long ObjectCacheSize { get; set; }
 
    bool TrackCacheStatistics { get; set; }

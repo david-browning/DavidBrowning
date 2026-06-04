@@ -3,72 +3,56 @@
       "PostRevisionId": 1,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 2,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 3,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 4,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 5,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 6,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 7,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    },
    {
       "PostRevisionId": 8,
       "SiteAssetId": 11,
       "ReferenceKey": "test-image",
-      "Role": "InlineImage",
       "Caption": "Temporary shared image used to test embedded post assets.",
-      "AltTextOverride": null,
-      "SortOrder": 10
+      "AltTextOverride": null
    }
 ]

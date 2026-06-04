@@ -7,10 +7,10 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Services.Cache;
 
-public sealed class JsonMemoryCache : AsyncMemoryCache<object?>
+public sealed class JsonMemoryCache : AsyncMemoryCache<object>
 {
    public JsonMemoryCache(
-      ILogger<AsyncMemoryCache<object?>> logger,
+      ILogger<AsyncMemoryCache<object>> logger,
       IOptions<JsonCacheOptions> options,
       ICacheSizeEstimator<object?> sizeEstimator)
       : base(logger, options.Value, sizeEstimator)

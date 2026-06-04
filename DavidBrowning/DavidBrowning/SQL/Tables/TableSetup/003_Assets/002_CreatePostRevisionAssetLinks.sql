@@ -1,4 +1,6 @@
-﻿CREATE TABLE dbo.db_PostRevisionAssetLinks
+﻿-- Copyright © 2026 David Browning. All rights reserved.
+-- Source-available for viewing only. No license granted.
+CREATE TABLE dbo.db_PostRevisionAssetLinks
 (
    PostRevisionId int NOT NULL,
    SiteAssetId int NOT NULL,
@@ -22,3 +24,6 @@
 
 CREATE UNIQUE INDEX UX_db_PostRevisionAssetLinks_RevisionId_ReferenceKey
    ON dbo.db_PostRevisionAssetLinks (PostRevisionId, ReferenceKey);
+
+CREATE INDEX IX_db_PostRevisionAssetLinks_SiteAssetId
+   ON dbo.db_PostRevisionAssetLinks (SiteAssetId);

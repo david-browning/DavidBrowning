@@ -25,7 +25,7 @@ internal sealed class SqlUncategorizedStore : IUncategorizedStore
    {
       return await _context.Interests
          .AsNoTracking()
-         .OrderBy(interest =>  interest.SortOrder)
+         .OrderBy(interest => interest.SortOrder)
          .ThenBy(interest => interest.DisplayName)
          .ToListAsync(cancellationToken);
    }

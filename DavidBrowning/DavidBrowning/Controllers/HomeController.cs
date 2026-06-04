@@ -59,7 +59,8 @@ public class HomeController : Controller
    {
       var data = await _jsonCache.GetJsonFileContentAsync<PrivacyViewModel>(
          "Heros/Privacy.json", cancellationToken);
-      if (data == null) {
+      if (data == null)
+      {
          throw new FileNotFoundException("Missing privacy data");
       }
 

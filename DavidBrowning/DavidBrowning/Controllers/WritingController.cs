@@ -36,7 +36,7 @@ public class WritingController : Controller
       IConfiguration configuration,
 
       JsonCache jsonCache,
-      IPostContentRenderer postRendered,
+      MarkdownPostContentRenderer postRendered,
       IWritingStore writingStore,
       ISlugService slugs,
       ISlugLookupService<WritingTag> tagStore)
@@ -106,7 +106,7 @@ public class WritingController : Controller
    /// <returns></returns>
    [HttpGet("details/{slug}")]
    public async Task<IActionResult> Details(
-      string slug, 
+      string slug,
       CancellationToken cancellationToken)
    {
       if (string.IsNullOrWhiteSpace(slug))
@@ -164,5 +164,5 @@ public class WritingController : Controller
    private readonly IWritingStore _writingStore;
    private readonly ISlugService _slugService;
    private readonly ISlugLookupService<WritingTag> _tagLookup;
-   private readonly IPostContentRenderer _postRendered;
+   private readonly MarkdownPostContentRenderer _postRendered;
 }

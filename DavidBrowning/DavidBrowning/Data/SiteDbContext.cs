@@ -16,7 +16,7 @@ public sealed partial class SiteDbContext : DbContext
    }
 
    public DbSet<Post> Posts => Set<Post>();
-   
+
    public DbSet<PostStyle> PostStyles => Set<PostStyle>();
 
    public DbSet<PostRevision> PostRevisions => Set<PostRevision>();

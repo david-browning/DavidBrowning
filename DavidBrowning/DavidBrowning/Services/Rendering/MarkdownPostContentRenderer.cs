@@ -12,7 +12,7 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Services.Rendering;
 
-public sealed class MarkdownPostContentRenderer : IPostContentRenderer
+public sealed class MarkdownPostContentRenderer
 {
    public MarkdownPostContentRenderer(
       IMarkdownDocumentRenderer markdownRenderer)
