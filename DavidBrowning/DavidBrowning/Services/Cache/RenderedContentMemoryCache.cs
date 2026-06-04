@@ -13,7 +13,7 @@ public sealed class RenderedContentMemoryCache : AsyncMemoryCache<RenderedConten
    public RenderedContentMemoryCache(
       ILogger<AsyncMemoryCache<RenderedContent>> logger,
       IOptions<RenderedContentCacheOptions> options,
-      ICacheSizeEstimator<RenderedContent?> sizeEstimator)
+      ICacheSizeEstimator<RenderedContent> sizeEstimator)
       : base(logger, options.Value, sizeEstimator)
    {
    }

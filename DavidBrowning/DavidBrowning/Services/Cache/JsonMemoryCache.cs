@@ -12,7 +12,7 @@ public sealed class JsonMemoryCache : AsyncMemoryCache<object>
    public JsonMemoryCache(
       ILogger<AsyncMemoryCache<object>> logger,
       IOptions<JsonCacheOptions> options,
-      ICacheSizeEstimator<object?> sizeEstimator)
+      ICacheSizeEstimator<object> sizeEstimator)
       : base(logger, options.Value, sizeEstimator)
    {
    }

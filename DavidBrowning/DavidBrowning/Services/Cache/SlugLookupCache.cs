@@ -40,7 +40,7 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
          cacheKey,
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
-            .SingleAsync(row => row.Id == id, token),
+            .SingleOrDefaultAsync(row => row.Id == id, token),
          cancellationToken);
    }
 
@@ -59,7 +59,7 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
          cacheKey,
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
-            .SingleAsync(row => row.Slug == slug, token),
+            .SingleOrDefaultAsync(row => row.Slug == slug, token),
          cancellationToken);
    }
 
