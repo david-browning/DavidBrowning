@@ -6,7 +6,7 @@ namespace DavidBrowning.Services.Cache.Options;
 
 public sealed class RenderedContentCacheOptions : ICacheOptions
 {
-   public TimeSpan CacheDuration {  get; set; }
+   public TimeSpan CacheDuration { get; set; }
    public TimeSpan CacheTimeout { get; set; }
    public long ObjectCacheSize { get; set; }
    public bool TrackCacheStatistics { get; set; }

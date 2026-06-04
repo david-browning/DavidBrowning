@@ -13,7 +13,7 @@ namespace DavidBrowning.Services.Assets;
 /// </summary>
 public interface IContentPipeline
 {
-   Task<RenderedContent?> GetRenderedContentAsync(
+   Task<RenderedContent> GetRenderedContentAsync(
       string assetKey,
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default);

@@ -8,7 +8,6 @@ namespace DavidBrowning.Models;
 
 /// <summary>
 /// Maps to db_PostRevisionAssetLinks.
-/// Connects a writing post to a reusable site asset.
 /// </summary>
 public sealed class PostRevisionAssetLink
 {

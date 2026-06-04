@@ -91,7 +91,7 @@ public sealed class Project
    /// </summary>
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? ContributionSummary { get; set; }
-  
+
    /// <summary>
    /// Whether this project should be highlighted on landing pages.
    /// </summary>

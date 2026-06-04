@@ -6,7 +6,7 @@ CREATE TABLE dbo.db_PostRevisions
     PostId int NOT NULL,
     RevisionNumber int NOT NULL,
 
-    -- PostContentFormat enum:
+    -- ContentFormat enum:
     -- PlainText = 0, Markdown = 1, Html = 2
     ContentFormat tinyint NOT NULL,
 

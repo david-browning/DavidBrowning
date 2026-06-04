@@ -7,6 +7,10 @@ using DavidBrowning.Models;
 
 namespace DavidBrowning.Data.Stores.Uncategorized;
 
+/// <summary>
+/// Used to look up data from a data store that is not related to writing,
+/// posts, or errors.
+/// </summary>
 public interface IUncategorizedStore
 {
    Task<IReadOnlyList<Interest>> GetInterestsAsync(

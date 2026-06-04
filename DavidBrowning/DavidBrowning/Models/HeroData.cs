@@ -13,5 +13,5 @@ public class HeroData
    public string? Subtitle { get; set; }
 
    [JsonPropertyName("lede")]
-   public string? Lede {  get; set; }
+   public string? Lede { get; set; }
 }

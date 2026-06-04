@@ -1,6 +1,5 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-
 using System;
 using System.Linq;
 using System.Threading;
@@ -12,8 +11,7 @@ using DavidBrowning.Services.Assets;
 
 namespace DavidBrowning.Services.Rendering;
 
-public sealed class MarkdownProjectContentRenderer :
-   IProjectContentRenderer
+public sealed class MarkdownProjectContentRenderer
 {
    public MarkdownProjectContentRenderer(
       IContentStore contentStore,
@@ -23,7 +21,7 @@ public sealed class MarkdownProjectContentRenderer :
       _markdownRenderer = markdownRenderer;
    }
 
-   public async Task<RenderedContent?> RenderAsync(
+   public async Task<RenderedContent> RenderAsync(
       Project project,
       CancellationToken cancellationToken = default)
    {
@@ -33,7 +31,7 @@ public sealed class MarkdownProjectContentRenderer :
 
       if (contentLink is null)
       {
-         return null;
+         throw new ArgumentNullException(nameof(contentLink));
       }
 
       var contentAsset = contentLink.SiteAsset ??

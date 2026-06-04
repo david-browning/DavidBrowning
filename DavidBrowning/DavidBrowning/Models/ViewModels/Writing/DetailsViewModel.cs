@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Models.ViewModels.Writing;
@@ -49,13 +48,12 @@ public class DetailsViewModel
 
 
    public int? CurrentRevisionId { get; set; }
-   
+
    public ContentFormat? ContentFormat { get; set; }
-   
+
    public string? CreatedBy { get; set; }
 
    public required RenderedContent Body { get; set; }
-
 
    public required ICollection<PostTag> TagLinks { get; init; }
 }

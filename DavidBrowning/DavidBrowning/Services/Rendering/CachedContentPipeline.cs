@@ -19,7 +19,7 @@ public sealed class CachedContentPipeline : IContentPipeline
       _cache = cache;
    }
 
-   public Task<RenderedContent?> GetRenderedContentAsync(
+   public Task<RenderedContent> GetRenderedContentAsync(
       string assetKey,
       ContentRenderOptions? options = null,
       CancellationToken cancellationToken = default)

@@ -31,12 +31,13 @@ public class AsyncMemoryCache<T> : IDisposable
       });
    }
 
-   public async Task<T?> GetOrCreateAsync(
+   public async Task<T> GetOrCreateAsync(
       string cacheKey,
       Func<CancellationToken, Task<T>> factory,
       CancellationToken cancellationToken = default)
    {
-      if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
+      if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue) &&
+         cachedValue != null)
       {
          return cachedValue;
       }
@@ -48,7 +49,8 @@ public class AsyncMemoryCache<T> : IDisposable
       {
          await cacheLock.Semaphore.WaitAsync(cancellationToken);
          enteredSemaphore = true;
-         if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue2))
+         if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue2) &&
+            cachedValue2 != null)
          {
             return cachedValue2;
          }

@@ -2,7 +2,6 @@
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
@@ -86,7 +85,7 @@ public class AboutController : Controller
             CssClass = "wb-about-profile-image",
          },
          cancellationToken);
-      if(profileImage == null)
+      if (profileImage == null)
       {
          throw new FileNotFoundException("The image is not found");
       }

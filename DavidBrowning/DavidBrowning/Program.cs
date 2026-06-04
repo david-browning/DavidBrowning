@@ -206,9 +206,27 @@ public static partial class Program
          builder.Services.AddSingleton<IContentPipeline, BasicContentPipeline>();
       }
 
-      builder.Services.AddSingleton<IMarkdownDocumentRenderer, MarkdownDocumentRenderer>();
-      builder.Services.AddSingleton<IPostContentRenderer, MarkdownPostContentRenderer>();
-      builder.Services.AddSingleton<IProjectContentRenderer, MarkdownProjectContentRenderer>();
+      builder.Services.AddSingleton<MarkdownDocumentRenderer>();
+      builder.Services.AddSingleton<IMarkdownDocumentRenderer>(
+         serviceProvider =>
+         {
+            IMarkdownDocumentRenderer innerRenderer =
+               serviceProvider.GetRequiredService<
+                  MarkdownDocumentRenderer>();
+
+            if (!enableCache)
+            {
+               return innerRenderer;
+            }
+
+            return new CachedMarkdownDocumentRenderer(
+               innerRenderer,
+               serviceProvider.GetRequiredService<
+                  RenderedContentMemoryCache>());
+         });
+
+      builder.Services.AddSingleton<MarkdownPostContentRenderer>();
+      builder.Services.AddSingleton<MarkdownProjectContentRenderer>();
 
       builder.Services.AddControllersWithViews();
    }

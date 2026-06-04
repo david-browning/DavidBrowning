@@ -25,7 +25,7 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
 {
    public SlugLookupCache(
       SiteDbContext dbContext,
-      SlugMemoryCache<TLookup?> asyncCache)
+      SlugMemoryCache<TLookup> asyncCache)
    {
       _dbContext = dbContext;
       _asyncCache = asyncCache;
@@ -40,7 +40,7 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
          cacheKey,
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
-            .SingleOrDefaultAsync(row => row.Id == id, token),
+            .SingleAsync(row => row.Id == id, token),
          cancellationToken);
    }
 
@@ -59,7 +59,7 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
          cacheKey,
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
-            .SingleOrDefaultAsync(row => row.Slug == slug, token),
+            .SingleAsync(row => row.Slug == slug, token),
          cancellationToken);
    }
 
@@ -85,5 +85,5 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
    }
 
    private readonly SiteDbContext _dbContext;
-   private readonly SlugMemoryCache<TLookup?> _asyncCache;
+   private readonly SlugMemoryCache<TLookup> _asyncCache;
 }

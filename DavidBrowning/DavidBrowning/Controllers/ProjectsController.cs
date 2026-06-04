@@ -38,7 +38,7 @@ public class ProjectsController : Controller
       IContentPipeline contentPipeline,
       IProjectStore project,
       ISlugService slugService,
-      IProjectContentRenderer projectRenderer,
+      MarkdownProjectContentRenderer projectRenderer,
       ISlugLookupService<ProjectVisibility> projectLookup,
       ISlugLookupService<ProjectStackTag> stackLookup,
       ISlugLookupService<ProjectOrigin> originLookup,
@@ -328,7 +328,7 @@ public class ProjectsController : Controller
    private readonly IContentPipeline _contentPipeline;
    private readonly IProjectStore _projectStore;
    private readonly ISlugService _slugService;
-   private readonly IProjectContentRenderer _projectContentRenderer;
+   private readonly MarkdownProjectContentRenderer _projectContentRenderer;
    private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;
    private readonly ISlugLookupService<ProjectStackTag> _stackLookup;
    private readonly ISlugLookupService<ProjectOrigin> _originLookup;
