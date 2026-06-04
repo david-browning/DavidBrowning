@@ -13,31 +13,68 @@ using Microsoft.Extensions.Logging;
 namespace DavidBrowning.Services.Cache;
 
 public class AsyncMemoryCache<T> : IDisposable
+   where T : class
 {
    internal int LockCount => _cacheLocks.Count;
 
    public AsyncMemoryCache(
       ILogger<AsyncMemoryCache<T>> logger,
       ICacheOptions cacheOptions,
-      ICacheSizeEstimator<T?> sizeEstimator)
+      ICacheSizeEstimator<T> sizeEstimator)
    {
       _logger = logger;
       _cacheOptions = cacheOptions;
       _sizeEstimator = sizeEstimator;
-      _memoryCache = new MemoryCache(new MemoryCacheOptions()
-      {
-         SizeLimit = _cacheOptions.ObjectCacheSize,
-         TrackStatistics = _cacheOptions.TrackCacheStatistics,
-      });
+
+      _memoryCache = new MemoryCache(
+         new MemoryCacheOptions()
+         {
+            SizeLimit = _cacheOptions.ObjectCacheSize,
+            TrackStatistics = _cacheOptions.TrackCacheStatistics,
+         });
    }
 
+   /// <summary>
+   /// Gets a cached value or creates one.
+   /// A null factory result violates the method contract.
+   /// </summary>
    public async Task<T> GetOrCreateAsync(
       string cacheKey,
       Func<CancellationToken, Task<T>> factory,
       CancellationToken cancellationToken = default)
    {
+      var value = await GetOrCreateCoreAsync(
+         cacheKey,
+         token => InvokeFactoryAsync(factory, token),
+         cancellationToken);
+
+      return value ??
+         throw new InvalidOperationException(
+            $"Cache factory returned null for '{cacheKey}'.");
+   }
+
+   /// <summary>
+   /// Gets a cached value or attempts to create one.
+   /// A null factory result is returned but is not cached.
+   /// </summary>
+   public Task<T?> TryGetOrCreateAsync(
+      string cacheKey,
+      Func<CancellationToken, Task<T?>> factory,
+      CancellationToken cancellationToken = default)
+   {
+      return GetOrCreateCoreAsync(
+         cacheKey,
+         factory,
+         cancellationToken);
+   }
+
+   private async Task<T?> GetOrCreateCoreAsync(
+      string cacheKey,
+      Func<CancellationToken, Task<T?>> factory,
+      CancellationToken cancellationToken)
+   {
       if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue) &&
-         cachedValue != null)
+          cachedValue is not null)
       {
          return cachedValue;
       }
@@ -49,20 +86,28 @@ public class AsyncMemoryCache<T> : IDisposable
       {
          await cacheLock.Semaphore.WaitAsync(cancellationToken);
          enteredSemaphore = true;
-         if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue2) &&
-            cachedValue2 != null)
+
+         if (_memoryCache.TryGetValue(cacheKey, out cachedValue) &&
+             cachedValue is not null)
          {
-            return cachedValue2;
+            return cachedValue;
          }
 
          _logger.LogInformation($"{cacheKey} is not cached. Caching...");
          var fetchedValue = await factory(cancellationToken);
+
+         if (fetchedValue is null)
+         {
+            return null;
+         }
+
          var size = _sizeEstimator.EstimateSize(fetchedValue);
          MemoryCacheEntryOptions options = new()
          {
             Size = size,
             SlidingExpiration = _cacheOptions.CacheTimeout,
-            AbsoluteExpirationRelativeToNow = _cacheOptions.CacheDuration,
+            AbsoluteExpirationRelativeToNow =
+               _cacheOptions.CacheDuration,
          };
 
          _memoryCache.Set(cacheKey, fetchedValue, options);
@@ -82,6 +127,13 @@ public class AsyncMemoryCache<T> : IDisposable
             cacheLock.Dispose();
          }
       }
+   }
+
+   private static async Task<T?> InvokeFactoryAsync(
+      Func<CancellationToken, Task<T>> factory,
+      CancellationToken cancellationToken)
+   {
+      return await factory(cancellationToken);
    }
 
    private CacheLock AcquireCacheLock(string cacheKey)
@@ -113,7 +165,7 @@ public class AsyncMemoryCache<T> : IDisposable
    }
 
    private readonly ILogger<AsyncMemoryCache<T>> _logger;
-   private readonly ICacheSizeEstimator<T?> _sizeEstimator;
+   private readonly ICacheSizeEstimator<T> _sizeEstimator;
    private readonly ICacheOptions _cacheOptions;
    private readonly IMemoryCache _memoryCache;
 
