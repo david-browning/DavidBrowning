@@ -136,20 +136,20 @@ public static partial class Program
          typeof(DefaultCacheSizeEstimator<>));
 
       builder.Services.AddSingleton(
-         typeof(ICacheSizeEstimator<string?>),
+         typeof(ICacheSizeEstimator<string>),
          typeof(StringSizeEstimator));
 
       builder.Services.AddSingleton<
-         ICacheSizeEstimator<byte[]?>,
+         ICacheSizeEstimator<byte[]>,
          ByteArraySizeEstimator>();
 
       builder.Services.AddSingleton<
-         ICacheSizeEstimator<RenderedContent?>,
+         ICacheSizeEstimator<RenderedContent>,
          RenderedContentSizeEstimator>();
 
       builder.Services.AddSingleton<
-         ICacheSizeEstimator<object?>,
-         SingleObjectSizeEstimator<object?>>();
+         ICacheSizeEstimator<object>,
+         SingleObjectSizeEstimator<object>>();
 
       // Add specialized caching services
       builder.Services.AddSingleton<JsonCache>();

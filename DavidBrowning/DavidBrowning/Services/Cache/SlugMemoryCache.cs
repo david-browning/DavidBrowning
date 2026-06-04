@@ -14,7 +14,7 @@ public sealed class SlugMemoryCache<TLookup> : AsyncMemoryCache<TLookup>
    public SlugMemoryCache(
       ILogger<AsyncMemoryCache<TLookup>> logger,
       IOptions<SlugCacheOptions> options,
-      ICacheSizeEstimator<TLookup?> sizeEstimator)
+      ICacheSizeEstimator<TLookup> sizeEstimator)
       : base(logger, options.Value, sizeEstimator)
    {
    }

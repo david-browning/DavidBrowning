@@ -36,11 +36,11 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
       CancellationToken cancellationToken = default)
    {
       string cacheKey = GetCacheKey("by-id", id.ToString());
-      return await _asyncCache.GetOrCreateAsync(
+      return await _asyncCache.TryGetOrCreateAsync(
          cacheKey,
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
-            .SingleAsync(row => row.Id == id, token),
+            .SingleOrDefaultAsync(row => row.Id == id, token),
          cancellationToken);
    }
 
@@ -55,11 +55,11 @@ public sealed class SlugLookupCache<TLookup> : ISlugLookupService<TLookup>
       CancellationToken cancellationToken = default)
    {
       string cacheKey = GetCacheKey("by-slug", slug);
-      return await _asyncCache.GetOrCreateAsync(
+      return await _asyncCache.TryGetOrCreateAsync(
          cacheKey,
          token => _dbContext.Set<TLookup>()
             .AsNoTracking()
-            .SingleAsync(row => row.Slug == slug, token),
+            .SingleOrDefaultAsync(row => row.Slug == slug, token),
          cancellationToken);
    }
 

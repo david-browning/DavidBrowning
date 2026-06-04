@@ -3,8 +3,9 @@
 namespace DavidBrowning.Services.Cache.Estimators;
 
 internal sealed class SingleObjectSizeEstimator<T> : ICacheSizeEstimator<T>
+   where T : notnull
 {
-   public long EstimateSize(T? value)
+   public long EstimateSize(T value)
    {
       return 1;
    }

@@ -20,6 +20,7 @@ public sealed class JsonCache
    public async Task<T> GetJsonFileContentAsync<T>(
       string assetKey,
       CancellationToken cancellationToken = default)
+      where T : notnull
    {
       var cacheKey = GetJsonCacheKey<T>(assetKey);
 
@@ -42,6 +43,7 @@ public sealed class JsonCache
    private async Task<object> DeserializeAsync<T>(
       string assetKey,
       CancellationToken cancellationToken)
+      where T : notnull
    {
       var asset = await _contentStore.GetAssetAsync(
          assetKey, cancellationToken);
