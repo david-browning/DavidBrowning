@@ -3,6 +3,7 @@
 namespace DavidBrowning.Services.Cache.Estimators;
 
 public interface ICacheSizeEstimator<T>
+      where T : notnull
 {
-   long EstimateSize(T? value);
+   long EstimateSize(T value);
 }

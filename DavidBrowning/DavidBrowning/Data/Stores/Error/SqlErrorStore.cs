@@ -60,13 +60,13 @@ internal sealed class SqlErrorStore : IErrorStore
       };
    }
 
-   public Task<WebsiteError> GetErrorAsync(
+   public Task<WebsiteError?> GetErrorAsync(
       int id,
       CancellationToken cancellationToken = default)
    {
       return _context.WebsiteErrors
          .AsNoTracking()
-         .SingleAsync(e => e.Id == id);
+         .SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
    }
 
    public async Task<WebsiteError> InsertErrorAsync(

@@ -13,7 +13,7 @@ public interface IErrorStore
       int pageSize,
       CancellationToken cancellationToken = default);
 
-   Task<WebsiteError> GetErrorAsync(
+   Task<WebsiteError?> GetErrorAsync(
       int id,
       CancellationToken cancellationToken = default);
 
