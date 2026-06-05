@@ -1,6 +1,5 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Projects;
@@ -279,11 +278,6 @@ public class ProjectsController : Controller
          cancellationToken);
       var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Projects.json", cancellationToken);
-      if (heroData == null)
-      {
-         throw new FileNotFoundException("The hero data could not be parsed.");
-      }
-
       return new IndexViewModel()
       {
          PageTitle = "Projects",

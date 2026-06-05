@@ -1,0 +1,52 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+
+@model DavidBrowning.Models.ViewModels.Error.StatusCodeViewModel
+<style>
+	.wb-error-panel {
+		max-width: 52rem;
+		border-left: 4px solid var(--bs-danger);
+		padding-left: 1.5rem;
+	}
+
+	.wb-error-kicker {
+		color: var(--bs-danger);
+	}
+</style>
+
+<section class="wb-section">
+	<div class="wb-error-panel">
+		<p class="wb-kicker wb-error-kicker">
+			HTTP @Model.HttpError
+		</p>
+
+		<h1>@ViewData["ErrorHeading"]</h1>
+
+		<p class="wb-lede text-secondary">
+			@ViewData["ErrorMessage"]
+		</p>
+
+		<div class="d-flex flex-wrap gap-3 mt-4">
+			<a asp-controller="Home"
+			   asp-action="Index"
+			   class="btn btn-primary">
+				<i class="fa-solid fa-house" aria-hidden="true"></i>
+				Return home
+			</a>
+
+			<a asp-controller="Projects"
+			   asp-action="Index"
+			   class="btn btn-outline-secondary">
+				Browse projects
+			</a>
+		</div>
+
+		@if (Model.ShowRequestId)
+		{
+			<p class="text-secondary small mt-4 mb-0">
+				Request ID:
+				<code>@Model.RequestId</code>
+			</p>
+		}
+	</div>
+</section>

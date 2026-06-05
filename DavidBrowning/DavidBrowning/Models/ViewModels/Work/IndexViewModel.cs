@@ -14,7 +14,7 @@ public sealed class IndexViewModel
    /// <summary>
    /// The about me/career overview you'd see on LinkedIn or the resume.
    /// </summary>
-   public required string Lede {  get; init; }
+   public required string Lede { get; init; }
 
    /// <summary>
    /// Places I've worked.

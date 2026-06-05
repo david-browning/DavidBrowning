@@ -1,6 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Services.Assets;
@@ -24,29 +26,40 @@ public sealed class ContentController : Controller
 
    [HttpGet("{**assetKey}", Name = "GetContentAsset")]
    public async Task<IActionResult> GetAsync(
-      string assetKey,
-      CancellationToken cancellationToken)
+   string assetKey,
+   CancellationToken cancellationToken)
    {
-      if (_environment.IsDevelopment())
+      try
       {
-         Response.Headers.CacheControl = "no-cache";
+         if (_environment.IsDevelopment())
+         {
+            Response.Headers.CacheControl = "no-cache";
+         }
+         else
+         {
+            Response.Headers.CacheControl = "public, max-age=3600";
+         }
+
+         var asset = await _contentStore.GetAssetAsync(
+            assetKey, cancellationToken);
+
+         var stream = await _contentStore.OpenReadAsync(
+            assetKey, cancellationToken);
+
+         return File(
+            fileStream: stream,
+            contentType: asset.ContentType,
+            lastModified: asset.LastModifiedUtc,
+            entityTag: new EntityTagHeaderValue(asset.EntityTag));
       }
-      else
+      catch (FileNotFoundException)
       {
-         Response.Headers.CacheControl = "public, max-age=3600";
+         return NotFound();
       }
-
-      var asset = await _contentStore.GetAssetAsync(
-         assetKey, cancellationToken);
-
-      var stream = await _contentStore.OpenReadAsync(
-         assetKey, cancellationToken);
-
-      return File(
-         fileStream: stream,
-         contentType: asset.ContentType,
-         lastModified: asset.LastModifiedUtc,
-         entityTag: new EntityTagHeaderValue(asset.EntityTag));
+      catch (ArgumentException)
+      {
+         return NotFound();
+      }
    }
 
    private readonly IWebHostEnvironment _environment;

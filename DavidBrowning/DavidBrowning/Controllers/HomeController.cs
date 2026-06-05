@@ -59,12 +59,13 @@ public class HomeController : Controller
       }
       var project = await _projectStore.GetPublishedProjectBySlugAsync(
          projectSlug, cancellationToken);
-      if (project == null) {
+      if (project == null)
+      {
          throw new InvalidOperationException(
             $"Could not find a project with the slug {projectSlug}");
       }
 
-         var postSlug = _configuration.GetValue<string>("FeaturePostSlug");
+      var postSlug = _configuration.GetValue<string>("FeaturePostSlug");
       if (string.IsNullOrEmpty(postSlug))
       {
          throw new ArgumentNullException(
@@ -72,7 +73,7 @@ public class HomeController : Controller
       }
       var post = await _writingStore.GetPublishedPostBySlugAsync(
          postSlug, cancellationToken);
-      if(post == null)
+      if (post == null)
       {
          throw new InvalidOperationException(
             $"Could not find a post with the slug {postSlug}");

@@ -31,7 +31,9 @@ public sealed class MarkdownProjectContentRenderer
 
       if (contentLink is null)
       {
-         throw new ArgumentNullException(nameof(contentLink));
+         throw new InvalidOperationException(
+            $"Project '{project.Slug}' does not have a linked " +
+            $"'{_detailsContentRoleSlug}' asset.");
       }
 
       var contentAsset = contentLink.SiteAsset ??
@@ -63,7 +65,9 @@ public sealed class MarkdownProjectContentRenderer
          {
             var asset = link.SiteAsset ??
                throw new InvalidOperationException(
-                  $"Linked asset '{link.ReferenceKey}' is missing.");
+                  $"Project '{project.Slug}' contains linked asset " +
+                  $"'{link.ReferenceKey}', but its SiteAsset navigation property " +
+                  "was not loaded.");
 
             return new LinkedAssetReference()
             {

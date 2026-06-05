@@ -81,9 +81,7 @@ internal class SqlWritingStore : IWritingStore
       ArgumentException.ThrowIfNullOrWhiteSpace(slug);
 
       var post = await CreatePublishedPostDetailQuery()
-         .FirstOrDefaultAsync(
-            post => post.Slug == slug,
-            cancellationToken);
+         .SingleOrDefaultAsync(post => post.Slug == slug, cancellationToken);
       return post;
    }
 

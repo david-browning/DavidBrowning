@@ -43,9 +43,11 @@ internal sealed class SqlProjectStore : IProjectStore
    {
       var workOrigin = await _originLookup.GetIdBySlugAsync(
          "professional", cancellationToken);
-      if(workOrigin == null)
+      if (workOrigin == null)
       {
-         throw new ArgumentException("Could not find professional origin Id");
+         throw new InvalidOperationException(
+            "Required project origin 'professional' was not found while " +
+            "loading featured work projects.");
       }
 
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
@@ -99,6 +101,7 @@ internal sealed class SqlProjectStore : IProjectStore
       string slug,
       CancellationToken cancellationToken = default)
    {
+      ArgumentException.ThrowIfNullOrWhiteSpace(slug);
       var publicId = await _visibilityLookup.GetIdBySlugAsync(
         "public",
         cancellationToken);
@@ -147,6 +150,7 @@ internal sealed class SqlProjectStore : IProjectStore
       string originSlug,
       CancellationToken cancellationToken = default)
    {
+      ArgumentException.ThrowIfNullOrWhiteSpace(originSlug);
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
          .Where(project => project.ProjectOrigin!.Slug == originSlug)
@@ -159,6 +163,7 @@ internal sealed class SqlProjectStore : IProjectStore
       string typeSlug,
       CancellationToken cancellationToken = default)
    {
+      ArgumentException.ThrowIfNullOrWhiteSpace(typeSlug);
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
          .Where(project => project.ProjectType!.Slug == typeSlug)
@@ -171,6 +176,7 @@ internal sealed class SqlProjectStore : IProjectStore
       string statusSlug,
       CancellationToken cancellationToken = default)
    {
+      ArgumentException.ThrowIfNullOrWhiteSpace(statusSlug);
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
          .Where(project => project.ProjectStatus!.Slug == statusSlug)
@@ -183,6 +189,7 @@ internal sealed class SqlProjectStore : IProjectStore
       string tagSlug,
       CancellationToken cancellationToken = default)
    {
+      ArgumentException.ThrowIfNullOrWhiteSpace(tagSlug);
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
          .Where(project => project.TagLinks.Any(link =>
@@ -196,6 +203,7 @@ internal sealed class SqlProjectStore : IProjectStore
       string stackTagSlug,
       CancellationToken cancellationToken = default)
    {
+      ArgumentException.ThrowIfNullOrWhiteSpace(stackTagSlug);
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
          .Where(project => project.StackTagLinks.Any(link =>
@@ -271,6 +279,12 @@ internal sealed class SqlProjectStore : IProjectStore
       var publicId = await _visibilityLookup.GetIdBySlugAsync(
          "public",
          cancellationToken);
+
+      if (publicId == null)
+      {
+         throw new InvalidOperationException(
+            "Required project visibility 'public' was not found.");
+      }
 
       return _dbContext.Projects
          .AsNoTracking()
