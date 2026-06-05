@@ -2,11 +2,143 @@
    Source-available for viewing only. No license granted. *@
 @model DavidBrowning.Models.ViewModels.Home.IndexViewModel
 @{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = Model.PageTitle;
 }
 
 <section class="wb-hero">
-    <div class="container">
-       
-    </div>
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col">
+				<p class="wb-kicker">@Model.PageTitle</p>
+				<h1>@Model.HeroTitle</h1>
+				<p class="wb-lede">
+					@Model.Lede
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			<h2>Ideas worth exploring</h2>
+		</header>
+		<div class="row">
+			<div class="hstack">
+
+				<article class="card h-100">
+					<div class="card-body">
+						<h2 class="h4">
+							<i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+							Work
+						</h2>
+						<p>
+							Lorem ipsum-style test prose
+						</p>
+						<a class="stretched-link" href="/work">
+							See my career
+						</a>
+					</div>
+				</article>
+				<article class="card h-100">
+					<div class="card-body">
+						<h2 class="h4">
+							<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+							Projects
+						</h2>
+						<p>
+							Lorem ipsum-style test prose
+						</p>
+						<a class="stretched-link" href="/projects">
+							Explore projects
+						</a>
+					</div>
+				</article>
+				<article class="card h-100">
+					<div class="card-body">
+						<h2 class="h4">
+							<i class="fa-solid fa-pen" aria-hidden="true"></i>
+							Writing
+						</h2>
+						<p>
+							Lorem ipsum-style test prose
+						</p>
+						<a class="stretched-link" href="/projects">
+							What I write
+						</a>
+					</div>
+				</article>
+				<article class="card h-100">
+					<div class="card-body">
+						<h2 class="h4">
+							<i class="fa-solid fa-user" aria-hidden="true"></i>
+							About
+						</h2>
+						<p>
+							Lorem ipsum-style test prose
+						</p>
+						<a class="stretched-link" href="/projects">
+							More about the person
+						</a>
+					</div>
+				</article>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			<h2>From the workbench</h2>
+		</header>
+		<div class="row">
+			<div class="col">
+				<partial name="_FeaturedProjectCard" model="Model.FeaturedProject" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<a href="/projects">
+					View all projects
+					<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+				</a>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			<h2>From the notebook</h2>
+		</header>
+		<div class="row">
+			<div class="col">
+				<partial name="_FeaturedPostCard" model="Model.FeaturedPost" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<a href="/writing">
+					Browse all writing
+					<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+				</a>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			<h2>On the workbench</h2>
+		</header>
+		<div class="row">
+			<div class="col">
+				<partial name="_InterestCard" model="Model.WorkbenchInterest" />
+			</div>
+		</div>
+	</div>
 </section>

@@ -3,21 +3,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Data.Stores.Work;
-using DavidBrowning.Diagnostics;
 using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels.Work;
-using DavidBrowning.Models.Work;
 using DavidBrowning.Services.Cache;
-using DavidBrowning.Services.Slugs;
-using DavidBrowning.Services.Time;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers;
 
@@ -25,28 +16,12 @@ namespace DavidBrowning.Controllers;
 public class WorkController : Controller
 {
    public WorkController(
-      ILogger<WorkController> logger,
-      ISystemClock clock,
-      IErrorStore errorLogStore,
-      IOptions<DiagnosticsOptions> options,
-      IWebHostEnvironment environment,
-      IConfiguration configuration,
-
       IWorkStore workStore,
       IProjectStore projectStore,
-      ISlugService slugs,
       JsonCache jsonCache)
    {
-      _logger = logger;
-      _clock = clock;
-      _errorLogStore = errorLogStore;
-      _options = options.Value;
-      _webHostEnvironment = environment;
-      _configuration = configuration;
-
       _workStore = workStore;
       _projectStore = projectStore;
-      _slugService = slugs;
       _jsonCache = jsonCache;
    }
 
@@ -121,15 +96,7 @@ public class WorkController : Controller
    }
 
    private const string _resumeAssetKey = "documents/resume.pdf";
-   private readonly ILogger<WorkController> _logger;
-   private readonly ISystemClock _clock;
-   private readonly IErrorStore _errorLogStore;
-   private readonly DiagnosticsOptions _options;
-   private readonly IWebHostEnvironment _webHostEnvironment;
-   private readonly IConfiguration _configuration;
-
    private readonly IWorkStore _workStore;
    private readonly IProjectStore _projectStore;
-   private readonly ISlugService _slugService;
    private readonly JsonCache _jsonCache;
 }
