@@ -22,7 +22,7 @@ public sealed class ContentController : Controller
       _contentStore = contentStore;
    }
 
-   [HttpGet("{**assetKey}")]
+   [HttpGet("{**assetKey}", Name = "GetContentAsset")]
    public async Task<IActionResult> GetAsync(
       string assetKey,
       CancellationToken cancellationToken)

@@ -1,0 +1,29 @@
+[
+  {
+    "Id": 1,
+    "CompanyName": "Microsoft (contracted through HCL Technologies)",
+    "LocationDisplayText": "Redmond, WA",
+    "SortOrder": 10,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  },
+  {
+    "Id": 2,
+    "CompanyName": "Computers & Math 4 Kids",
+    "LocationDisplayText": "Redmond, WA",
+    "SortOrder": 20,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  },
+  {
+    "Id": 3,
+    "CompanyName": "California Polytechnic State University",
+    "LocationDisplayText": "San Luis Obispo, CA",
+    "SortOrder": 30,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  }
+]

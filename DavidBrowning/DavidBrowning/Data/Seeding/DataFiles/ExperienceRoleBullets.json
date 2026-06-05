@@ -1,0 +1,72 @@
+[
+  {
+    "Id": 1,
+    "ExperienceRoleId": 1,
+    "Text": "Owned the product release operations from managing Git repository to building, testing, and maintaining blue-green deployments, with semi-weekly deployments including product iterations, feature enhancements, and bug fixes.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "ExperienceRoleId": 1,
+    "Text": "Directed technical team coordination across a multidisciplinary engineering department through expectation setting, solution development, performance monitoring, technical documentation, and project prioritization, across 5 team members.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "ExperienceRoleId": 1,
+    "Text": "Modernized the release management from a manual repository to an automated, centralized, dynamic tool using ASP Core and C#, enabling advancements such as pipeline monitoring, backport requests, and simplified release processing.",
+    "SortOrder": 30,
+    "IsActive": true
+  },
+  {
+    "Id": 4,
+    "ExperienceRoleId": 1,
+    "Text": "Developed parsing and validation capability to ensure syntax and configuration integrity while integrating with Azure DevOps utilizing C# and PowerShell, proactively minimizing risk and maximizing product reliability.",
+    "SortOrder": 40,
+    "IsActive": true
+  },
+  {
+    "Id": 5,
+    "ExperienceRoleId": 1,
+    "Text": "Transformed the automated notification experience by eliminating manual vendor-based, process-driven scripting through integrating declarative template-driven processes, improving onboarding notification efficiency by 80%.",
+    "SortOrder": 50,
+    "IsActive": true
+  },
+  {
+    "Id": 6,
+    "ExperienceRoleId": 1,
+    "Text": "Provided pipeline development and maintenance support as a technical team lead and product expert.",
+    "SortOrder": 60,
+    "IsActive": true
+  },
+  {
+    "Id": 7,
+    "ExperienceRoleId": 2,
+    "Text": "Matured a local network infrastructure by building, implementing, maintaining, and managing the virtual private network (VPN), Windows Deployment server, and Windows Update server for a local afterschool program, serving 100+ recurring active users.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 8,
+    "ExperienceRoleId": 2,
+    "Text": "Scaled technical and development capabilities through end-to-end software configuration and integration for notable launches, such as creating and implementing an Active Directory site and automating computer deployment processes.",
+    "SortOrder": 20,
+    "IsActive": true
+  },
+  {
+    "Id": 9,
+    "ExperienceRoleId": 3,
+    "Text": "Created an extensive computer curriculum including program conceptualization, content creation, assessment building, and delivery design, serving students between the ages of 8 and 14.",
+    "SortOrder": 10,
+    "IsActive": true
+  },
+  {
+    "Id": 10,
+    "ExperienceRoleId": 4,
+    "Text": "Managed lab technology system including new software deployment, quality testing, technical support, system maintenance, and daily oversight, as a trusted partner with professors and university IT department.",
+    "SortOrder": 10,
+    "IsActive": true
+  }
+]

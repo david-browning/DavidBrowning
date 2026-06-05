@@ -9,6 +9,7 @@ using DavidBrowning.Data.Seeding;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
 using DavidBrowning.Data.Stores.Uncategorized;
+using DavidBrowning.Data.Stores.Work;
 using DavidBrowning.Data.Stores.Writing;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Extensions;
@@ -361,6 +362,7 @@ public static partial class Program
       ConfigureErrorStore(builder);
       ConfigureWritingStore(builder);
       ConfigureProjectStore(builder);
+      ConfigureWorkStore(builder);
       ConfigureUncategorizedStore(builder);
    }
 
@@ -404,6 +406,11 @@ public static partial class Program
 
       throw new InvalidOperationException(
          $"Unknown project store provider: {provider}");
+   }
+
+   private static void ConfigureWorkStore(WebApplicationBuilder builder)
+   {
+      builder.Services.AddScoped<IWorkStore, SqlWorkStore>();
    }
 
    private static void ConfigureUncategorizedStore(WebApplicationBuilder builder)
