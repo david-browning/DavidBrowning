@@ -27,7 +27,7 @@ namespace DavidBrowning.Controllers;
 public class AboutController : Controller
 {
    public AboutController(
-      ILogger<WorkController> logger,
+      ILogger<AboutController> logger,
       ISystemClock clock,
       IErrorStore errorLogStore,
       IOptions<DiagnosticsOptions> options,
@@ -72,11 +72,6 @@ public class AboutController : Controller
    {
       var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/About.json", cancellationToken);
-      if (heroData == null)
-      {
-         throw new FileNotFoundException("The hero data could not be parsed.");
-      }
-
       var profileImage = await _contentPipeline.GetRenderedContentAsync(
          "Images/Me.jpg",
          new ContentRenderOptions()
@@ -85,12 +80,9 @@ public class AboutController : Controller
             CssClass = "wb-about-profile-image",
          },
          cancellationToken);
-      if (profileImage == null)
-      {
-         throw new FileNotFoundException("The image is not found");
-      }
 
-      var interests = await _uncategorizedStore.GetInterestsAsync();
+      var interests = await _uncategorizedStore.GetInterestsAsync(
+         cancellationToken);
       List<InterestCardViewModel> interestCards = new();
       foreach (var interest in interests)
       {
@@ -129,7 +121,7 @@ public class AboutController : Controller
       };
    }
 
-   private readonly ILogger<WorkController> _logger;
+   private readonly ILogger<AboutController> _logger;
    private readonly ISystemClock _clock;
    private readonly IErrorStore _errorLogStore;
    private readonly DiagnosticsOptions _options;

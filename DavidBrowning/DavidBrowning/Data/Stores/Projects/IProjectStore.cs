@@ -25,6 +25,9 @@ public interface IProjectStore
    Task<IReadOnlyList<Project>> GetFeaturedProjectsAsync(
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<Project>> GetFeaturedWorkProjectsAsync(
+      CancellationToken cancellationToken = default);
+
    /// <summary>
    /// Assume the slug is normalized.
    /// </summary>

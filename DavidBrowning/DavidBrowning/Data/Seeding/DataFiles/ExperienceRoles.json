@@ -1,0 +1,46 @@
+[
+  {
+    "Id": 1,
+    "ExperienceId": 1,
+    "Title": "Lead Engineer",
+    "DateDisplayText": "2019-2025",
+    "Description": "Led and optimized the product deployment lifecycles for one of Microsoft's premier B2B solutions, Office 365 Admin Center, supporting Office 365 users globally.",
+    "SortOrder": 10,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  },
+  {
+    "Id": 2,
+    "ExperienceId": 2,
+    "Title": "System Administrator",
+    "DateDisplayText": "2018",
+    "Description": null,
+    "SortOrder": 10,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  },
+  {
+    "Id": 3,
+    "ExperienceId": 2,
+    "Title": "Coding & Scripting Instructor",
+    "DateDisplayText": "2015-2018",
+    "Description": null,
+    "SortOrder": 20,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  },
+  {
+    "Id": 4,
+    "ExperienceId": 3,
+    "Title": "Lab Manager",
+    "DateDisplayText": "2017",
+    "Description": null,
+    "SortOrder": 10,
+    "IsActive": true,
+    "CreatedAtUtc": "2026-06-04T00:00:00Z",
+    "UpdatedAtUtc": "2026-06-04T00:00:00Z"
+  }
+]

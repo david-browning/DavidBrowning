@@ -2,7 +2,96 @@
    Source-available for viewing only. No license granted. *@
 @model DavidBrowning.Models.ViewModels.Work.IndexViewModel
 @{
-	ViewData["Title"] = "Work";
+	ViewData["Title"] = Model.PageTitle;
 }
 
-Info about my career
+<section class="wb-hero">
+	<div class="container">
+		<div class="row g-4 align-items-center">
+			<div class="col">
+				@* Use these kickers if a page is broken into many sections *@
+				<p class="wb-kicker">@Model.PageTitle</p>
+				<h1>@Model.HeroTitle</h1>
+				<p class="wb-lede">
+					@Model.Lede
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="experience" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Professional Experience</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+		<div class="row row-cols-1 g-4">
+			@foreach (var exp in Model.Experience)
+			{
+				<div class="col">
+					<partial name="_ExperienceCard" model="exp" />
+				</div>
+			}
+		</div>
+	</div>
+</section>
+
+<section id="credentials" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Credentials</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+		<div class="row row-cols-1 g-4">
+			@foreach (var cred in Model.Credentials)
+			{
+				<div class="col">
+					<partial name="_CredentialCard" model="cred" />
+				</div>
+			}
+		</div>
+	</div>
+</section>
+
+<section id="featured" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* Use these kickers if a page is broken into many sections *@
+			@* <p class="wb-kicker">Projects</p> *@
+			<h2>Featured Projects</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+		<div class="wb-featured-grid">
+			@foreach (var project in Model.FeaturedWorkProjects)
+			{
+				<div class="col">
+					<partial name="_FeaturedProjectCard" model="project" />
+				</div>
+			}
+		</div>
+	</div>
+</section>
+
+<section id="resume" class="wb-section">
+	<div class="container">
+		<header class="wb-section-header">
+			@* <p class="wb-kicker"></p> *@
+			<h2>Resume Download</h2>
+			<p class="wb-lede">
+				Download my resume in PDF form.
+			</p>
+		</header>
+		<div class="row g-4">
+			<a class="wb-footer-link"
+			   asp-area="" asp-controller="Work" asp-action="Resume">
+				<i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+				<span>Download</span>
+			</a>
+		</div>
+	</div>
+</section>

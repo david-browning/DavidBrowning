@@ -1,13 +1,15 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
+using DavidBrowning.Data.Stores.Work;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels.Work;
+using DavidBrowning.Models.Work;
 using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Slugs;
 using DavidBrowning.Services.Time;
@@ -30,6 +32,7 @@ public class WorkController : Controller
       IWebHostEnvironment environment,
       IConfiguration configuration,
 
+      IWorkStore workStore,
       IProjectStore projectStore,
       ISlugService slugs,
       JsonCache jsonCache)
@@ -41,6 +44,7 @@ public class WorkController : Controller
       _webHostEnvironment = environment;
       _configuration = configuration;
 
+      _workStore = workStore;
       _projectStore = projectStore;
       _slugService = slugs;
       _jsonCache = jsonCache;
@@ -58,7 +62,10 @@ public class WorkController : Controller
    [HttpGet("resume")]
    public IActionResult Resume()
    {
-      return View();
+      return RedirectToRoute("GetContentAsset", new
+      {
+         assetKey = _resumeAssetKey,
+      });
    }
 
    /// <summary>
@@ -96,21 +103,24 @@ public class WorkController : Controller
    private async Task<IndexViewModel> GetIndexModelAsync(
       CancellationToken cancellationToken)
    {
-      var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/Work.json");
-      if (hero == null)
-      {
-         throw new FileNotFoundException("Hero data missing");
-      }
-
+      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+         "Heros/Work.json", cancellationToken);
+      var exp = await _workStore.GetExperienceAsync(cancellationToken);
+      var cred = await _workStore.GetCredentialsAsync(cancellationToken);
+      var projects = await _projectStore.GetFeaturedWorkProjectsAsync(
+         cancellationToken);
       return new()
       {
-         PageTitle = "Work",
-         HeroTitle = hero.Title ?? "Missing Data",
-         HeroSubtitle = hero.Subtitle ?? "Missing Data",
+         PageTitle = heroData.Title ?? "Missing Data",
+         HeroTitle = heroData.Subtitle ?? "Missing Data",
+         Lede = heroData.Lede ?? "Missing Data",
+         Experience = exp.Select(e => new ExperienceViewModel(e)).ToList(),
+         Credentials = cred.Select(c => new CredentialViewModel(c)).ToList(),
+         FeaturedWorkProjects = projects,
       };
    }
 
+   private const string _resumeAssetKey = "documents/resume.pdf";
    private readonly ILogger<WorkController> _logger;
    private readonly ISystemClock _clock;
    private readonly IErrorStore _errorLogStore;
@@ -118,6 +128,7 @@ public class WorkController : Controller
    private readonly IWebHostEnvironment _webHostEnvironment;
    private readonly IConfiguration _configuration;
 
+   private readonly IWorkStore _workStore;
    private readonly IProjectStore _projectStore;
    private readonly ISlugService _slugService;
    private readonly JsonCache _jsonCache;

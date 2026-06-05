@@ -17,11 +17,13 @@ internal sealed class SqlProjectStore : IProjectStore
    public SqlProjectStore(
       ILogger<SqlProjectStore> logger,
       SiteDbContext context,
+      ISlugLookupService<ProjectOrigin> originLookup,
       ISlugLookupService<ProjectStatus> statusLookup,
       ISlugLookupService<ProjectVisibility> visibleLookup)
    {
       _logger = logger;
       _dbContext = context;
+      _originLookup = originLookup;
       _statusLookup = statusLookup;
       _visibilityLookup = visibleLookup;
    }
@@ -31,6 +33,24 @@ internal sealed class SqlProjectStore : IProjectStore
    {
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
+         .OrderBy(project => project.SortOrder)
+         .ThenBy(project => project.Name)
+         .ToListAsync(cancellationToken);
+   }
+
+   public async Task<IReadOnlyList<Project>> GetFeaturedWorkProjectsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      var workOrigin = await _originLookup.GetIdBySlugAsync(
+         "professional", cancellationToken);
+      if(workOrigin == null)
+      {
+         throw new ArgumentException("Could not find professional origin Id");
+      }
+
+      var query = await BuildPublishedProjectQueryAsync(cancellationToken);
+      return await query
+         .Where(project => project.ProjectOriginId == workOrigin)
          .OrderBy(project => project.SortOrder)
          .ThenBy(project => project.Name)
          .ToListAsync(cancellationToken);
@@ -268,6 +288,7 @@ internal sealed class SqlProjectStore : IProjectStore
 
    private readonly ILogger<SqlProjectStore> _logger;
    private readonly SiteDbContext _dbContext;
+   private readonly ISlugLookupService<ProjectOrigin> _originLookup;
    private readonly ISlugLookupService<ProjectStatus> _statusLookup;
    private readonly ISlugLookupService<ProjectVisibility> _visibilityLookup;
 }

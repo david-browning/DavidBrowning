@@ -3,6 +3,7 @@
 using DavidBrowning.Models;
 using DavidBrowning.Models.Error;
 using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.Work;
 using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,13 +62,22 @@ public sealed partial class SiteDbContext : DbContext
 
    public DbSet<Interest> Interests => Set<Interest>();
 
+   public DbSet<Experience> Experiences => Set<Experience>();
+
+   public DbSet<ExperienceRole> ExperienceRoles => Set<ExperienceRole>();
+
+   public DbSet<ExperienceRoleBullet> ExperienceRoleBullets =>
+      Set<ExperienceRoleBullet>();
+
+   public DbSet<Credential> Credentials => Set<Credential>();
+
    protected override void OnModelCreating(ModelBuilder modelBuilder)
    {
       base.OnModelCreating(modelBuilder);
-
       ConfigureErrors(modelBuilder);
       ConfigureSiteAssets(modelBuilder);
       ConfigureWriting(modelBuilder);
       ConfigureProjects(modelBuilder);
+      ConfigureWork(modelBuilder);
    }
 }
