@@ -1,12 +1,14 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
+
+@model DavidBrowning.Models.ViewModels.Error.StatusCodeViewModel
+
 @{
-	ViewData["Title"] = "Page Not Found";
+    ViewData["Title"] = "Page not found";
+    ViewData["ErrorHeading"] = "That page could not be found.";
+    ViewData["ErrorMessage"] =
+       "The address may be outdated, or the page may have moved. " +
+       "Return to the home page or continue browsing the site.";
 }
 
-<section class="wb-hero">
-	<div class="container">
-		<h1 class="text-danger">Page Not Found</h1>
-		<h2>The page you requested could not be found.</h2>
-	</div>
-</section>
+<partial name="_ErrorPage" model="Model" />

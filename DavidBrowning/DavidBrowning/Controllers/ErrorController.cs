@@ -5,8 +5,6 @@ using System.Diagnostics;
 using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Models.ViewModels.Error;
-using DavidBrowning.Services.Time;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,35 +30,24 @@ public class ErrorController : Controller
       _errorStore = errorStore;
    }
 
-   [HttpGet]
-   [Route("/Error/StatusCode/{statusCode:int}")]
+   [Route("Error/StatusCode/{statusCode}")]
    public IActionResult StatusCodePage(int statusCode)
    {
-      var exceptionFeature =
-         HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-
-      var statusCodeFeature =
-         HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
-
-      StatusCodeViewModel model = new()
+      var model = new StatusCodeViewModel()
       {
          HttpError = statusCode,
-         RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
-         OriginalPath =
-            exceptionFeature?.Path ??
-            statusCodeFeature?.OriginalPath ??
-            HttpContext.Request.Path.Value,
-         OriginalQueryString =
-            statusCodeFeature?.OriginalQueryString ?? string.Empty,
+         RequestId = Activity.Current?.Id ??
+            HttpContext.TraceIdentifier,
       };
-
-      Response.StatusCode = statusCode;
 
       return statusCode switch
       {
+         StatusCodes.Status400BadRequest => View("BadRequest", model),
+         StatusCodes.Status401Unauthorized => View("Unauthorized", model),
          StatusCodes.Status403Forbidden => View("Forbidden", model),
          StatusCodes.Status404NotFound => View("NotFound", model),
-         _ => View("ServerError", model)
+         StatusCodes.Status500InternalServerError => View("ServerError", model),
+         _ => View("StatusCode", model),
       };
    }
 
@@ -76,6 +63,69 @@ public class ErrorController : Controller
 
       throw new InvalidOperationException(
          "This is a test exception thrown by ErrorController to test the error middleware.");
+   }
+
+   [HttpGet("test-bad-request")]
+   public IActionResult ReturnTestBadRequest()
+   {
+      return ReturnTestStatusCode(StatusCodes.Status400BadRequest);
+   }
+
+   [HttpGet("test-unauthorized")]
+   public IActionResult ReturnTestUnauthorized()
+   {
+      return ReturnTestStatusCode(StatusCodes.Status401Unauthorized);
+   }
+
+   [HttpGet("test-forbidden")]
+   public IActionResult ReturnTestForbidden()
+   {
+      return ReturnTestStatusCode(StatusCodes.Status403Forbidden);
+   }
+
+   [HttpGet("test-not-found")]
+   public IActionResult ReturnTestNotFound()
+   {
+      return ReturnTestStatusCode(StatusCodes.Status404NotFound);
+   }
+
+   [HttpGet("test-server-error")]
+   public IActionResult ReturnTestServerError()
+   {
+      return ReturnTestStatusCode(StatusCodes.Status500InternalServerError);
+   }
+
+   [HttpGet("test-generic-status")]
+   public IActionResult ReturnTestGenericStatus()
+   {
+      return ReturnTestStatusCode(StatusCodes.Status418ImATeapot);
+   }
+
+   /// <summary>
+   /// Returns an empty HTTP error response so the status-code middleware can
+   /// re-execute the matching error-page endpoint.
+   /// </summary>
+   /// <param name="statusCode">
+   /// HTTP error status code to return. Only 4xx and 5xx codes are supported.
+   /// </param>
+   /// <returns></returns>
+   [HttpGet("test-status/{statusCode:int}")]
+   public IActionResult ReturnTestStatusCode(int statusCode)
+   {
+      IActionResult? guardResult = GuardDiagnosticsAccess();
+
+      if (guardResult is not null)
+      {
+         return guardResult;
+      }
+
+      if (statusCode < 400 || statusCode > 599)
+      {
+         return BadRequest(
+            "The test status code must be between 400 and 599.");
+      }
+
+      return StatusCode(statusCode);
    }
 
    /// <summary>

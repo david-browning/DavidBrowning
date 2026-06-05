@@ -1,14 +1,13 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
-
 @model DavidBrowning.Models.ViewModels.Error.StatusCodeViewModel
 
 @{
-    ViewData["Title"] = "Access unavailable";
-    ViewData["ErrorHeading"] = "This page is not available.";
+    ViewData["Title"] = "Request could not be completed";
+    ViewData["ErrorHeading"] = "That request could not be completed.";
     ViewData["ErrorMessage"] =
-       "The requested page cannot be displayed. Return to the home " +
-       "page or continue browsing the public areas of the site.";
+       "The site could not understand that request. Return home and " +
+       "choose a page from the site navigation.";
 }
 
 <partial name="_ErrorPage" model="Model" />

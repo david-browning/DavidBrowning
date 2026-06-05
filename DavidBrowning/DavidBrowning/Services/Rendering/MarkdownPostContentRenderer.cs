@@ -40,7 +40,9 @@ public sealed class MarkdownPostContentRenderer
          {
             var asset = link.SiteAsset ??
                throw new InvalidOperationException(
-                  $"Linked asset '{link.ReferenceKey}' is missing.");
+                  $"Post revision {revision.Id} contains linked asset " +
+                  $"'{link.ReferenceKey}', but its SiteAsset navigation property " +
+                  "was not loaded.");
 
             return new LinkedAssetReference()
             {

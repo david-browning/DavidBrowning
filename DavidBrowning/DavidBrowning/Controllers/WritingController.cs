@@ -1,7 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,10 +116,6 @@ public class WritingController : Controller
       var all = await _writingStore.GetPublishedPostsAsync(cancellationToken);
       var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Writing.json", cancellationToken);
-      if (heroData == null)
-      {
-         throw new FileNotFoundException("The hero data could not be parsed.");
-      }
 
       return new IndexViewModel()
       {

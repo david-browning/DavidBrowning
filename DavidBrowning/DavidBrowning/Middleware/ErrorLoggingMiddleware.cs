@@ -32,10 +32,7 @@ internal sealed class ErrorLoggingMiddleware
       }
       catch (Exception exception)
       {
-         var error = CreateErrorLogEntry(
-            context,
-            exception,
-            environment);
+         var error = CreateErrorLogEntry(context, exception, environment);
 
          try
          {
@@ -44,9 +41,12 @@ internal sealed class ErrorLoggingMiddleware
          catch (OperationCanceledException)
             when (context.RequestAborted.IsCancellationRequested)
          {
-            // Request was canceled by client/request lifetime.
-            // Usually don't log as an application failure.
-            _logger.LogInformation("Request aborted");
+            _logger.LogInformation(
+               "Request was aborted by the client for {Method} {Path}.",
+               context.Request.Method,
+               context.Request.Path);
+
+            throw;
          }
          catch (Exception loggingException)
          {
