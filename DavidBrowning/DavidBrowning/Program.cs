@@ -430,7 +430,7 @@ public static partial class Program
       if (app.Environment.IsDevelopment())
       {
          app.UseDeveloperExceptionPage();
-         if (config.GetValue<bool>(_enableCustomerErrorsKey))
+         if (config.GetValue<bool>(_enableCustomErrorsKey))
          {
             app.UseExceptionHandler(_internalServerErrorPath);
          }
@@ -564,8 +564,8 @@ public static partial class Program
    private const string _contentStoreName = "ContentStore";
 
    private const string _databaseProviderKey = "Database:Provider";
-   private const string _enableCustomerErrorsKey =
-      "Diagnostics:EnableCustomerErrors";
+   private const string _enableCustomErrorsKey =
+      "Diagnostics:EnableCustomErrors";
    private const string _enableDetailedErrorsKey =
       "Diagnostics:EntityFrameworkOptions:EnableDetailedErrors";
    private const string _enableSensitiveDataLoggingKey =

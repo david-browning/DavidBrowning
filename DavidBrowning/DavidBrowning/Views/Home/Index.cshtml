@@ -9,7 +9,7 @@
 	<div class="container">
 		<div class="row g-4 align-items-center">
 			<div class="col">
-				<p class="wb-kicker">@Model.PageTitle</p>
+				<p class="wb-kicker">David Browning / Software Engineer</p>
 				<h1>@Model.HeroTitle</h1>
 				<p class="wb-lede">
 					@Model.Lede
@@ -22,66 +22,64 @@
 <section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
+			<p class="wb-kicker">01 / Explore</p>
 			<h2>Ideas worth exploring</h2>
 		</header>
-		<div class="row">
-			<div class="hstack">
-
-				<article class="card h-100">
-					<div class="card-body">
-						<h2 class="h4">
-							<i class="fa-solid fa-briefcase" aria-hidden="true"></i>
-							Work
-						</h2>
-						<p>
-							Lorem ipsum-style test prose
-						</p>
-						<a class="stretched-link" href="/work">
-							See my career
-						</a>
-					</div>
+		<div class="row row-cols-1 row-cols-lg-4 g-4 align-items-center">
+			<div class="col">
+				<article class="wb-card h-100">
+					<h3>
+						<i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+						Work
+					</h3>
+					<p class="text-secondary">
+						Lorem ipsum-style test prose
+					</p>
+					<a class="stretched-link" href="/work">
+						See my career
+					</a>
 				</article>
-				<article class="card h-100">
-					<div class="card-body">
-						<h2 class="h4">
-							<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
-							Projects
-						</h2>
-						<p>
-							Lorem ipsum-style test prose
-						</p>
-						<a class="stretched-link" href="/projects">
-							Explore projects
-						</a>
-					</div>
+			</div>
+			<div class="col">
+				<article class="wb-card h-100">
+					<h3 class="h4">
+						<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+						Projects
+					</h3>
+					<p class="text-secondary">
+						Lorem ipsum-style test prose
+					</p>
+					<a class="stretched-link" href="/projects">
+						Explore projects
+					</a>
 				</article>
-				<article class="card h-100">
-					<div class="card-body">
-						<h2 class="h4">
-							<i class="fa-solid fa-pen" aria-hidden="true"></i>
-							Writing
-						</h2>
-						<p>
-							Lorem ipsum-style test prose
-						</p>
-						<a class="stretched-link" href="/projects">
-							What I write
-						</a>
-					</div>
+			</div>
+			<div class="col">
+				<article class="wb-card h-100">
+					<h3 class="h4">
+						<i class="fa-solid fa-pen" aria-hidden="true"></i>
+						Writing
+					</h3>
+					<p class="text-secondary">
+						Lorem ipsum-style test prose
+					</p>
+					<a class="stretched-link" href="/projects">
+						What I write
+					</a>
 				</article>
-				<article class="card h-100">
-					<div class="card-body">
-						<h2 class="h4">
-							<i class="fa-solid fa-user" aria-hidden="true"></i>
-							About
-						</h2>
-						<p>
-							Lorem ipsum-style test prose
-						</p>
-						<a class="stretched-link" href="/projects">
-							More about the person
-						</a>
-					</div>
+			</div>
+			<div class="col">
+				<article class="wb-card h-100">
+					<h3 class="h4">
+						<i class="fa-solid fa-user" aria-hidden="true"></i>
+						About
+					</h3>
+					<p class="text-secondary">
+						Lorem ipsum-style test prose
+					</p>
+					<a class="stretched-link" href="/projects">
+						More about the person
+					</a>
 				</article>
 			</div>
 		</div>
@@ -91,14 +89,15 @@
 <section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
+			<p class="wb-kicker">02 / Selected Projects</p>
 			<h2>From the workbench</h2>
 		</header>
-		<div class="row">
+		<div class="row g-4">
 			<div class="col">
 				<partial name="_FeaturedProjectCard" model="Model.FeaturedProject" />
 			</div>
 		</div>
-		<div class="row">
+		<div class="row mt-1 g-4">
 			<div class="col">
 				<a href="/projects">
 					View all projects
@@ -112,14 +111,15 @@
 <section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
+			<p class="wb-kicker">03 / Recent Writing</p>
 			<h2>From the notebook</h2>
 		</header>
-		<div class="row">
+		<div class="row g-4">
 			<div class="col">
 				<partial name="_FeaturedPostCard" model="Model.FeaturedPost" />
 			</div>
 		</div>
-		<div class="row">
+		<div class="row mt-1 g-4">
 			<div class="col">
 				<a href="/writing">
 					Browse all writing
@@ -133,9 +133,10 @@
 <section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
+			<p class="wb-kicker">04 / In Progress</p>
 			<h2>On the workbench</h2>
 		</header>
-		<div class="row">
+		<div class="row g-4">
 			<div class="col">
 				<partial name="_InterestCard" model="Model.WorkbenchInterest" />
 			</div>

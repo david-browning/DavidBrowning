@@ -9,15 +9,9 @@
 	<div class="container">
 		<div class="row g-4 align-items-center">
 			<div class="col">
-				@* Use these kickers if a page is broken into many sections *@
-				<p class="wb-kicker">Projects</p>
-				<h1>
-					@Model.ProjectName
-				</h1>
-
-				<p class="wb-lede">
-					@Model.Description
-				</p>
+				<p class="wb-kicker">Projects / @Model.ProjectType</p>
+				<h1>@Model.ProjectName</h1>
+				<p class="wb-lede">@Model.Description</p>
 			</div>
 		</div>
 
@@ -114,63 +108,59 @@
 @if (Model.Body is not null)
 {
 	<section class="wb-section">
+		<header class="wb-section-header">
+			<p class="wb-kicker">Case Study</p>
+			<h2>Project details</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
 		<partial name="_RenderedContent" model="Model.Body" />
 	</section>
 }
 
 @if (Model.AssetBlocks.Count > 0)
 {
-	<section id="details" class="wb-section">
-		<div class="container">
-			<header class="wb-section-header">
-				@* Use these kickers if a page is broken into many sections *@
-				@* <p class="wb-kicker">Projects</p> *@
-				<h2>Project Details</h2>
-				@* <p class="wb-lede"></p> *@
-			</header>
-
-			<div class="row row-cols-1 g-4">
-				@foreach (var asset in Model.AssetBlocks)
-				{
-					<partial name="_AssetBlock" model="@asset" />
-				}
-			</div>
-		</div>
+	<section class="wb-section">
+		<header class="wb-section-header">
+			<p class="wb-kicker">Visuals</p>
+			<h2>Screenshots and diagrams</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+		@foreach (var asset in Model.AssetBlocks)
+		{
+			<partial name="_AssetBlock" model="asset" />
+		}
 	</section>
 }
 
 @if (Model.Links.Count > 0)
 {
-	<section id="links" class="wb-section">
-		<div class="container">
-			<header class="wb-section-header">
-				@* Use these kickers if a page is broken into many sections *@
-				@* <p class="wb-kicker">Projects</p> *@
-				<h2>Project Links</h2>
-				<p class="wb-lede">Links to project resources.</p>
-			</header>
+	<section class="wb-section">
+		<header class="wb-section-header">
+			<p class="wb-kicker">Resources</p>
+			<h2>Project links</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
 
-			<div class="row row-cols-1 g-4">
-				<div class="col">
-					<aside class="wb-panel wb-panel-accent">
-						<p class="wb-card-meta">Tags:</p>
-						<ul class="wb-tag-list mt-4">
-							@foreach (var link in Model.Links)
-							{
-								<li class="wb-tag">
-									<a class="wb-footer-link link-danger"
-									   href="@link.Url" target="_blank" rel="noopener noreferrer">
-										@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
-										{
-											<i class="@link.ProjectLinkType!.IconCssClass" aria-hidden="true"></i>
-										}
-										<span>@link.Label</span>
-									</a>
-								</li>
-							}
-						</ul>
-					</aside>
-				</div>
+		<div class="row row-cols-1 g-4">
+			<div class="col">
+				<aside class="wb-panel wb-panel-accent">
+					<p class="wb-card-meta">Tags:</p>
+					<ul class="wb-tag-list mt-4">
+						@foreach (var link in Model.Links)
+						{
+							<li class="wb-tag">
+								<a class="wb-footer-link link-danger"
+								   href="@link.Url" target="_blank" rel="noopener noreferrer">
+									@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
+									{
+										<i class="@link.ProjectLinkType!.IconCssClass" aria-hidden="true"></i>
+									}
+									<span>@link.Label</span>
+								</a>
+							</li>
+						}
+					</ul>
+				</aside>
 			</div>
 		</div>
 	</section>
@@ -178,19 +168,19 @@
 
 @if (Model.RelatedPosts.Count > 0)
 {
-	<section id="related" class="wb-section">
-		<div class="container">
-			<header class="wb-section-header">
-				<h2>Also Read</h2>
-			</header>
-			<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5 g-4">
-				@foreach (var post in Model.RelatedPosts)
-				{
-					<div class="col">
-						<partial name="_FeaturedPostCard" model="post.Post" />
-					</div>
-				}
-			</div>
+	<section class="wb-section">
+		<header class="wb-section-header">
+			<p class="wb-kicker">Further Reading</p>
+			<h2>Also read</h2>
+			@* <p class="wb-lede"></p> *@
+		</header>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5 g-4">
+			@foreach (var post in Model.RelatedPosts)
+			{
+				<div class="col">
+					<partial name="_FeaturedPostCard" model="post.Post" />
+				</div>
+			}
 		</div>
 	</section>
 }
