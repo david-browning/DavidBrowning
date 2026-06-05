@@ -12,8 +12,6 @@ public class CredentialViewModel
    {
       IssuingOrganization = cred.IssuingOrganization;
       Name = cred.Name;
-      AwardedMonth = cred.AwardedMonth;
-      AwardedYear = cred.AwardedYear;
       CredentialUrl = cred.CredentialUrl;
       DateDisplayText = cred.DateDisplayText;
       Description = cred.Description;
@@ -25,10 +23,6 @@ public class CredentialViewModel
    public required string Name { get; init; }
 
    public string? Type { get; init; }
-
-   public int? AwardedMonth { get; init; }
-
-   public int? AwardedYear { get; init; }
 
    public string? DateDisplayText { get; init; }
 
