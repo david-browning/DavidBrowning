@@ -5,9 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Writing;
-using DavidBrowning.Diagnostics;
 using DavidBrowning.Models;
 using DavidBrowning.Models.ViewModels;
 using DavidBrowning.Models.ViewModels.Writing;
@@ -15,12 +13,7 @@ using DavidBrowning.Models.Writing;
 using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
-using DavidBrowning.Services.Time;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers;
 
@@ -28,26 +21,12 @@ namespace DavidBrowning.Controllers;
 public class WritingController : Controller
 {
    public WritingController(
-      ILogger<WritingController> logger,
-      ISystemClock clock,
-      IErrorStore errorLogStore,
-      IOptions<DiagnosticsOptions> options,
-      IWebHostEnvironment environment,
-      IConfiguration configuration,
-
       JsonCache jsonCache,
       MarkdownPostContentRenderer postRendered,
       IWritingStore writingStore,
       ISlugService slugs,
       ISlugLookupService<WritingTag> tagStore)
    {
-      _logger = logger;
-      _clock = clock;
-      _errorLogStore = errorLogStore;
-      _options = options.Value;
-      _webHostEnvironment = environment;
-      _configuration = configuration;
-
       _jsonCache = jsonCache;
       _postRendered = postRendered;
       _writingStore = writingStore;
@@ -152,13 +131,6 @@ public class WritingController : Controller
          FeaturedPosts = featured,
       };
    }
-
-   private readonly ILogger<WritingController> _logger;
-   private readonly ISystemClock _clock;
-   private readonly IErrorStore _errorLogStore;
-   private readonly DiagnosticsOptions _options;
-   private readonly IWebHostEnvironment _webHostEnvironment;
-   private readonly IConfiguration _configuration;
 
    private readonly JsonCache _jsonCache;
    private readonly IWritingStore _writingStore;

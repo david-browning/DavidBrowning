@@ -3,9 +3,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Error;
 using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Diagnostics;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
 using DavidBrowning.Models.ViewModels;
@@ -14,12 +12,7 @@ using DavidBrowning.Services.Assets;
 using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
-using DavidBrowning.Services.Time;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Controllers;
 
@@ -27,37 +20,21 @@ namespace DavidBrowning.Controllers;
 public class ProjectsController : Controller
 {
    public ProjectsController(
-      ILogger<ProjectsController> logger,
-      ISystemClock clock,
-      IErrorStore errorLogStore,
-      IOptions<DiagnosticsOptions> options,
-      IWebHostEnvironment environment,
-      IConfiguration configuration,
-
       JsonCache jsonCache,
       IContentPipeline contentPipeline,
       IProjectStore project,
       ISlugService slugService,
       MarkdownProjectContentRenderer projectRenderer,
-      ISlugLookupService<ProjectVisibility> projectLookup,
       ISlugLookupService<ProjectStackTag> stackLookup,
       ISlugLookupService<ProjectOrigin> originLookup,
       ISlugLookupService<ProjectType> typeLookup,
       ISlugLookupService<ProjectStatus> statusLookup,
       ISlugLookupService<ProjectTag> tagLookup)
    {
-      _logger = logger;
-      _clock = clock;
-      _errorLogStore = errorLogStore;
-      _options = options.Value;
-      _webHostEnvironment = environment;
-      _configuration = configuration;
-
       _jsonCache = jsonCache;
       _contentPipeline = contentPipeline;
       _projectStore = project;
       _slugService = slugService;
-      _projectVisibilityLookup = projectLookup;
       _stackLookup = stackLookup;
       _originLookup = originLookup;
       _typeLookup = typeLookup;
@@ -317,19 +294,11 @@ public class ProjectsController : Controller
       };
    }
 
-   private readonly ILogger<ProjectsController> _logger;
-   private readonly ISystemClock _clock;
-   private readonly IErrorStore _errorLogStore;
-   private readonly DiagnosticsOptions _options;
-   private readonly IWebHostEnvironment _webHostEnvironment;
-   private readonly IConfiguration _configuration;
-
    private readonly JsonCache _jsonCache;
    private readonly IContentPipeline _contentPipeline;
    private readonly IProjectStore _projectStore;
    private readonly ISlugService _slugService;
    private readonly MarkdownProjectContentRenderer _projectContentRenderer;
-   private readonly ISlugLookupService<ProjectVisibility> _projectVisibilityLookup;
    private readonly ISlugLookupService<ProjectStackTag> _stackLookup;
    private readonly ISlugLookupService<ProjectOrigin> _originLookup;
    private readonly ISlugLookupService<ProjectType> _typeLookup;

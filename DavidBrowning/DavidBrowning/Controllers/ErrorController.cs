@@ -20,21 +20,15 @@ public class ErrorController : Controller
 {
    public ErrorController(
       ILogger<ErrorController> logger,
-      ISystemClock clock,
-      IErrorStore errorLogStore,
       IOptions<DiagnosticsOptions> options,
       IWebHostEnvironment environment,
       IConfiguration configuration,
-
       IErrorStore errorStore)
    {
       _logger = logger;
-      _clock = clock;
-      _errorLogStore = errorLogStore;
       _options = options.Value;
       _webHostEnvironment = environment;
       _configuration = configuration;
-
       _errorStore = errorStore;
    }
 
@@ -105,11 +99,8 @@ public class ErrorController : Controller
    }
 
    private readonly ILogger<ErrorController> _logger;
-   private readonly ISystemClock _clock;
-   private readonly IErrorStore _errorLogStore;
    private readonly DiagnosticsOptions _options;
    private readonly IWebHostEnvironment _webHostEnvironment;
    private readonly IConfiguration _configuration;
-
    private readonly IErrorStore _errorStore;
 }
