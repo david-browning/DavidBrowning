@@ -2,7 +2,7 @@
    Source-available for viewing only. No license granted. *@
 @model DavidBrowning.Models.ViewModels.Writing.IndexViewModel
 @{
-	ViewData["Title"] = "Writing";
+	ViewData["Title"] = Model.PageTitle;
 }
 
 <section class="wb-hero">
@@ -31,9 +31,7 @@
 			<div class="wb-featured-grid">
 				@foreach (var post in Model.FeaturedPosts)
 				{
-					<div class="col">
-						<partial name="_FeaturedPostCard" model="post" />
-					</div>
+					<partial name="_FeaturedPostCard" model="post" />
 				}
 			</div>
 		</div>
@@ -55,9 +53,7 @@
 		<div class="row row-cols-1 g-4">
 			@foreach (var post in Model.Posts)
 			{
-				<div class="col">
-					<partial name="_PostCard" model="post" />
-				</div>
+				<partial name="_PostCard" model="post" />
 			}
 		</div>
 		<partial name="_Pager" model="Model.Pager" />

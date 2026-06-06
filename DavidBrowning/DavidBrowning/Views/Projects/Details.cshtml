@@ -15,7 +15,7 @@
 			</div>
 		</div>
 
-		<div class="row g-4">
+		<div class="row row-cols-2 row-cols-lg-4 g-4 mt-4">
 			<div class="col">
 				<dl class="mb-0">
 					<dt>Status</dt>
@@ -44,14 +44,15 @@
 
 		@if (!string.IsNullOrEmpty(Model.Role))
 		{
-			<div class="row g-4 cols-2">
-				<div class="col-4">
+			<div class="row g-4 mt-4">
+				<div class="col-12 col-lg-4">
 					<dl class="mb-0">
 						<dt>Role</dt>
 						<dd class="text-secondary">@Model.Role</dd>
 					</dl>
 				</div>
-				<div class="col-8">
+
+				<div class="col-12 col-lg-8">
 					<dl class="mb-0">
 						<dt>Contribution</dt>
 						<dd class="text-secondary">@Model.ContributionSummary</dd>
@@ -60,14 +61,16 @@
 			</div>
 		}
 
-		<div class="row g-4">
+		<div class="row row-cols-1 row-cols-lg-2 g-4 mt-4">
 			<div class="col">
-				<aside class="wb-panel wb-panel-accent">
+				<aside class="wb-panel wb-panel-accent h-100">
 					<p class="wb-card-meta">Tags</p>
-					<ul class="wb-tag-list mt-4">
+
+					<ul class="wb-tag-list">
 						@foreach (var tag in Model.TagLinks)
 						{
-							var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+							var m =
+							new DavidBrowning.Models.ViewModels.QueryTagViewModel()
 							{
 								Controller = "projects",
 								Endpoint = "tags",
@@ -81,25 +84,26 @@
 				</aside>
 			</div>
 
-			<div class="row g-4">
-				<div class="col">
-					<aside class="wb-panel wb-panel-accent">
-						<p class="wb-card-meta">Technologies</p>
-						<ul class="wb-tag-list mt-4">
-							@foreach (var tag in Model.StackTagLinks)
+			<div class="col">
+				<aside class="wb-panel wb-panel-accent h-100">
+					<p class="wb-card-meta">Technologies</p>
+
+					<ul class="wb-tag-list">
+						@foreach (var tag in Model.StackTagLinks)
+						{
+							var m =
+							new DavidBrowning.Models.ViewModels.QueryTagViewModel()
 							{
-								var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
-								{
-									Controller = "projects",
-									Endpoint = "stacks",
-									DisplayName = tag.ProjectStackTag!.DisplayName,
-									Slug = tag.ProjectStackTag!.Slug,
-								};
-								<partial name="_QueryTag" model="@m" />
-							}
-						</ul>
-					</aside>
-				</div>
+								Controller = "projects",
+								Endpoint = "stacks",
+								DisplayName = tag.ProjectStackTag!.DisplayName,
+								Slug = tag.ProjectStackTag!.Slug,
+							};
+
+							<partial name="_QueryTag" model="@m" />
+						}
+					</ul>
+				</aside>
 			</div>
 		</div>
 	</div>
@@ -108,28 +112,31 @@
 @if (Model.Body is not null)
 {
 	<section class="wb-section">
-		<header class="wb-section-header">
-			<p class="wb-kicker">Case study</p>
-			<h2>Project details</h2>
-			@* <p class="wb-lede"></p> *@
-		</header>
-		<partial name="_RenderedContent" model="Model.Body" />
+		<div class="container">
+			<header class="wb-section-header">
+				<p class="wb-kicker">Case study</p>
+				<h2>Project details</h2>
+			</header>
+			<partial name="_RenderedContent" model="Model.Body" />
+		</div>
 	</section>
 }
 
 @if (Model.AssetBlocks.Count > 0)
 {
 	<section class="wb-section">
-		<header class="wb-section-header">
-			<p class="wb-kicker">Visuals</p>
-			<h2>Screenshots and diagrams</h2>
-			@* <p class="wb-lede"></p> *@
-		</header>
-		<div class="d-grid gap-4">
-			@foreach (var asset in Model.AssetBlocks)
-			{
-				<partial name="_AssetBlock" model="asset" />
-			}
+		<div class="container">
+			<header class="wb-section-header">
+				<p class="wb-kicker">Visuals</p>
+				<h2>Screenshots and diagrams</h2>
+			</header>
+
+			<div class="d-grid gap-4">
+				@foreach (var asset in Model.AssetBlocks)
+				{
+					<partial name="_AssetBlock" model="asset" />
+				}
+			</div>
 		</div>
 	</section>
 }
@@ -137,33 +144,36 @@
 @if (Model.Links.Count > 0)
 {
 	<section class="wb-section">
-		<header class="wb-section-header">
-			<p class="wb-kicker">Resources</p>
-			<h2>Project links</h2>
-			@* <p class="wb-lede"></p> *@
-		</header>
+		<div class="container">
+			<header class="wb-section-header">
+				<p class="wb-kicker">Resources</p>
+				<h2>Project links</h2>
+			</header>
 
-		<div class="row row-cols-1 g-4">
-			<div class="col">
-				<aside class="wb-panel wb-panel-accent">
-					<p class="wb-card-meta">Tags:</p>
-					<ul class="wb-tag-list mt-4">
-						@foreach (var link in Model.Links)
-						{
-							<li class="wb-tag">
-								<a class="wb-footer-link"
-								   href="@link.Url" target="_blank" rel="noopener noreferrer">
-									@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
-									{
-										<i class="@link.ProjectLinkType!.IconCssClass" aria-hidden="true"></i>
-									}
-									<span>@link.Label</span>
-								</a>
-							</li>
-						}
-					</ul>
-				</aside>
-			</div>
+			<aside class="wb-panel wb-panel-accent">
+				<p class="wb-card-meta">Links</p>
+
+				<ul class="wb-tag-list">
+					@foreach (var link in Model.Links)
+					{
+						<li class="wb-tag">
+							<a class="wb-footer-link"
+							   href="@link.Url"
+							   target="_blank"
+							   rel="noopener noreferrer">
+								@if (!string.IsNullOrEmpty(
+														link.ProjectLinkType!.IconCssClass))
+								{
+									<i class="@link.ProjectLinkType.IconCssClass"
+									   aria-hidden="true"></i>
+								}
+
+								<span>@link.Label</span>
+							</a>
+						</li>
+					}
+				</ul>
+			</aside>
 		</div>
 	</section>
 }
@@ -171,16 +181,18 @@
 @if (Model.RelatedPosts.Count > 0)
 {
 	<section class="wb-section">
-		<header class="wb-section-header">
-			<p class="wb-kicker">Further reading</p>
-			<h2>Also read</h2>
-			@* <p class="wb-lede"></p> *@
-		</header>
-		<div class="wb-featured-grid">
-			@foreach (var post in Model.RelatedPosts)
-			{
-				<partial name="_FeaturedPostCard" model="post.Post" />
-			}
+		<div class="container">
+			<header class="wb-section-header">
+				<p class="wb-kicker">Further reading</p>
+				<h2>Also read</h2>
+			</header>
+
+			<div class="wb-featured-grid">
+				@foreach (var post in Model.RelatedPosts)
+				{
+					<partial name="_FeaturedPostCard" model="post.Post" />
+				}
+			</div>
 		</div>
 	</section>
 }

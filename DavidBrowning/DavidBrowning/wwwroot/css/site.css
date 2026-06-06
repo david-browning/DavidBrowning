@@ -208,6 +208,16 @@ hr {
       margin-top: 0;
    }
 
+.wb-error-panel {
+   max-width: 52rem;
+   border-left: 4px solid var(--bs-danger);
+   padding-left: 1.5rem;
+}
+
+.wb-error-kicker {
+   color: var(--bs-danger);
+}
+
 /* ============================================================
    Typography
    ============================================================ */
@@ -270,6 +280,27 @@ h3 {
    .wb-prose h3 {
       margin-top: 2.5rem;
    }
+
+.wb-post-body p,
+.wb-post-body h2,
+.wb-post-body h3,
+.wb-post-body h4,
+.wb-post-body ul,
+.wb-post-body ol,
+.wb-post-body blockquote {
+   max-width: 52rem;
+}
+
+.wb-post-body figure,
+.wb-post-body img,
+.wb-post-body pre {
+   max-width: 100%;
+}
+
+.wb-post-body img {
+   display: block;
+   height: auto;
+}
 
 /* ============================================================
    Links / Focus
