@@ -22,16 +22,14 @@
 <section id="featured" class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
-			<p class="wb-kicker">01 / Selected Work</p>
+			<p class="wb-kicker">01 / Selected work</p>
 			<h2>Featured projects</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>
 		<div class="wb-featured-grid">
 			@foreach (var project in Model.FeaturedProjects)
 			{
-				<div class="col">
-					<partial name="_FeaturedProjectCard" model="project" />
-				</div>
+				<partial name="_FeaturedProjectCard" model="project" />
 			}
 		</div>
 	</div>
@@ -40,7 +38,7 @@
 <section id="all" class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
-			<p class="wb-kicker">02 / Project Catalog</p>
+			<p class="wb-kicker">02 / Project catalog</p>
 			<h2>All projects</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>
@@ -48,9 +46,7 @@
 		<div class="row row-cols-1 g-4">
 			@foreach (var project in Model.AllProjects)
 			{
-				<div class="col">
-					<partial name="_ProjectCard" model="project" />
-				</div>
+				<partial name="_ProjectCard" model="project" />
 			}
 		</div>
 	</div>

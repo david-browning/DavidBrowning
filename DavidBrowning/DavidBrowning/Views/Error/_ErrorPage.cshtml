@@ -2,20 +2,10 @@
    Source-available for viewing only. No license granted. *@
 
 @model DavidBrowning.Models.ViewModels.Error.StatusCodeViewModel
-<style>
-	.wb-error-panel {
-		max-width: 52rem;
-		border-left: 4px solid var(--bs-danger);
-		padding-left: 1.5rem;
-	}
-
-	.wb-error-kicker {
-		color: var(--bs-danger);
-	}
-</style>
 
 <section class="wb-section">
-	<div class="wb-error-panel">
+	<div class="container">
+		<div class="wb-error-panel">
 		<p class="wb-kicker wb-error-kicker">
 			HTTP @Model.HttpError
 		</p>
@@ -48,5 +38,6 @@
 				<code>@Model.RequestId</code>
 			</p>
 		}
+		</div>
 	</div>
 </section>

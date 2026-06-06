@@ -7,7 +7,8 @@
 <figure class="wb-asset-block wb-asset-block-image">
 	<img src="@urlBuilder.GetContentUrl(Model.AssetKey)"
 		 alt="@Model.AltText"
-		 loading="lazy" />
+		 loading="lazy"
+		 decoding="async" />
 
 	@if (!string.IsNullOrWhiteSpace(Model.Caption))
 	{
