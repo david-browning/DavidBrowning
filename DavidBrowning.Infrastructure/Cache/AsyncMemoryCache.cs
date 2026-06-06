@@ -1,16 +1,12 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using DavidBrowning.Services.Cache.Estimators;
-using DavidBrowning.Services.Cache.Options;
+using DavidBrowning.Infrastructure.Cache.Estimators;
+using DavidBrowning.Infrastructure.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
-namespace DavidBrowning.Services.Cache;
+namespace DavidBrowning.Infrastructure.Cache;
 
 public class AsyncMemoryCache<T> : IDisposable
    where T : class

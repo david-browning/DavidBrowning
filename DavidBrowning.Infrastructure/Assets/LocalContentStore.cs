@@ -1,14 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace DavidBrowning.Services.Assets;
+namespace DavidBrowning.Infrastructure.Assets;
 
 /// <summary>
 /// Content store that gets content from the local machine.
@@ -36,7 +32,6 @@ public sealed class LocalContentStore : IContentStore
       CancellationToken cancellationToken = default)
    {
       var fullPath = GetAssetFullPath(assetKey);
-
       if (!File.Exists(fullPath))
       {
          throw new FileNotFoundException(

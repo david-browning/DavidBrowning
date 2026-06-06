@@ -1,10 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.Threading;
-using System.Threading.Tasks;
 using DavidBrowning.Models;
 
-namespace DavidBrowning.Services.Cache;
+namespace DavidBrowning.Infrastructure.Cache;
 
 /// <summary>
 /// Typed lookup service for lookup tables that have Id, Slug, and 

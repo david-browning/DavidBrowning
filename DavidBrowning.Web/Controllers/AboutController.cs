@@ -3,16 +3,15 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Uncategorized;
-using DavidBrowning.Models;
-using DavidBrowning.Models.ViewModels;
-using DavidBrowning.Models.ViewModels.About;
-using DavidBrowning.Services.Assets;
-using DavidBrowning.Services.Cache;
-using DavidBrowning.Services.Rendering;
+using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Rendering;
+using DavidBrowning.Web.ViewModels;
+using DavidBrowning.Web.ViewModels.About;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 [Route("about")]
 public class AboutController : Controller

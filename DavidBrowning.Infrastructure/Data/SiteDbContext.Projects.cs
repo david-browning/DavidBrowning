@@ -1,12 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
-using System.Collections.Generic;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
 using Microsoft.EntityFrameworkCore;
 
-namespace DavidBrowning.Data;
+namespace DavidBrowning.Infrastructure.Data;
 
 public sealed partial class SiteDbContext
 {

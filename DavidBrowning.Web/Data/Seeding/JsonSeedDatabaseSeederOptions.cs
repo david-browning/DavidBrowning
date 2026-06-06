@@ -1,6 +1,6 @@
 // Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-namespace DavidBrowning.Data.Seeding;
+namespace DavidBrowning.Web.Data.Seeding;
 
 public sealed class JsonSeedDatabaseSeederOptions
 {

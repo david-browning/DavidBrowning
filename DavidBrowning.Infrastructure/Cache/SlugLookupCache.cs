@@ -1,12 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.Threading;
-using System.Threading.Tasks;
-using DavidBrowning.Data;
+using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DavidBrowning.Services.Cache;
+namespace DavidBrowning.Infrastructure.Cache;
 
 /// <summary>
 /// Generic EF Core implementation of ISlugLookupService.

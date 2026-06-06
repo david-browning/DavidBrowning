@@ -4,26 +4,19 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Identity;
-using DavidBrowning.Data;
-using DavidBrowning.Data.Seeding;
-using DavidBrowning.Data.Stores.Error;
-using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Data.Stores.Uncategorized;
-using DavidBrowning.Data.Stores.Work;
-using DavidBrowning.Data.Stores.Writing;
-using DavidBrowning.Diagnostics;
 using DavidBrowning.Helpers;
-using DavidBrowning.Middleware;
+using DavidBrowning.Infrastructure;
+using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Infrastructure.Cache.Estimators;
+using DavidBrowning.Infrastructure.Data;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Options;
+using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
-using DavidBrowning.Models.ViewModels;
-using DavidBrowning.Services;
-using DavidBrowning.Services.Assets;
-using DavidBrowning.Services.Cache;
-using DavidBrowning.Services.Cache.Estimators;
-using DavidBrowning.Services.Cache.Options;
-using DavidBrowning.Services.Rendering;
-using DavidBrowning.Services.Slugs;
-using DavidBrowning.Services.Time;
+using DavidBrowning.Web.Data.Seeding;
+using DavidBrowning.Web.Diagnostics;
+using DavidBrowning.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DavidBrowning;
+namespace DavidBrowning.Web;
 
 public static partial class Program
 {
@@ -124,11 +117,9 @@ public static partial class Program
    {
       // Basic Services
       builder.Services.AddMemoryCache();
-      builder.Services.AddSingleton<ISystemClock, SystemClock>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
       builder.Services.AddSingleton<UrlBuilder>();
-      builder.Services.AddSingleton<
-         IDateTimeDisplayService, BasicDateTimeDisplayService>();
+      builder.Services.AddSingleton<TimezoneConverter>();
 
       // These services are used to estimate the size of objects for use in
       // caching.
@@ -208,7 +199,7 @@ public static partial class Program
       }
 
       builder.Services.AddSingleton<MarkdownDocumentRenderer>();
-      builder.Services.AddSingleton<IMarkdownDocumentRenderer>(
+      builder.Services.AddSingleton(
          serviceProvider =>
          {
             IMarkdownDocumentRenderer innerRenderer =

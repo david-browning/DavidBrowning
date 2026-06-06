@@ -1,11 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.Threading;
-using System.Threading.Tasks;
-using DavidBrowning.Models;
-using DavidBrowning.Services.Assets;
 
-namespace DavidBrowning.Services.Rendering;
+using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Models;
+
+namespace DavidBrowning.Infrastructure.Rendering;
 
 public class BasicContentPipeline : IContentPipeline
 {

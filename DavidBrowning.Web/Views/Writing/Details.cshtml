@@ -1,7 +1,8 @@
-﻿@* Copyright © 2026 David Browning. All rights reserved.
+﻿@using DavidBrowning.Infrastructure
+@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
-@inject DavidBrowning.Services.Time.IDateTimeDisplayService dateFormatter
-@model DavidBrowning.Models.ViewModels.Writing.DetailsViewModel
+@inject TimezoneConverter dateFormatter
+@model DavidBrowning.Web.ViewModels.Writing.DetailsViewModel
 @{
 	ViewData["Title"] = Model.Title;
 }
@@ -43,7 +44,7 @@
 					<ul class="wb-tag-list">
 						@foreach (var tag in Model.TagLinks)
 						{
-							var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+							var m = new DavidBrowning.Web.ViewModels.QueryTagViewModel()
 							{
 								Controller = "writing",
 								Endpoint = "tags",

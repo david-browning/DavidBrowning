@@ -6,7 +6,7 @@
 	and key details of a project.
 *@
 @model DavidBrowning.Models.Projects.Project
-@inject DavidBrowning.Services.UrlBuilder urlBuilder
+@inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 
 <article class="wb-card h-100 d-flex flex-column">
 	<p class="wb-card-meta">@Model.ProjectType!.DisplayName</p>
@@ -39,7 +39,7 @@
 		<ul class="wb-tag-list">
 			@foreach (var tag in Model.StackTagLinks)
 			{
-				var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+				var m = new DavidBrowning.Web.ViewModels.QueryTagViewModel()
 				{
 					Controller = "projects",
 					Endpoint = "stacks",

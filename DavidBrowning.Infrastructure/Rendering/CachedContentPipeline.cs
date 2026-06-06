@@ -1,13 +1,11 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System.Threading;
-using System.Threading.Tasks;
+using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Models;
-using DavidBrowning.Services.Assets;
-using DavidBrowning.Services.Cache;
 
-namespace DavidBrowning.Services.Rendering;
+namespace DavidBrowning.Infrastructure.Rendering;
 
 public sealed class CachedContentPipeline : IContentPipeline
 {
@@ -28,8 +26,7 @@ public sealed class CachedContentPipeline : IContentPipeline
 
       return _cache.GetOrCreateAsync(
          cacheKey,
-         token => _pipeline.GetRenderedContentAsync(
-            assetKey, options, token),
+         token => _pipeline.GetRenderedContentAsync( assetKey, options, token),
          cancellationToken);
    }
 

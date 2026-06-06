@@ -7,7 +7,7 @@ using DavidBrowning.Models.Work;
 using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 
-namespace DavidBrowning.Data;
+namespace DavidBrowning.Infrastructure.Data;
 
 public sealed partial class SiteDbContext : DbContext
 {

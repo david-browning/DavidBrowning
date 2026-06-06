@@ -5,18 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Writing;
-using DavidBrowning.Models;
-using DavidBrowning.Models.ViewModels;
-using DavidBrowning.Models.ViewModels.Writing;
+using DavidBrowning.Infrastructure;
+using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models.Writing;
-using DavidBrowning.Services.Cache;
-using DavidBrowning.Services.Rendering;
-using DavidBrowning.Services.Slugs;
+using DavidBrowning.Web.ViewModels;
+using DavidBrowning.Web.ViewModels.Writing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 [Route("writing")]
 public class WritingController : Controller

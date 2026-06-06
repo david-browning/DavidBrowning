@@ -1,8 +1,8 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
 
-@model DavidBrowning.Models.ViewModels.AssetBlockViewModel
-@inject DavidBrowning.Services.UrlBuilder urlBuilder
+@model DavidBrowning.Web.ViewModels.AssetBlockViewModel
+@inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 
 <figure class="wb-asset-block wb-asset-block-image">
 	<img src="@urlBuilder.GetContentUrl(Model.AssetKey)"

@@ -4,16 +4,14 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Data.Stores.Uncategorized;
-using DavidBrowning.Data.Stores.Writing;
-using DavidBrowning.Models;
-using DavidBrowning.Models.ViewModels.Home;
-using DavidBrowning.Services.Cache;
+using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Web.ViewModels;
+using DavidBrowning.Web.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 public class HomeController : Controller
 {
@@ -86,8 +84,7 @@ public class HomeController : Controller
          Lede = hero.Lede ?? "Missing Data",
          FeaturedPost = post,
          FeaturedProject = project,
-         WorkbenchInterest = new Models.ViewModels.InterestCardViewModel(
-            interests[index]),
+         WorkbenchInterest = new InterestCardViewModel(interests[index]),
       };
    }
 

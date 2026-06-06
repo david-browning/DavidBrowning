@@ -1,9 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
-using System.Threading;
-
-namespace DavidBrowning.Services.Cache;
+namespace DavidBrowning.Infrastructure.Cache;
 
 internal sealed class CacheLock : IDisposable
 {

@@ -1,15 +1,11 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using DavidBrowning.Helpers;
-using DavidBrowning.Models.Projects;
+using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Models;
-using DavidBrowning.Services.Assets;
+using DavidBrowning.Models.Projects;
 
-namespace DavidBrowning.Services.Rendering;
+namespace DavidBrowning.Infrastructure.Rendering;
 
 public sealed class MarkdownProjectContentRenderer
 {

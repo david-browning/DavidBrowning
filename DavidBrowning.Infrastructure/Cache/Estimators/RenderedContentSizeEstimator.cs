@@ -2,7 +2,7 @@
 // Source-available for viewing only. No license granted.
 using DavidBrowning.Models;
 
-namespace DavidBrowning.Services.Cache.Estimators;
+namespace DavidBrowning.Infrastructure.Cache.Estimators;
 
 public sealed class RenderedContentSizeEstimator :
    ICacheSizeEstimator<RenderedContent>

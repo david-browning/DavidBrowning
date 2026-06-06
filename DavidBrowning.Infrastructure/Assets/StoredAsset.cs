@@ -1,9 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System;
-
-namespace DavidBrowning.Services.Assets;
+namespace DavidBrowning.Infrastructure.Assets;
 
 /// <summary>
 /// Represents content stored by an IContentStore.

@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace DavidBrowning.Data.Seeding;
+namespace DavidBrowning.Web.Data.Seeding;
 
 /// <summary>
 /// Reflection-driven JSON seed loader for EF Core.
@@ -128,7 +128,7 @@ public sealed class JsonSeedDatabaseSeeder<TDbContext>
       IExecutionStrategy executionStrategy = _dbContext.Database.CreateExecutionStrategy();
       return await executionStrategy.ExecuteAsync(async () =>
       {
-         await using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction =
+         await using IDbContextTransaction transaction =
             await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
          if (useSqlServerIdentityInsert)
