@@ -1,13 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using DavidBrowning.Services.Assets;
+using DavidBrowning.Infrastructure.Assets;
 
-namespace DavidBrowning.Services.Cache;
+namespace DavidBrowning.Infrastructure.Cache;
 
 public sealed class JsonCache
 {

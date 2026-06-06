@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace DavidBrowning.Data.Seeding;
+namespace DavidBrowning.Web.Data.Seeding;
 
 public static class JsonSeedSerializerOptions
 {

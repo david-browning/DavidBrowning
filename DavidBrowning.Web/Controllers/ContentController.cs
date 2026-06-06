@@ -5,13 +5,13 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Services.Assets;
+using DavidBrowning.Infrastructure.Assets;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 [Route("content")]
 public sealed class ContentController : Controller

@@ -1,6 +1,6 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
-@model DavidBrowning.Models.ViewModels.Projects.DetailsViewModel
+@model DavidBrowning.Web.ViewModels.Projects.DetailsViewModel
 @{
 	ViewData["Title"] = Model.ProjectName;
 }
@@ -70,7 +70,7 @@
 						@foreach (var tag in Model.TagLinks)
 						{
 							var m =
-							new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+							new DavidBrowning.Web.ViewModels.QueryTagViewModel()
 							{
 								Controller = "projects",
 								Endpoint = "tags",
@@ -92,7 +92,7 @@
 						@foreach (var tag in Model.StackTagLinks)
 						{
 							var m =
-							new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+							new DavidBrowning.Web.ViewModels.QueryTagViewModel()
 							{
 								Controller = "projects",
 								Endpoint = "stacks",

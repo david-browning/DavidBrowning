@@ -1,17 +1,12 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Models;
-using DavidBrowning.Services.Cache;
 
-namespace DavidBrowning.Services.Rendering;
+namespace DavidBrowning.Infrastructure.Rendering;
 
 public sealed class CachedMarkdownDocumentRenderer :
    IMarkdownDocumentRenderer
@@ -37,10 +32,7 @@ public sealed class CachedMarkdownDocumentRenderer :
       return _cache.GetOrCreateAsync(
          cacheKey,
          token => _innerRenderer.RenderAsync(
-            documentKey,
-            markdown,
-            assetLinks,
-            token),
+            documentKey, markdown, assetLinks, token),
          cancellationToken);
    }
 
@@ -56,26 +48,17 @@ public sealed class CachedMarkdownDocumentRenderer :
       AppendPart(source, "markdown", markdown);
 
       var orderedAssetLinks = assetLinks
-         .OrderBy(
-            link => link.ReferenceKey,
-            StringComparer.OrdinalIgnoreCase)
-         .ThenBy(
-            link => link.AssetKey,
-            StringComparer.Ordinal)
+         .OrderBy(link => link.ReferenceKey, StringComparer.OrdinalIgnoreCase)
+         .ThenBy(link => link.AssetKey, StringComparer.Ordinal)
          .ToList();
 
       AppendPart(
-         source,
-         "asset-link-count",
-         orderedAssetLinks.Count.ToString(
-            CultureInfo.InvariantCulture));
+         source, "asset-link-count",
+         orderedAssetLinks.Count.ToString(CultureInfo.InvariantCulture));
 
       foreach (var assetLink in orderedAssetLinks)
       {
-         AppendPart(
-            source,
-            "reference-key",
-            assetLink.ReferenceKey.ToLowerInvariant());
+         AppendPart(source, "reference-key", assetLink.ReferenceKey.ToLowerInvariant());
 
          AppendPart(source, "asset-key", assetLink.AssetKey);
          AppendPart(source, "alt-text", assetLink.AltText);
@@ -103,9 +86,7 @@ public sealed class CachedMarkdownDocumentRenderer :
          return;
       }
 
-      builder.Append(
-         value.Length.ToString(CultureInfo.InvariantCulture));
-
+      builder.Append(value.Length.ToString(CultureInfo.InvariantCulture));
       builder.Append(':');
       builder.Append(value);
       builder.Append(';');

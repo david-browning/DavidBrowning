@@ -2,9 +2,9 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Diagnostics;
-using DavidBrowning.Data.Stores.Error;
-using DavidBrowning.Diagnostics;
-using DavidBrowning.Models.ViewModels.Error;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Web.Diagnostics;
+using DavidBrowning.Web.ViewModels.Error;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 public class ErrorController : Controller
 {

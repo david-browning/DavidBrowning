@@ -3,7 +3,7 @@
 using DavidBrowning.Models.Error;
 using Microsoft.EntityFrameworkCore;
 
-namespace DavidBrowning.Data;
+namespace DavidBrowning.Infrastructure.Data;
 
 public sealed partial class SiteDbContext
 {

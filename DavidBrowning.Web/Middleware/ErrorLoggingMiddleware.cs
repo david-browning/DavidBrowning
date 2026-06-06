@@ -3,13 +3,13 @@
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Error;
+using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models.Error;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace DavidBrowning.Middleware;
+namespace DavidBrowning.Web.Middleware;
 
 internal sealed class ErrorLoggingMiddleware
 {

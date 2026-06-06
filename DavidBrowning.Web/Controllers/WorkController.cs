@@ -3,14 +3,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Data.Stores.Work;
-using DavidBrowning.Models;
-using DavidBrowning.Models.ViewModels.Work;
-using DavidBrowning.Services.Cache;
+using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Web.ViewModels;
+using DavidBrowning.Web.ViewModels.Work;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 [Route("work")]
 public class WorkController : Controller

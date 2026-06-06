@@ -2,18 +2,17 @@
 // Source-available for viewing only. No license granted.
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Data.Stores.Projects;
-using DavidBrowning.Models;
+using DavidBrowning.Infrastructure;
+using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models.Projects;
-using DavidBrowning.Models.ViewModels;
-using DavidBrowning.Models.ViewModels.Projects;
-using DavidBrowning.Services.Assets;
-using DavidBrowning.Services.Cache;
-using DavidBrowning.Services.Rendering;
-using DavidBrowning.Services.Slugs;
+using DavidBrowning.Web.ViewModels;
+using DavidBrowning.Web.ViewModels.Projects;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DavidBrowning.Controllers;
+namespace DavidBrowning.Web.Controllers;
 
 [Route("projects")]
 public class ProjectsController : Controller

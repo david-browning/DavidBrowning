@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DavidBrowning.Data.Seeding;
+namespace DavidBrowning.Web.Data.Seeding;
 
 public sealed class JsonSeedResult
 {

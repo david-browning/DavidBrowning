@@ -1,16 +1,13 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using DavidBrowning.Helpers;
+using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Models;
-using DavidBrowning.Services.Assets;
 using Microsoft.Extensions.Logging;
 
-namespace DavidBrowning.Services.Rendering;
+namespace DavidBrowning.Infrastructure.Rendering;
 
 public sealed class BasicContentRenderer : IContentRenderer
 {
@@ -25,9 +22,7 @@ public sealed class BasicContentRenderer : IContentRenderer
       CancellationToken cancellationToken = default)
    {
       cancellationToken.ThrowIfCancellationRequested();
-
       var contentType = AssetHelpers.GetMediaType(content.ContentType);
-
       string html;
       if (contentType.EqualsOrdinalIgnoreCase(_htmlContentType))
       {
@@ -95,7 +90,6 @@ public sealed class BasicContentRenderer : IContentRenderer
 
       var src = WebUtility.HtmlEncode(GetAssetUrl(content.AssetKey));
       var altText = WebUtility.HtmlEncode(options?.AltText ?? string.Empty);
-
       var cssAttribute = string.Empty;
       if (!string.IsNullOrWhiteSpace(options?.CssClass))
       {
@@ -113,8 +107,7 @@ public sealed class BasicContentRenderer : IContentRenderer
       var encoded = WebUtility.HtmlEncode(text);
 
       var paragraphs = encoded.Split(
-         new[] { "\r\n\r\n", "\n\n" },
-         StringSplitOptions.RemoveEmptyEntries);
+         new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
       if (paragraphs.Length == 0)
       {

@@ -1,0 +1,19 @@
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System.Collections.Generic;
+using DavidBrowning.Models.Projects;
+
+namespace DavidBrowning.Web.ViewModels.Projects;
+
+public class IndexViewModel
+{
+   public required string PageTitle { get; init; }
+
+   public required string HeroTitle { get; init; }
+
+   public required string HeroSubtitle { get; init; }
+
+   public required IReadOnlyList<Project> AllProjects { get; set; }
+
+   public required IReadOnlyList<Project> FeaturedProjects { get; set; }
+}

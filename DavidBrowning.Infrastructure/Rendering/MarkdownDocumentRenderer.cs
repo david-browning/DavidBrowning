@@ -1,17 +1,12 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Models;
-using DavidBrowning.Services.Assets;
 using Markdig;
 
-namespace DavidBrowning.Services.Rendering;
+namespace DavidBrowning.Infrastructure.Rendering;
 
 public sealed partial class MarkdownDocumentRenderer :
    IMarkdownDocumentRenderer

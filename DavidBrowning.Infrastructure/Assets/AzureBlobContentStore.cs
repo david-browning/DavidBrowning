@@ -1,12 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace DavidBrowning.Services.Assets;
+namespace DavidBrowning.Infrastructure.Assets;
 
 public sealed class AzureBlobContentStore : IContentStore
 {

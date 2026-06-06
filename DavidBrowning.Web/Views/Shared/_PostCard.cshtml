@@ -1,7 +1,7 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
 @model DavidBrowning.Models.Writing.Post
-@inject DavidBrowning.Services.UrlBuilder urlBuilder
+@inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 
 <article class="wb-card h-100 d-flex flex-column">
 	<p class="wb-card-meta">@Model.PostStyle!.DisplayName</p>
@@ -14,7 +14,7 @@
 		<ul class="wb-tag-list">
 			@foreach (var tag in Model.Tags)
 			{
-				var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+				var m = new DavidBrowning.Web.ViewModels.QueryTagViewModel()
 				{
 					Controller = "writing",
 					Endpoint = "tags",
