@@ -352,6 +352,34 @@ a {
       box-shadow: var(--wb-focus-ring);
    }
 
+.wb-pager .page-link {
+   color: var(--wb-accent);
+   background-color: transparent;
+   border-color: var(--bs-border-color);
+   border-radius: 0;
+}
+
+   .wb-pager .page-link:hover {
+      color: var(--bs-body-color);
+      background-color: var(--bs-secondary-bg);
+      border-color: var(--wb-accent);
+   }
+
+.wb-pager .page-item.active .page-link {
+   color: var(--bs-body-bg);
+   background-color: var(--wb-accent);
+   border-color: var(--wb-accent);
+   font-weight: 700;
+}
+
+.wb-pager .page-item.disabled .page-link {
+   color: var(--bs-secondary-color);
+   background-color: transparent;
+   border-color: transparent;
+   border-color: var(--bs-border-color);
+   opacity: 0.45;
+}
+
 /* ============================================================
    Bootstrap Button Theme
    ============================================================ */

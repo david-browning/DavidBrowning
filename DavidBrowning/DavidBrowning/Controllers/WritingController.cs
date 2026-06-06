@@ -1,6 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using DavidBrowning.Services.Cache;
 using DavidBrowning.Services.Rendering;
 using DavidBrowning.Services.Slugs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace DavidBrowning.Controllers;
 
@@ -20,12 +22,14 @@ namespace DavidBrowning.Controllers;
 public class WritingController : Controller
 {
    public WritingController(
+      IConfiguration configurationManager,
       JsonCache jsonCache,
       MarkdownPostContentRenderer postRendered,
       IWritingStore writingStore,
       ISlugService slugs,
       ISlugLookupService<WritingTag> tagStore)
    {
+      _pageSize = configurationManager.GetValue<int>("Content:PageSize");
       _jsonCache = jsonCache;
       _postRendered = postRendered;
       _writingStore = writingStore;
@@ -33,9 +37,22 @@ public class WritingController : Controller
       _tagLookup = tagStore;
    }
 
-   public async Task<IActionResult> Index(CancellationToken cancellationToken)
+   public Task<IActionResult> Index(CancellationToken cancellationToken)
    {
-      return View(await GetIndexModelAsync(cancellationToken));
+      return GetPageAsync(1, cancellationToken);
+   }
+
+   [HttpGet("page/{page:int:min(1)}")]
+   public async Task<IActionResult> Page(
+      int page,
+      CancellationToken cancellationToken)
+   {
+      if (page == 1)
+      {
+         return RedirectToAction(nameof(Index));
+      }
+
+      return await GetPageAsync(page, cancellationToken);
    }
 
    /// <summary>
@@ -108,25 +125,51 @@ public class WritingController : Controller
       return View(new DetailsViewModel(post, body));
    }
 
-   private async Task<IndexViewModel> GetIndexModelAsync(
+   private async Task<IActionResult> GetPageAsync(
+      int page,
       CancellationToken cancellationToken)
    {
-      var featured = await _writingStore.GetFeaturedPostsAsync(
-         cancellationToken);
-      var all = await _writingStore.GetPublishedPostsAsync(cancellationToken);
+      var model = await GetIndexModelAsync(page, cancellationToken);
+      if (page > Math.Max(model.Pager.TotalPages, 1))
+      {
+         return NotFound();
+      }
+
+      return View("Index", model);
+   }
+
+   private async Task<IndexViewModel> GetIndexModelAsync(
+      int page,
+      CancellationToken cancellationToken)
+   {
+      var pagedPosts = await _writingStore.GetPagedPublishedPostsAsync(
+         page, _pageSize, cancellationToken);
+
+      IReadOnlyList<Post> featuredPosts =
+         page == 1
+            ? await _writingStore.GetFeaturedPostsAsync(cancellationToken)
+            : Array.Empty<Post>();
+
       var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Writing.json", cancellationToken);
 
       return new IndexViewModel()
       {
-         PageTitle = "Writings",
+         PageTitle = "Writing",
          HeroTitle = heroData.Title ?? "Missing Data",
          HeroSubtitle = heroData.Subtitle ?? "Missing Data",
-         AllPosts = all,
-         FeaturedPosts = featured,
+         Posts = pagedPosts.Items,
+         FeaturedPosts = featuredPosts,
+         Pager = new PagerViewModel(
+            currentPage: pagedPosts.Page,
+            totalPages: pagedPosts.TotalPages,
+            controller: "Writing",
+            indexAction: nameof(Index),
+            pageAction: nameof(Page)),
       };
    }
 
+   private readonly int _pageSize;
    private readonly JsonCache _jsonCache;
    private readonly IWritingStore _writingStore;
    private readonly ISlugService _slugService;
