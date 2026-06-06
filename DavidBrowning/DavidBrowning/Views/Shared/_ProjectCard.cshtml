@@ -7,28 +7,23 @@
 *@
 @model DavidBrowning.Models.Projects.Project
 @inject DavidBrowning.Services.UrlBuilder urlBuilder
-@{
-
-}
 
 <article class="wb-card h-100 d-flex flex-column">
 	<p class="wb-card-meta">@Model.ProjectType!.DisplayName</p>
 	<h3>@Model.Name</h3>
 	<p class="wb-card-meta">Project Facts</p>
-	<div class="container">
-		<div class="row row-cols-2">
-			<div class="col">
-				<dl class="mb-0">
-					<dt>Status</dt>
-					<dd class="text-secondary">@Model.ProjectStatus!.DisplayName</dd>
-				</dl>
-			</div>
-			<div class="col">
-				<dl class="mb-0">
-					<dt>Origin</dt>
-					<dd class="text-secondary">@Model.ProjectOrigin!.DisplayName</dd>
-				</dl>
-			</div>
+	<div class="row row-cols-1 row-cols-md-2 g-3">
+		<div class="col">
+			<dl class="mb-0">
+				<dt>Status</dt>
+				<dd class="text-secondary">@Model.ProjectStatus!.DisplayName</dd>
+			</dl>
+		</div>
+		<div class="col">
+			<dl class="mb-0">
+				<dt>Origin</dt>
+				<dd class="text-secondary">@Model.ProjectOrigin!.DisplayName</dd>
+			</dl>
 		</div>
 	</div>
 

@@ -63,7 +63,7 @@
 		<div class="row g-4">
 			<div class="col">
 				<aside class="wb-panel wb-panel-accent">
-					<p class="wb-card-meta">Tags:</p>
+					<p class="wb-card-meta">Tags</p>
 					<ul class="wb-tag-list mt-4">
 						@foreach (var tag in Model.TagLinks)
 						{
@@ -84,7 +84,7 @@
 			<div class="row g-4">
 				<div class="col">
 					<aside class="wb-panel wb-panel-accent">
-						<p class="wb-card-meta">Technologies:</p>
+						<p class="wb-card-meta">Technologies</p>
 						<ul class="wb-tag-list mt-4">
 							@foreach (var tag in Model.StackTagLinks)
 							{
@@ -109,7 +109,7 @@
 {
 	<section class="wb-section">
 		<header class="wb-section-header">
-			<p class="wb-kicker">Case Study</p>
+			<p class="wb-kicker">Case study</p>
 			<h2>Project details</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>
@@ -125,10 +125,12 @@
 			<h2>Screenshots and diagrams</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>
-		@foreach (var asset in Model.AssetBlocks)
-		{
-			<partial name="_AssetBlock" model="asset" />
-		}
+		<div class="d-grid gap-4">
+			@foreach (var asset in Model.AssetBlocks)
+			{
+				<partial name="_AssetBlock" model="asset" />
+			}
+		</div>
 	</section>
 }
 
@@ -149,7 +151,7 @@
 						@foreach (var link in Model.Links)
 						{
 							<li class="wb-tag">
-								<a class="wb-footer-link link-danger"
+								<a class="wb-footer-link"
 								   href="@link.Url" target="_blank" rel="noopener noreferrer">
 									@if (!string.IsNullOrEmpty(link.ProjectLinkType!.IconCssClass))
 									{
@@ -170,16 +172,14 @@
 {
 	<section class="wb-section">
 		<header class="wb-section-header">
-			<p class="wb-kicker">Further Reading</p>
+			<p class="wb-kicker">Further reading</p>
 			<h2>Also read</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>
-		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5 g-4">
+		<div class="wb-featured-grid">
 			@foreach (var post in Model.RelatedPosts)
 			{
-				<div class="col">
-					<partial name="_FeaturedPostCard" model="post.Post" />
-				</div>
+				<partial name="_FeaturedPostCard" model="post.Post" />
 			}
 		</div>
 	</section>

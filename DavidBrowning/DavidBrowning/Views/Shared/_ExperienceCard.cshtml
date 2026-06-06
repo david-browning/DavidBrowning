@@ -11,35 +11,26 @@
 	<div class="container">
 		@foreach (var role in Model.Roles)
 		{
-			<div class="row mt-4">
-				<div class="container" style="padding-left: 0px">
-					<div class="row row-cols-2">
-						<div class="col col-8">
-							<h4>@role.Title</h4>
-						</div>
-						@if (!string.IsNullOrEmpty(role.DateDisplayText))
-						{
-							<div class="col col-4">
-								<div class="col d-flex justify-content-end text-end">
-									@role.DateDisplayText
-								</div>
-							</div>
-						}
-					</div>
-				</div>
-			</div>
+			<div class="mt-4">
+				<div class="d-flex justify-content-between gap-3">
+					<h4>@role.Title</h4>
 
-			<div class="row row-cols-1">
-				<div class="col">
-
-					<p>@role.Description</p>
-					<ul>
-						@foreach (var bullet in role.Bullets)
-						{
-							<li>@bullet</li>
-						}
-					</ul>
+					@if (!string.IsNullOrEmpty(role.DateDisplayText))
+					{
+						<span class="text-secondary text-end">
+							@role.DateDisplayText
+						</span>
+					}
 				</div>
+
+				<p>@role.Description</p>
+
+				<ul>
+					@foreach (var bullet in role.Bullets)
+					{
+						<li>@bullet</li>
+					}
+				</ul>
 			</div>
 		}
 	</div>

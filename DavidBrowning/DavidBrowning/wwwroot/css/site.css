@@ -376,7 +376,6 @@ a {
    color: var(--bs-secondary-color);
    background-color: transparent;
    border-color: transparent;
-   border-color: var(--bs-border-color);
    opacity: 0.45;
 }
 
@@ -424,7 +423,7 @@ a {
    ============================================================ */
 
 .wb-hero {
-   padding: clamp(4rem, 6vw, 4rem) 0;
+   padding: clamp(3rem, 6vw, 5rem) 0;
 }
 
 .wb-section {

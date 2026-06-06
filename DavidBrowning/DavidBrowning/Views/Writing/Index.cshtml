@@ -43,7 +43,11 @@
 <section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
-			<p class="wb-kicker">02 / Archive</p>
+			<p class="wb-kicker">
+				@(Model.ShowFeaturedPosts
+								? "02 / Archive"
+								: "01 / Archive")
+			</p>
 			<h2>All writing</h2>
 			@* <p class="wb-lede"></p> *@
 		</header>

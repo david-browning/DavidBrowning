@@ -31,46 +31,39 @@
 			</div>
 			<div class="col">
 				<dl class="mb-0">
-					<dt>Written By</dt>
+					<dt>Written by</dt>
 					<dd class="text-secondary">@Model.CreatedBy</dd>
 				</dl>
 			</div>
 		</div>
-	</div>
-	<div class="row g-4">
-		<div class="col">
-			<aside class="wb-panel wb-panel-accent">
-				<p class="wb-card-meta">Tags:</p>
-				<ul class="wb-tag-list mt-4">
-					@foreach (var tag in Model.TagLinks)
-					{
-						var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+		<div class="row g-4 mt-4">
+			<div class="col">
+				<aside class="wb-panel wb-panel-accent">
+					<p class="wb-card-meta">Tags</p>
+					<ul class="wb-tag-list">
+						@foreach (var tag in Model.TagLinks)
 						{
-							Controller = "writing",
-							Endpoint = "tags",
-							DisplayName = tag.WritingTag!.DisplayName,
-							Slug = tag.WritingTag!.Slug,
-						};
+							var m = new DavidBrowning.Models.ViewModels.QueryTagViewModel()
+							{
+								Controller = "writing",
+								Endpoint = "tags",
+								DisplayName = tag.WritingTag!.DisplayName,
+								Slug = tag.WritingTag!.Slug,
+							};
 
-						<partial name="_QueryTag" model="@m" />
-					}
-				</ul>
-			</aside>
+							<partial name="_QueryTag" model="@m" />
+						}
+					</ul>
+				</aside>
+			</div>
 		</div>
 	</div>
 </section>
 
 <section class="wb-section">
 	<div class="container">
-		<header class="wb-section-header">
-			@* <p class="wb-kicker">01 / Panels</p> *@
-			@* <h2></h2> *@
-			@* <p class="wb-lede"></p> *@
-		</header>
-		<div class="row g-4"> 
-			<article class="wb-post-body wb-content">
-				<partial name="_RenderedContent" model="Model.Body" />
-			</article>
-		</div>
+		<article class="wb-post-body wb-content wb-prose">
+			<partial name="_RenderedContent" model="Model.Body" />
+		</article>
 	</div>
 </section>
