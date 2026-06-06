@@ -19,26 +19,28 @@
 	</div>
 </section>
 
-
-<section id="featured" class="wb-section">
-	<div class="container">
-		<header class="wb-section-header">
-			<p class="wb-kicker">01 / Highlights</p>
-			<h2>Featured writing</h2>
-			@* <p class="wb-lede"></p> *@
-		</header>
-		<div class="wb-featured-grid">
-			@foreach (var post in Model.FeaturedPosts)
-			{
-				<div class="col">
-					<partial name="_FeaturedPostCard" model="post" />
-				</div>
-			}
+@if (Model.ShowFeaturedPosts)
+{
+	<section class="wb-section">
+		<div class="container">
+			<header class="wb-section-header">
+				<p class="wb-kicker">01 / Highlights</p>
+				<h2>Featured writing</h2>
+				@* <p class="wb-lede"></p> *@
+			</header>
+			<div class="wb-featured-grid">
+				@foreach (var post in Model.FeaturedPosts)
+				{
+					<div class="col">
+						<partial name="_FeaturedPostCard" model="post" />
+					</div>
+				}
+			</div>
 		</div>
-	</div>
-</section>
+	</section>
+}
 
-<section id="all" class="wb-section">
+<section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
 			<p class="wb-kicker">02 / Archive</p>
@@ -47,12 +49,13 @@
 		</header>
 
 		<div class="row row-cols-1 g-4">
-			@foreach (var post in Model.AllPosts)
+			@foreach (var post in Model.Posts)
 			{
 				<div class="col">
 					<partial name="_PostCard" model="post" />
 				</div>
 			}
 		</div>
+		<partial name="_Pager" model="Model.Pager" />
 	</div>
 </section>

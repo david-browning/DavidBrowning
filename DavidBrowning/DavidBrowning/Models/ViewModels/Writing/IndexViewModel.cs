@@ -13,7 +13,12 @@ public class IndexViewModel
 
    public required string HeroSubtitle { get; init; }
 
-   public required IReadOnlyList<Post> AllPosts { get; init; }
+   public required IReadOnlyList<Post> Posts { get; init; }
 
    public required IReadOnlyList<Post> FeaturedPosts { get; init; }
+
+   public required PagerViewModel Pager { get; init; }
+
+   public bool ShowFeaturedPosts =>
+      Pager.CurrentPage == 1 && FeaturedPosts.Count > 0;
 }
