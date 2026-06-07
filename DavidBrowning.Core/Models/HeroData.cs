@@ -2,7 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System.Text.Json.Serialization;
 
-namespace DavidBrowning.Web.ViewModels;
+namespace DavidBrowning.Models;
 
 public class HeroData
 {
