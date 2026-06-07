@@ -24,9 +24,11 @@ public class WritingController : Controller
       IConfiguration configurationManager,
       JsonCache jsonCache,
       MarkdownPostContentRenderer postRendered,
+      UrlBuilder urlBuilder,
       IWritingStore writingStore,
       ISlugService slugs,
-      ISlugLookupService<WritingTag> tagStore)
+      ISlugLookupService<WritingTag> tagStore,
+      JsonDataBuilder jsonDataBuilder)
    {
       _pageSize = configurationManager.GetValue<int>("Content:PageSize");
       _jsonCache = jsonCache;
@@ -34,6 +36,8 @@ public class WritingController : Controller
       _writingStore = writingStore;
       _slugService = slugs;
       _tagLookup = tagStore;
+      _urlBuilder = urlBuilder;
+      _jsonDataBuilder = jsonDataBuilder;
    }
 
    public Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -121,7 +125,17 @@ public class WritingController : Controller
             "Published post is missing its current revision.");
       var body = await _postRendered.RenderAsync(
          revision, revision.AssetLinks.ToList(), cancellationToken);
-      return View(new DetailsViewModel(post, body));
+      SeoMetadataViewModel seo = new()
+      {
+         Title = post.Title,
+         Description = post.Summary ?? post.Slug,
+         CanonicalUrl = _urlBuilder.GetAbsoluteUrl($"/writing/{post.Slug}"),
+         NoIndex = false,
+         OpenGraphType = "article",
+         StructuredData = _jsonDataBuilder.CreateWritingPostMetadata(post),
+      };
+
+      return View(new DetailsViewModel(post, body, seo));
    }
 
    private async Task<IActionResult> GetPageAsync(
@@ -149,14 +163,17 @@ public class WritingController : Controller
             ? await _writingStore.GetFeaturedPostsAsync(cancellationToken)
             : Array.Empty<Post>();
 
-      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+      var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Writing.json", cancellationToken);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);
 
       return new IndexViewModel()
       {
-         PageTitle = "Writing",
-         HeroTitle = heroData.Title ?? "Missing Data",
-         HeroSubtitle = heroData.Subtitle ?? "Missing Data",
+         PageTitle = hero.Title,
+         HeroTitle = hero.Subtitle,
+         Lede = hero.Lede,
          Posts = pagedPosts.Items,
          FeaturedPosts = featuredPosts,
          Pager = new PagerViewModel(
@@ -165,13 +182,22 @@ public class WritingController : Controller
             controller: "Writing",
             indexAction: nameof(Index),
             pageAction: nameof(Page)),
+         Seo = new()
+         {
+            Title = hero.Title,
+            Description = hero.Subtitle,
+            CanonicalUrl = _urlBuilder.GetAbsoluteUrl("/writing"),
+            NoIndex = false,
+         },
       };
    }
 
    private readonly int _pageSize;
    private readonly JsonCache _jsonCache;
+   private readonly UrlBuilder _urlBuilder;
    private readonly IWritingStore _writingStore;
    private readonly ISlugService _slugService;
    private readonly ISlugLookupService<WritingTag> _tagLookup;
    private readonly MarkdownPostContentRenderer _postRendered;
+   private readonly JsonDataBuilder _jsonDataBuilder;
 }

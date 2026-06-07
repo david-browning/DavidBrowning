@@ -8,7 +8,6 @@ CREATE TABLE dbo.db_Posts
    Title nvarchar(128) NOT NULL,
    Subtitle nvarchar(128) NULL,
    Summary nvarchar(512) NULL,
-   MetaDescription nvarchar(512) NULL,
    PostStyleId int NOT NULL,
 
    -- PostStatus enum:

@@ -3,6 +3,7 @@
 @model DavidBrowning.Web.ViewModels.Writing.IndexViewModel
 @{
 	ViewData["Title"] = Model.PageTitle;
+	ViewData["Seo"] = Model.Seo;
 }
 
 <section class="wb-hero">
@@ -12,7 +13,7 @@
 				<p class="wb-kicker">@Model.PageTitle</p>
 				<h1>@Model.HeroTitle</h1>
 				<p class="wb-lede">
-					@Model.HeroSubtitle
+					@Model.Lede
 				</p>
 			</div>
 		</div>

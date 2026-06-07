@@ -11,7 +11,7 @@ public class IndexViewModel
 
    public required string HeroTitle { get; init; }
 
-   public required string HeroSubtitle { get; init; }
+   public required string Lede { get; init; }
 
    public required IReadOnlyList<Post> Posts { get; init; }
 
@@ -21,4 +21,6 @@ public class IndexViewModel
 
    public bool ShowFeaturedPosts =>
       Pager.CurrentPage == 1 && FeaturedPosts.Count > 0;
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

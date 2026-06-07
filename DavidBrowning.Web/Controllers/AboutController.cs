@@ -1,8 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
@@ -18,10 +20,12 @@ public class AboutController : Controller
 {
    public AboutController(
       JsonCache cache,
+      UrlBuilder urlBuilder,
       IContentPipeline contentPipeline,
       IUncategorizedStore uncategorizedStore)
    {
       _jsonCache = cache;
+      _urlBuilder = urlBuilder;
       _contentPipeline = contentPipeline;
       _uncategorizedStore = uncategorizedStore;
    }
@@ -34,8 +38,11 @@ public class AboutController : Controller
    private async Task<IndexViewModel> GetIndexModelAsync(
       CancellationToken cancellationToken)
    {
-      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+      var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/About.json", cancellationToken);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);
       var profileImage = await _contentPipeline.GetRenderedContentAsync(
          "Images/Me.jpg",
          new ContentRenderOptions()
@@ -44,6 +51,9 @@ public class AboutController : Controller
             CssClass = "wb-about-profile-image",
          },
          cancellationToken);
+
+      var aboutMe = await _contentPipeline.GetRenderedContentAsync(
+         "Documents/About.txt", null, cancellationToken);
 
       var interests = await _uncategorizedStore.GetInterestsAsync(
          cancellationToken);
@@ -62,16 +72,24 @@ public class AboutController : Controller
 
       return new IndexViewModel()
       {
-         PageTitle = "About",
-         HeroTitle = heroData.Title ?? "Missing Data",
-         HeroSubtitle = heroData.Subtitle ?? "Missing Data",
-         AboutMe = heroData.Lede ?? "Missing Data",
+         PageTitle = hero.Title,
+         HeroTitle = hero.Subtitle,
+         Lede = hero.Lede,
+         AboutMe = aboutMe,
          MeImage = profileImage,
          Interests = interestCards,
+         Seo = new()
+         {
+            Title = hero.Title,
+            Description = hero.Lede,
+            CanonicalUrl = _urlBuilder.GetAbsoluteUrl("/about"),
+            NoIndex = false,
+         },
       };
    }
 
    private readonly JsonCache _jsonCache;
+   private readonly UrlBuilder _urlBuilder;
    private readonly IUncategorizedStore _uncategorizedStore;
    private readonly IContentPipeline _contentPipeline;
 }

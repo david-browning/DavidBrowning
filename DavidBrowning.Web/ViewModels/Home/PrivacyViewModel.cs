@@ -18,4 +18,6 @@ public sealed class PrivacyViewModel
 
    [JsonPropertyName("Sections")]
    public required List<HeroData> Sections { get; init; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

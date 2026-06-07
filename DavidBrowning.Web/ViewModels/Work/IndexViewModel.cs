@@ -30,4 +30,6 @@ public sealed class IndexViewModel
    /// List of education credentials and certifications.
    /// </summary>
    public required IReadOnlyList<CredentialViewModel> Credentials { get; init; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }
