@@ -11,12 +11,14 @@ namespace DavidBrowning.Web.ViewModels.Writing;
 public class DetailsViewModel
 {
    [SetsRequiredMembers]
-   public DetailsViewModel(Post post, RenderedContent body)
+   public DetailsViewModel(
+      Post post, 
+      RenderedContent body,
+      SeoMetadataViewModel seo)
    {
       Title = post.Title;
       Subtitle = post.Subtitle;
       Summary = post.Summary;
-      MetaDescription = post.MetaDescription;
       PostStyleDisplayName = post.PostStyle?.DisplayName ??
          throw new InvalidOperationException(
             "Post is missing its post style.");
@@ -33,6 +35,7 @@ public class DetailsViewModel
       Body = body;
 
       TagLinks = post.Tags;
+      Seo = seo;
    }
 
    public required string Title { get; set; }
@@ -40,8 +43,6 @@ public class DetailsViewModel
    public string? Subtitle { get; set; }
 
    public string? Summary { get; set; }
-
-   public string? MetaDescription { get; set; }
 
    public required string PostStyleDisplayName { get; set; }
 
@@ -57,4 +58,6 @@ public class DetailsViewModel
    public required RenderedContent Body { get; set; }
 
    public required ICollection<PostTag> TagLinks { get; init; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

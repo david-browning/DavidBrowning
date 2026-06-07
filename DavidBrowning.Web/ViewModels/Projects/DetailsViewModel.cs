@@ -12,7 +12,10 @@ namespace DavidBrowning.Web.ViewModels.Projects;
 public class DetailsViewModel
 {
    [SetsRequiredMembers]
-   public DetailsViewModel(Project project, RenderedContent? body)
+   public DetailsViewModel(
+      Project project, 
+      RenderedContent? body,
+      SeoMetadataViewModel seo)
    {
       ProjectName = project.Name;
       Description = project.Description;
@@ -36,7 +39,8 @@ public class DetailsViewModel
          .Select(link => new AssetBlockViewModel(link))
          .ToList();
       RelatedPosts = project.RelatedPosts;
-      this.Body = body;
+      Body = body;
+      Seo = seo;
    }
 
    public required string ProjectName { get; init; }
@@ -57,4 +61,6 @@ public class DetailsViewModel
    public required ICollection<ProjectLink> Links { get; init; }
    public required IReadOnlyList<AssetBlockViewModel> AssetBlocks { get; init; }
    public required ICollection<ProjectPost> RelatedPosts { get; init; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

@@ -74,6 +74,9 @@ public static partial class Program
 
       builder.Services.Configure<DateTimeDisplayOptions>(
          builder.Configuration.GetSection("DateTimeDisplayOptions"));
+
+      builder.Services.Configure<SiteMetadataOptions>(
+         builder.Configuration.GetSection("MetadataOptions"));
    }
 
    private static void ConfigureSecrets(WebApplicationBuilder builder)
@@ -117,9 +120,10 @@ public static partial class Program
    {
       // Basic Services
       builder.Services.AddMemoryCache();
-      builder.Services.AddSingleton<ISlugService, BasicSlugService>();
       builder.Services.AddSingleton<UrlBuilder>();
       builder.Services.AddSingleton<TimezoneConverter>();
+      builder.Services.AddSingleton<JsonDataBuilder>();
+      builder.Services.AddSingleton<ISlugService, BasicSlugService>();
 
       // These services are used to estimate the size of objects for use in
       // caching.

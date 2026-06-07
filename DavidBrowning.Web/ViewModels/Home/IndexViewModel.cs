@@ -19,4 +19,6 @@ public sealed class IndexViewModel
    public required Post FeaturedPost { get; init; }
 
    public InterestCardViewModel? WorkbenchInterest { get; init; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

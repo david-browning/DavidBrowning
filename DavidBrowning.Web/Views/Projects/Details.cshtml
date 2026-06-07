@@ -3,6 +3,7 @@
 @model DavidBrowning.Web.ViewModels.Projects.DetailsViewModel
 @{
 	ViewData["Title"] = Model.ProjectName;
+	ViewData["Seo"] = Model.Seo;
 }
 
 <section class="wb-hero">
@@ -162,7 +163,7 @@
 							   target="_blank"
 							   rel="noopener noreferrer">
 								@if (!string.IsNullOrEmpty(
-														link.ProjectLinkType!.IconCssClass))
+									link.ProjectLinkType!.IconCssClass))
 								{
 									<i class="@link.ProjectLinkType.IconCssClass"
 									   aria-hidden="true"></i>

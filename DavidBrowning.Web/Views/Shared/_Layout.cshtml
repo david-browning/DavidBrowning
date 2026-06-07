@@ -2,6 +2,7 @@
    Source-available for viewing only. No license granted. *@
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Hosting
+@using DavidBrowning.Web.ViewModels
 @inject IWebHostEnvironment WebHostEnvironment
 @{
 	var currentController =
@@ -19,6 +20,8 @@
 
 		return controllerMatches ? "wb-nav-link active" : "wb-nav-link";
 	}
+
+	var seo = ViewData["Seo"] as SeoMetadataViewModel;
 }
 
 <!DOCTYPE html>
@@ -26,7 +29,17 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - DavidBrowning</title>
+	@if (seo != null)
+	{
+		<partial name="_SeoMetadata" model="seo"/>
+	}
+	else
+	{
+		<title>@ViewData["Title"] - DavidBrowning</title>
+		<meta name="description"
+			  content="Software engineering projects, writing, and professional experience from David Browning.">
+		<meta name="robots" content="noindex">
+	}
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	@* <link rel="stylesheet" href="~/DavidBrowning.styles.css" asp-append-version="true" /> *@
@@ -96,7 +109,7 @@
 						<span>About</span>
 					</a>
 
-					@if(WebHostEnvironment.IsDevelopment())
+					@if (WebHostEnvironment.IsDevelopment())
 					{
 						<a class="@GetNavLinkClass("Workbench")"
 						   asp-area="" asp-controller="Workbench" asp-action="Index">
@@ -139,7 +152,7 @@
 							<i class="fa-brands fa-linkedin" aria-hidden="true"></i>
 							<span>LinkedIn</span>
 						</a>
-@* 						<a class="wb-footer-link"
+						@* 						<a class="wb-footer-link"
 						   href="mailto:your-email@example.com">
 							<i class="fa-solid fa-envelope" aria-hidden="true"></i>
 							<span>Email</span>
@@ -150,7 +163,7 @@
 							<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
 							<span>Privacy</span>
 						</a>
-						
+
 						<a class="wb-footer-link"
 						   href="https://github.com/david-browning/DavidBrowning"
 						   target="_blank" rel="noopener noreferrer">

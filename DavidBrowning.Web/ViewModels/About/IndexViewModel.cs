@@ -11,11 +11,13 @@ public class IndexViewModel
 
    public required string HeroTitle { get; init; }
 
-   public required string HeroSubtitle { get; init; }
+   public required string Lede { get; init; }
 
-   public required string AboutMe { get; init; }
+   public required RenderedContent AboutMe { get; init; }
 
    public required RenderedContent MeImage { get; init; }
 
    public required IReadOnlyList<InterestCardViewModel> Interests { get; init; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

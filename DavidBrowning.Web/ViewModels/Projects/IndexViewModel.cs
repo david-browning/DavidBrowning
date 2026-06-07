@@ -11,9 +11,11 @@ public class IndexViewModel
 
    public required string HeroTitle { get; init; }
 
-   public required string HeroSubtitle { get; init; }
+   public required string Lede { get; init; }
 
    public required IReadOnlyList<Project> AllProjects { get; set; }
 
    public required IReadOnlyList<Project> FeaturedProjects { get; set; }
+
+   public required SeoMetadataViewModel Seo { get; init; }
 }

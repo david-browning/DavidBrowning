@@ -1,8 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Web.ViewModels;
@@ -17,11 +19,13 @@ public class WorkController : Controller
    public WorkController(
       IWorkStore workStore,
       IProjectStore projectStore,
-      JsonCache jsonCache)
+      JsonCache jsonCache,
+      UrlBuilder urlBuilder)
    {
       _workStore = workStore;
       _projectStore = projectStore;
       _jsonCache = jsonCache;
+      _urlBuilder = urlBuilder;
    }
 
    public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -77,20 +81,30 @@ public class WorkController : Controller
    private async Task<IndexViewModel> GetIndexModelAsync(
       CancellationToken cancellationToken)
    {
-      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+      var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Work.json", cancellationToken);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);
       var exp = await _workStore.GetExperienceAsync(cancellationToken);
       var cred = await _workStore.GetCredentialsAsync(cancellationToken);
       var projects = await _projectStore.GetFeaturedWorkProjectsAsync(
          cancellationToken);
       return new()
       {
-         PageTitle = heroData.Title ?? "Missing Data",
-         HeroTitle = heroData.Subtitle ?? "Missing Data",
-         Lede = heroData.Lede ?? "Missing Data",
+         PageTitle = hero.Title,
+         HeroTitle = hero.Subtitle,
+         Lede = hero.Lede,
          Experience = exp.Select(e => new ExperienceViewModel(e)).ToList(),
          Credentials = cred.Select(c => new CredentialViewModel(c)).ToList(),
          FeaturedWorkProjects = projects,
+         Seo = new()
+         {
+            Title = hero.Title,
+            Description = hero.Subtitle,
+            CanonicalUrl = _urlBuilder.GetAbsoluteUrl("/work"),
+            NoIndex = false,
+         }
       };
    }
 
@@ -98,4 +112,5 @@ public class WorkController : Controller
    private readonly IWorkStore _workStore;
    private readonly IProjectStore _projectStore;
    private readonly JsonCache _jsonCache;
+   private readonly UrlBuilder _urlBuilder;
 }

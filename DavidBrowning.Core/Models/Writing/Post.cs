@@ -37,9 +37,6 @@ public sealed class Post
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? Summary { get; set; }
 
-   [StringLength(DataConstants.MaxMetadataLength)]
-   public string? MetaDescription { get; set; }
-
    /// <summary>
    /// Foreign key to db_PostStyles.
    /// Controls how the post should be presented.

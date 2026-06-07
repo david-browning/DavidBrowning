@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Infrastructure;
@@ -22,6 +23,8 @@ public class ProjectsController : Controller
       IContentPipeline contentPipeline,
       IProjectStore project,
       ISlugService slugService,
+      UrlBuilder urlBuilder,
+      JsonDataBuilder dataBuilder,
       MarkdownProjectContentRenderer projectRenderer,
       ISlugLookupService<ProjectStackTag> stackLookup,
       ISlugLookupService<ProjectOrigin> originLookup,
@@ -32,6 +35,7 @@ public class ProjectsController : Controller
       _jsonCache = jsonCache;
       _contentPipeline = contentPipeline;
       _projectStore = project;
+      _urlBuilder = urlBuilder;
       _slugService = slugService;
       _stackLookup = stackLookup;
       _originLookup = originLookup;
@@ -39,6 +43,7 @@ public class ProjectsController : Controller
       _statusLookup = statusLookup;
       _tagLookup = tagLookup;
       _projectContentRenderer = projectRenderer;
+      _jsonDataBuilder = dataBuilder;
    }
 
    public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -264,8 +269,16 @@ public class ProjectsController : Controller
 
       var body = await _projectContentRenderer.RenderAsync(
          project, cancellationToken);
+      SeoMetadataViewModel seo = new()
+      {
+         Title = project.Name,
+         Description = project.Description ?? project.Slug,
+         CanonicalUrl = _urlBuilder.GetAbsoluteUrl($"/projects/{project.Slug}"),
+         NoIndex = false,
+         StructuredData = _jsonDataBuilder.CreateProjectMetadata(project),
+      };
 
-      return View(new DetailsViewModel(project, body));
+      return View(new DetailsViewModel(project, body, seo));
    }
 
    private async Task<IndexViewModel> GetIndexModelAsync(
@@ -275,15 +288,26 @@ public class ProjectsController : Controller
          cancellationToken);
       var all = await _projectStore.GetPublishedProjectsAsync(
          cancellationToken);
-      var heroData = await _jsonCache.GetJsonFileContentAsync<HeroData>(
+      var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Projects.json", cancellationToken);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
+      ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);
+
       return new IndexViewModel()
       {
-         PageTitle = "Projects",
-         HeroTitle = heroData.Title ?? "Missing Data",
-         HeroSubtitle = heroData.Subtitle ?? "Missing Data",
+         PageTitle = hero.Title,
+         HeroTitle = hero.Subtitle,
+         Lede = hero.Lede,
          AllProjects = all,
          FeaturedProjects = featured,
+         Seo = new()
+         {
+            Title = hero.Title,
+            Description = hero.Lede,
+            CanonicalUrl = _urlBuilder.GetAbsoluteUrl("/projects"),
+            NoIndex = false,
+         }
       };
    }
 
@@ -297,4 +321,6 @@ public class ProjectsController : Controller
    private readonly ISlugLookupService<ProjectType> _typeLookup;
    private readonly ISlugLookupService<ProjectStatus> _statusLookup;
    private readonly ISlugLookupService<ProjectTag> _tagLookup;
+   private readonly UrlBuilder _urlBuilder;
+   private readonly JsonDataBuilder _jsonDataBuilder;
 }

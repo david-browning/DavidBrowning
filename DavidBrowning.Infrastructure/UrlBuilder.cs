@@ -4,6 +4,17 @@ namespace DavidBrowning.Infrastructure;
 
 public sealed class UrlBuilder
 {
+   public UrlBuilder()
+   {
+      _publicOrigin = new Uri("https://davidbrowning.com/", UriKind.Absolute);
+   }
+
+   public string GetAbsoluteUrl(string relativeUrl)
+   {
+      ArgumentException.ThrowIfNullOrEmpty(relativeUrl);
+      return new Uri(_publicOrigin, relativeUrl.TrimStart('/')).AbsoluteUri;
+   }
+
    /// <summary>
    /// 
    /// </summary>
@@ -57,4 +68,6 @@ public sealed class UrlBuilder
          endpoint.Trim('/'),
          slug.Trim('/'));
    }
+
+   private readonly Uri _publicOrigin;
 }
