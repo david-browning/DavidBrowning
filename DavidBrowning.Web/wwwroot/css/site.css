@@ -240,6 +240,7 @@ h1 {
 
 h2 {
    font-size: clamp(2rem, 4vw, 3.25rem);
+   color: #a7914e;
 }
 
 h3 {
