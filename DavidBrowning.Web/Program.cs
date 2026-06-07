@@ -13,6 +13,7 @@ using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Options;
 using DavidBrowning.Infrastructure.Rendering;
+using DavidBrowning.Infrastructure.Seo;
 using DavidBrowning.Models;
 using DavidBrowning.Web.Data.Seeding;
 using DavidBrowning.Web.Diagnostics;
@@ -124,6 +125,7 @@ public static partial class Program
       builder.Services.AddSingleton<TimezoneConverter>();
       builder.Services.AddSingleton<JsonDataBuilder>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
+      builder.Services.AddSingleton<SitemapBuilder>();
 
       // These services are used to estimate the size of objects for use in
       // caching.

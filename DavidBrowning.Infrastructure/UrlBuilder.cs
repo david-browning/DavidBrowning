@@ -41,7 +41,7 @@ public sealed class UrlBuilder
    /// <param name="controller"></param>
    /// <param name="endpoint"></param>
    /// <returns></returns>
-   public string GetSearchUrl(
+   public string GetFilterUrl(
       string slug,
       string controller,
       string endpoint = "search")
