@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Identity;
+using DavidBrowning.Diagnostics;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Assets;
@@ -11,13 +12,12 @@ using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Cache.Estimators;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Middleware;
 using DavidBrowning.Infrastructure.Options;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Infrastructure.Seo;
 using DavidBrowning.Models;
 using DavidBrowning.Web.Data.Seeding;
-using DavidBrowning.Web.Diagnostics;
-using DavidBrowning.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -61,17 +61,17 @@ public static partial class Program
    private static void ConfigureOptions(WebApplicationBuilder builder)
    {
       builder.Services.Configure<DiagnosticsOptions>(
-         builder.Configuration.GetSection(_diagnosticsSectionName));
+         builder.Configuration.GetSection(ConfigurationHelpers.DiagnosticsSectionName));
 
       builder.Services.Configure<JsonCacheOptions>(
-         builder.Configuration.GetSection($"{_cacheSectionName}:JsonCache"));
+         builder.Configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:JsonCache"));
 
       builder.Services.Configure<RenderedContentCacheOptions>(
          builder.Configuration.GetSection(
-            $"{_cacheSectionName}:RenderedContentCache"));
+            $"{ConfigurationHelpers.CacheSectionName}:RenderedContentCache"));
 
       builder.Services.Configure<SlugCacheOptions>(
-         builder.Configuration.GetSection($"{_cacheSectionName}:SlugCache"));
+         builder.Configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:SlugCache"));
 
       builder.Services.Configure<DateTimeDisplayOptions>(
          builder.Configuration.GetSection("DateTimeDisplayOptions"));
@@ -83,9 +83,9 @@ public static partial class Program
    private static void ConfigureSecrets(WebApplicationBuilder builder)
    {
       string secretsProvider =
-         builder.Configuration[_secretsProviderKey] ?? _localProviderName;
+         builder.Configuration[ConfigurationHelpers.SecretsProviderKey] ?? ConfigurationHelpers.LocalProviderName;
 
-      if (secretsProvider.EqualsOrdinalIgnoreCase(_localProviderName))
+      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
       {
          // Do nothing.
          //
@@ -98,9 +98,9 @@ public static partial class Program
          return;
       }
 
-      if (secretsProvider.EqualsOrdinalIgnoreCase(_azureKeyVaultProviderName))
+      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureKeyVaultProviderName))
       {
-         string? keyVaultUriText = builder.Configuration[_keyVaultUriKey];
+         string? keyVaultUriText = builder.Configuration[ConfigurationHelpers.KeyVaultUriKey];
          if (string.IsNullOrWhiteSpace(keyVaultUriText))
          {
             throw new InvalidOperationException(
@@ -123,7 +123,7 @@ public static partial class Program
       builder.Services.AddMemoryCache();
       builder.Services.AddSingleton<UrlBuilder>();
       builder.Services.AddSingleton<TimezoneConverter>();
-      builder.Services.AddSingleton<JsonDataBuilder>();
+      builder.Services.AddSingleton<StructuredDataBuilder>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
       builder.Services.AddSingleton<SitemapBuilder>();
 
@@ -157,16 +157,16 @@ public static partial class Program
 
       // Configure how to get content
       string contentStoreProvider = GetConfiguredStoreProvider(
-         builder, _contentStoreName, _dummyProviderName);
-      if (contentStoreProvider.EqualsOrdinalIgnoreCase(_dummyProviderName))
+         builder, ConfigurationHelpers.ContentStoreName, ConfigurationHelpers.DummyProviderName);
+      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.DummyProviderName))
       {
          builder.Services.AddSingleton<IContentStore, DummyContentStore>();
       }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(_localProviderName))
+      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
       {
          builder.Services.AddSingleton<IContentStore, LocalContentStore>();
       }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(_azureStorageBlobsProviderName))
+      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureStorageBlobsProviderName))
       {
          builder.Services.AddSingleton<IContentStore, AzureBlobContentStore>();
       }
@@ -182,7 +182,7 @@ public static partial class Program
       // Configure the rendering pipeline depending on whether caching is 
       // enabled.
       var enableCache = builder.Configuration.GetValue<bool>(
-         $"{_cacheSectionName}:EnableContentCache");
+         $"{ConfigurationHelpers.CacheSectionName}:EnableContentCache");
       if (enableCache)
       {
          builder.Services.AddSingleton<BasicContentPipeline>();
@@ -232,21 +232,21 @@ public static partial class Program
    private static void ConfigureDatabase(WebApplicationBuilder builder)
    {
       string databaseProvider =
-         builder.Configuration[_databaseProviderKey] ?? _sqlServerProviderName;
+         builder.Configuration[ConfigurationHelpers.DatabaseProviderKey] ?? ConfigurationHelpers.SqlServerProviderName;
       bool enableSensitiveDataLogging =
-         builder.Configuration.GetValue<bool>(_enableSensitiveDataLoggingKey);
+         builder.Configuration.GetValue<bool>(ConfigurationHelpers.EnableSensitiveDataLoggingKey);
       bool enableDetailedErrors =
-         builder.Configuration.GetValue<bool>(_enableDetailedErrorsKey);
+         builder.Configuration.GetValue<bool>(ConfigurationHelpers._enableDetailedErrorsKey);
       bool enableSqlCommandLogging =
-         builder.Configuration.GetValue<bool>(_enableSqlCommandLoggingKey);
+         builder.Configuration.GetValue<bool>(ConfigurationHelpers.EnableSqlCommandLoggingKey);
 
       builder.Services.AddDbContext<SiteDbContext>(options =>
       {
-         if (databaseProvider.EqualsOrdinalIgnoreCase(_sqlServerProviderName))
+         if (databaseProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
          {
             string? siteDatabaseConnectionString =
                builder.Configuration.GetConnectionString(
-                  _siteDatabaseConnectionName);
+                  ConfigurationHelpers.SiteDatabaseConnectionName);
 
             if (string.IsNullOrWhiteSpace(siteDatabaseConnectionString))
             {
@@ -265,11 +265,11 @@ public static partial class Program
                });
          }
          else if (databaseProvider.EqualsOrdinalIgnoreCase(
-            _inMemoryProviderName))
+            ConfigurationHelpers.InMemoryProviderName))
          {
             string databaseName =
-               builder.Configuration[_inMemoryDatabaseNameKey] ??
-               _defaultInMemoryDatabaseName;
+               builder.Configuration[ConfigurationHelpers.InMemoryDatabaseNameKey] ??
+               ConfigurationHelpers.DefaultInMemoryDatabaseName;
 
             options.UseInMemoryDatabase(databaseName);
          }
@@ -340,9 +340,9 @@ public static partial class Program
    private static void ConfigureLookupServices(WebApplicationBuilder builder)
    {
       string lookupProvider = GetConfiguredStoreProvider(
-         builder, _lookupStoreName, _dummyProviderName);
+         builder, ConfigurationHelpers.LookupStoreName, ConfigurationHelpers.DummyProviderName);
 
-      if (lookupProvider.EqualsOrdinalIgnoreCase(_sqlServerProviderName))
+      if (lookupProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
       {
          builder.Services.AddScoped(
             typeof(ISlugLookupService<>),
@@ -366,8 +366,8 @@ public static partial class Program
    private static void ConfigureErrorStore(WebApplicationBuilder builder)
    {
       string provider = GetConfiguredStoreProvider(
-         builder, _errorStoreName, _dummyProviderName);
-      if (provider.EqualsOrdinalIgnoreCase(_sqlServerProviderName))
+         builder, ConfigurationHelpers.ErrorStoreName, ConfigurationHelpers.DummyProviderName);
+      if (provider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
       {
          builder.Services.AddScoped<IErrorStore, SqlErrorStore>();
          return;
@@ -380,8 +380,8 @@ public static partial class Program
    private static void ConfigureWritingStore(WebApplicationBuilder builder)
    {
       string provider = GetConfiguredStoreProvider(
-         builder, _writingStoreName, _dummyProviderName);
-      if (provider.EqualsOrdinalIgnoreCase(_sqlServerProviderName))
+         builder, ConfigurationHelpers.WritingStoreName, ConfigurationHelpers.DummyProviderName);
+      if (provider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
       {
          builder.Services.AddScoped<IWritingStore, SqlWritingStore>();
          return;
@@ -394,8 +394,8 @@ public static partial class Program
    private static void ConfigureProjectStore(WebApplicationBuilder builder)
    {
       string provider = GetConfiguredStoreProvider(
-         builder, _projectStoreName, _dummyProviderName);
-      if (provider.EqualsOrdinalIgnoreCase(_sqlServerProviderName))
+         builder, ConfigurationHelpers.ProjectStoreName, ConfigurationHelpers.DummyProviderName);
+      if (provider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
       {
          builder.Services.AddScoped<IProjectStore, SqlProjectStore>();
          return;
@@ -427,19 +427,19 @@ public static partial class Program
       if (app.Environment.IsDevelopment())
       {
          app.UseDeveloperExceptionPage();
-         if (config.GetValue<bool>(_enableCustomErrorsKey))
+         if (config.GetValue<bool>(ConfigurationHelpers.EnableCustomErrorsKey))
          {
-            app.UseExceptionHandler(_internalServerErrorPath);
+            app.UseExceptionHandler(ConfigurationHelpers.InternalServerErrorPath);
          }
       }
       else
       {
-         app.UseExceptionHandler(_internalServerErrorPath);
+         app.UseExceptionHandler(ConfigurationHelpers.InternalServerErrorPath);
          app.UseHsts();
       }
 
       app.UseMiddleware<ErrorLoggingMiddleware>();
-      app.UseStatusCodePagesWithReExecute(_statusCodePagePath);
+      app.UseStatusCodePagesWithReExecute(ConfigurationHelpers.StatusCodePagePath);
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();
@@ -449,8 +449,8 @@ public static partial class Program
       app.UseAuthorization();
 
       app.MapControllerRoute(
-         name: _defaultRouteName,
-         pattern: _defaultRoutePattern);
+         name: ConfigurationHelpers.DefaultRouteName,
+         pattern: ConfigurationHelpers.DefaultRoutePattern);
    }
 
    private static async Task SeedDatabaseAsync(WebApplication app)
@@ -463,9 +463,9 @@ public static partial class Program
       // Just create a logger because we cannot get loggers for static classes.
       var loggerFactory =
          scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var logger = loggerFactory.CreateLogger(_startupLoggerName);
+      var logger = loggerFactory.CreateLogger(ConfigurationHelpers.StartupLoggerName);
 
-      bool seedEnabled = configuration.GetValue<bool>(_seedEnabledKey);
+      bool seedEnabled = configuration.GetValue<bool>(ConfigurationHelpers.SeedEnabledKey);
 
       if (!seedEnabled)
       {
@@ -473,7 +473,7 @@ public static partial class Program
          return;
       }
 
-      string? seedRootFolder = configuration[_seedRootFolderKey];
+      string? seedRootFolder = configuration[ConfigurationHelpers.SeedRootFolderKey];
       var environment =
          scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
       var dbContext =
@@ -483,23 +483,23 @@ public static partial class Program
       {
          seedRootFolder = Path.Combine(
             environment.ContentRootPath,
-            _dataFolderName,
-            _seedFolderName);
+            ConfigurationHelpers.DataFolderName,
+            ConfigurationHelpers.SeedFolderName);
       }
 
       string tablePrefix =
-         configuration[_tablePrefixKey] ?? _defaultTablePrefix;
+         configuration[ConfigurationHelpers.TablePrefixKey] ?? ConfigurationHelpers.DefaultTablePrefix;
 
       JsonSeedDatabaseSeederOptions seedOptions = new()
       {
          TablePrefix = tablePrefix,
          SkipFileWhenTargetTableHasRows =
-            configuration.GetValue(_skipFileWhenTargetTableHasRowsKey, true),
+            configuration.GetValue(ConfigurationHelpers.SkipFileWhenTargetTableHasRowsKey, true),
          ThrowOnUnmatchedJsonFiles =
-            configuration.GetValue(_throwOnUnmatchedJsonFilesKey, true),
+            configuration.GetValue(ConfigurationHelpers.ThrowOnUnmatchedJsonFilesKey, true),
          UseSqlServerIdentityInsertWhenNeeded =
             configuration.GetValue(
-               _useSqlServerIdentityInsertWhenNeededKey,
+               ConfigurationHelpers.UseSqlServerIdentityInsertWhenNeededKey,
                true)
       };
 
@@ -530,58 +530,6 @@ public static partial class Program
 
    private static string GetStoreProviderKey(string storeName)
    {
-      return $"{_storesSectionName}:{storeName}:{_providerSectionName}";
+      return $"{ConfigurationHelpers.StoresSectionName}:{storeName}:{ConfigurationHelpers.ProviderSectionName}";
    }
-
-   private const string _azureKeyVaultProviderName = "AzureKeyVault";
-   private const string _azureStorageBlobsProviderName = "AzureStorageBlobs";
-   private const string _dataFolderName = "Data";
-   private const string _defaultInMemoryDatabaseName = "DavidBrowning";
-   private const string _defaultRouteName = "default";
-   private const string _defaultRoutePattern =
-      "{controller=Home}/{action=Index}/{id?}";
-   private const string _defaultTablePrefix = "db_";
-   private const string _diagnosticsSectionName = "Diagnostics";
-   private const string _cacheSectionName = "Cache";
-   private const string _dummyProviderName = "Dummy";
-   private const string _errorStoreName = "ErrorStore";
-   private const string _inMemoryProviderName = "InMemory";
-   private const string _localProviderName = "Local";
-   private const string _lookupCacheSectionName = "LookupCache";
-   private const string _lookupStoreName = "LookupStore";
-   private const string _projectStoreName = "ProjectStore";
-   private const string _providerSectionName = "Provider";
-   private const string _seedFolderName = "Seed";
-   private const string _siteDatabaseConnectionName = "SiteDatabase";
-   private const string _sqlServerProviderName = "SqlServer";
-   private const string _startupLoggerName = "Startup";
-   private const string _storesSectionName = "Stores";
-   private const string _writingStoreName = "WritingStore";
-
-   private const string _contentStoreName = "ContentStore";
-
-   private const string _databaseProviderKey = "Database:Provider";
-   private const string _enableCustomErrorsKey =
-      "Diagnostics:EnableCustomErrors";
-   private const string _enableDetailedErrorsKey =
-      "Diagnostics:EntityFrameworkOptions:EnableDetailedErrors";
-   private const string _enableSensitiveDataLoggingKey =
-      "Diagnostics:EntityFrameworkOptions:EnableSensitiveDataLogging";
-   private const string _enableSqlCommandLoggingKey =
-      "Diagnostics:EntityFrameworkOptions:EnableSqlCommandLogging";
-   private const string _inMemoryDatabaseNameKey =
-      "Database:InMemoryDatabaseName";
-   private const string _internalServerErrorPath = "/Error/StatusCode/500";
-   private const string _keyVaultUriKey = "KeyVault:Uri";
-   private const string _secretsProviderKey = "Secrets:Provider";
-   private const string _seedEnabledKey = "Database:Seed:Enabled";
-   private const string _seedRootFolderKey = "Database:Seed:RootFolder";
-   private const string _skipFileWhenTargetTableHasRowsKey =
-      "Database:Seed:SkipFileWhenTargetTableHasRows";
-   private const string _statusCodePagePath = "/Error/StatusCode/{0}";
-   private const string _tablePrefixKey = "Database:TablePrefix";
-   private const string _throwOnUnmatchedJsonFilesKey =
-      "Database:Seed:ThrowOnUnmatchedJsonFiles";
-   private const string _useSqlServerIdentityInsertWhenNeededKey =
-      "Database:Seed:UseSqlServerIdentityInsertWhenNeeded";
 }

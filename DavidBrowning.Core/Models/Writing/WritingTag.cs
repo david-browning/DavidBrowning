@@ -13,7 +13,7 @@ namespace DavidBrowning.Models.Writing;
 public sealed class WritingTag : IQueryableSlug
 {
    [Required, Key]
-   public int Id { get; set; }
+   public required int Id { get; set; }
 
    /// <summary>
    /// The content of the tag. Something like ".NET" or "Thoughts".

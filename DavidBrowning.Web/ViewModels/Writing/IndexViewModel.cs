@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
 using DavidBrowning.Models.Writing;
+using DavidBrowning.ViewModels;
 
 namespace DavidBrowning.Web.ViewModels.Writing;
 

@@ -12,7 +12,7 @@ namespace DavidBrowning.Models.Projects;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Slug), IsUnique = true)]
-public sealed class Project
+public sealed class Project : IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }

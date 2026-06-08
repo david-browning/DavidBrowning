@@ -13,7 +13,7 @@ namespace DavidBrowning.Models.Work;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(ExperienceId), nameof(SortOrder))]
-public sealed class ExperienceRole
+public sealed class ExperienceRole : IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }

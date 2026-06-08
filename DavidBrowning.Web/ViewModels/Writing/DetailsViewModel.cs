@@ -12,7 +12,7 @@ public class DetailsViewModel
 {
    [SetsRequiredMembers]
    public DetailsViewModel(
-      Post post, 
+      Post post,
       RenderedContent body,
       SeoMetadataViewModel seo)
    {

@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <Folder Include="ContentAssets\Images\" />
+    <Folder Include="Middleware\" />
+    <Folder Include="ViewModels\Error\" />
   </ItemGroup>
    <ItemGroup>
   <None Update="ContentAssets\**\*.*">

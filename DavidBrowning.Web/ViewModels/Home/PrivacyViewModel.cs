@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DavidBrowning.Models;
 
 namespace DavidBrowning.Web.ViewModels.Home;
 

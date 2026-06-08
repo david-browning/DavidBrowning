@@ -75,4 +75,37 @@ public sealed class SqlErrorStore : IErrorStore
 
    private readonly ILogger<SqlErrorStore> _logger;
    private readonly SiteDbContext _context;
+
+   public async Task<PagedResult<WebsiteError>> GetPagedErrorsAsync(
+      int page,
+      int pageSize, 
+      CancellationToken cancellationToken = default)
+   {
+      if (page < 1)
+      {
+         throw new ArgumentOutOfRangeException(
+            nameof(page), "Page must be greater than or equal to 1.");
+      }
+
+      if (pageSize < 1)
+      {
+         throw new ArgumentOutOfRangeException(
+            nameof(pageSize), "Page size must be greater than or equal to 1.");
+      }
+
+      var query = _context.WebsiteErrors.AsNoTracking();
+      var totalCount = await query.CountAsync(cancellationToken);
+      var errors = await query
+         .Skip((page - 1) * pageSize)
+         .Take(pageSize)
+         .ToListAsync(cancellationToken);
+
+      return new PagedResult<WebsiteError>()
+      {
+         Items = errors,
+         Page = page,
+         TotalCount = totalCount,
+         PageSize = pageSize,
+      };
+   }
 }

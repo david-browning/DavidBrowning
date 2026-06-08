@@ -2,9 +2,9 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Diagnostics;
+using DavidBrowning.Diagnostics;
 using DavidBrowning.Infrastructure.Data.Stores;
-using DavidBrowning.Web.Diagnostics;
-using DavidBrowning.Web.ViewModels.Error;
+using DavidBrowning.ViewModels.Error;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

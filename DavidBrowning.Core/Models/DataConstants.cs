@@ -14,4 +14,8 @@ public sealed class DataConstants
    public const int MaxUrlLength = 2048;
    public const int MaxIconCssClassLength = 128;
    public const int MaxContentTypeLength = 128;
+
+   public const string SlugRegex = @"^[a-z0-9]+(?:-[a-z0-9]+)*$";
+   public const string SlugRegexError =
+      "Use lowercase letters, numbers, and hyphens only.";
 }
