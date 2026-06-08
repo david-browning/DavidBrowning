@@ -1,22 +1,50 @@
-﻿// Copyright Â© 2026 David Browning. All rights reserved.
+﻿// Copyright © 2026 David Browning. All rights reserved.
+//
 // Source-available for viewing only. No license granted.
-using System.Diagnostics.CodeAnalysis;
+
+using System;
+using System.ComponentModel.DataAnnotations;
+
+using DavidBrowning.Models;
 using DavidBrowning.Models.Work;
 
 namespace DavidBrowning.Admin.ViewModels.Work;
 
-public class ExperienceEditViewModel
+public sealed class ExperienceEditViewModel
 {
-   public required EditModes EditMode { get; init; }
+   public EditModes EditMode { get; set; } = EditModes.Create;
+
+   public int? Id { get; set; }
+
+   [Required]
+   [StringLength(DataConstants.MaxNameLength)]
+   public string? CompanyName { get; set; }
+
+   [StringLength(DataConstants.MaxLabelLength)]
+   public string? LocationDisplayText { get; set; }
+
+   [Range(0, int.MaxValue)]
+   public int SortOrder { get; set; }
+
+   public bool IsActive { get; set; } = true;
+
+   public DateTime? CreatedAtUtc { get; init; }
+
+   public DateTime? UpdatedAtUtc { get; init; }
 
    public ExperienceEditViewModel()
    {
-
    }
 
-   [SetsRequiredMembers]
    public ExperienceEditViewModel(Experience experience)
    {
       EditMode = EditModes.Edit;
+      Id = experience.Id;
+      CompanyName = experience.CompanyName;
+      LocationDisplayText = experience.LocationDisplayText;
+      SortOrder = experience.SortOrder;
+      IsActive = experience.IsActive;
+      CreatedAtUtc = experience.CreatedAtUtc;
+      UpdatedAtUtc = experience.UpdatedAtUtc;
    }
 }

@@ -1,94 +1,69 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
+//
 // Source-available for viewing only. No license granted.
+
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class PostEditViewModel
+public sealed class PostEditViewModel
 {
-   public required EditModes EditMode { get; init; }
+   public EditModes EditMode { get; set; } = EditModes.Create;
 
-   [Required, Key]
    public int? Id { get; set; }
 
-   /// <summary>
-   /// The URL-friendly text.
-   /// </summary>
    [Required]
    [StringLength(DataConstants.MaxSlugLength)]
-   [RegularExpression(DataConstants.SlugRegex,
+   [RegularExpression(
+      DataConstants.SlugRegex,
       ErrorMessage = DataConstants.SlugRegexError)]
    public string? Slug { get; set; }
 
-   /// <summary>
-   /// Title of the post
-   /// </summary>
    [Required]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? Title { get; set; }
 
-   /// <summary>
-   /// Optional subtitle.
-   /// </summary>
    [StringLength(DataConstants.MaxLabelLength)]
    public string? Subtitle { get; set; }
 
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? Summary { get; set; }
 
-   /// <summary>
-   /// Foreign key to db_PostStyles.
-   /// Controls how the post should be presented.
-   /// </summary>
    [Required]
+   [Range(1, int.MaxValue)]
    public int? PostStyleId { get; set; }
 
-   /// <summary>
-   /// The status of the post.
-   /// Instead of having it be a foreign key, we'll just map it to an enum
-   /// in code.
-   /// </summary>
-   [Required]
+   [EnumDataType(typeof(PostStatus))]
    public PostStatus Status { get; set; } = PostStatus.Draft;
 
-   public bool IsFeatured { get; set; } = false;
+   public bool IsFeatured { get; set; }
 
-   /// <summary>
-   /// When the post was first created.
-   /// </summary>
-   [Required]
-   public DateTime CreatedDateUtc { get; set; } = DateTime.UtcNow;
-
-   /// <summary>
-   /// When the post was last updated. This is for the post as a whole. The
-   /// post revisions also contain a date.
-   /// </summary>
-   [Required]
-   public DateTime LastUpdatedDateUtc { get; set; } = DateTime.UtcNow;
-
-   /// <summary>
-   /// Optional: When the post was published.
-   /// </summary>
    public DateTime? PublishedDateUtc { get; set; }
 
-   /// <summary>
-   /// Maps to db_PostRevisions to reference the latest revision of this 
-   /// post.
-   /// </summary>
+   // Treat CurrentRevisionId as a controlled selection. The application
+   // service must verify that the selected revision belongs to this post.
    public int? CurrentRevisionId { get; set; }
 
+   // Simple many-to-many selections. Persist by diffing the submitted IDs
+   // against Post.Tags.
+   public ISet<int> WritingTagIds { get; set; } = new HashSet<int>();
 
+   // Display-only metadata. Do not trust posted values when saving.
+   public DateTime? CreatedDateUtc { get; init; }
+
+   // Display-only metadata. Do not trust posted values when saving.
+   public DateTime? LastUpdatedDateUtc { get; init; }
 
    public PostEditViewModel()
    {
-
    }
 
-   [SetsRequiredMembers]
    public PostEditViewModel(Post post)
    {
       EditMode = EditModes.Edit;
@@ -100,9 +75,12 @@ public class PostEditViewModel
       PostStyleId = post.PostStyleId;
       Status = post.Status;
       IsFeatured = post.IsFeatured;
-      CreatedDateUtc = post.CreatedDateUtc;
-      LastUpdatedDateUtc   = post.LastUpdatedDateUtc;
       PublishedDateUtc = post.PublishedDateUtc;
       CurrentRevisionId = post.CurrentRevisionId;
+      WritingTagIds = post.Tags
+         .Select(tag => tag.WritingTagId)
+         .ToHashSet();
+      CreatedDateUtc = post.CreatedDateUtc;
+      LastUpdatedDateUtc = post.LastUpdatedDateUtc;
    }
 }

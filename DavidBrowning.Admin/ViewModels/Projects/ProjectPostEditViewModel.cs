@@ -9,44 +9,34 @@ using DavidBrowning.Models.Projects;
 
 namespace DavidBrowning.Admin.ViewModels.Projects;
 
-public sealed class ProjectLinkEditViewModel
+// ProjectPost uses a composite key: (ProjectId, PostId).
+// Treat those key fields as immutable while editing.
+public sealed class ProjectPostEditViewModel
 {
    public EditModes EditMode { get; set; } = EditModes.Create;
 
-   public int? Id { get; set; }
-
-   [Required]
    [Range(1, int.MaxValue)]
-   public int? ProjectId { get; set; }
+   public int ProjectId { get; set; }
 
-   [Required]
    [Range(1, int.MaxValue)]
-   public int? ProjectLinkTypeId { get; set; }
+   public int PostId { get; set; }
 
-   [Required]
    [StringLength(DataConstants.MaxLabelLength)]
-   public string? Label { get; set; }
-
-   [Required]
-   [StringLength(DataConstants.MaxUrlLength)]
-   [Url]
-   public string? Url { get; set; }
+   public string? RelationshipLabel { get; set; }
 
    [Range(0, int.MaxValue)]
    public int SortOrder { get; set; }
 
-   public ProjectLinkEditViewModel()
+   public ProjectPostEditViewModel()
    {
    }
 
-   public ProjectLinkEditViewModel(ProjectLink link)
+   public ProjectPostEditViewModel(ProjectPost link)
    {
       EditMode = EditModes.Edit;
-      Id = link.Id;
       ProjectId = link.ProjectId;
-      ProjectLinkTypeId = link.ProjectLinkTypeId;
-      Label = link.Label;
-      Url = link.Url;
+      PostId = link.PostId;
+      RelationshipLabel = link.RelationshipLabel;
       SortOrder = link.SortOrder;
    }
 }
