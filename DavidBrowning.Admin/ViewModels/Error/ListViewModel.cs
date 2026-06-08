@@ -7,18 +7,13 @@ using DavidBrowning.Models.Error;
 
 namespace DavidBrowning.Admin.ViewModels.Error;
 
-public class ListViewModel : IListViewModel<WebsiteError>
+public class ListViewModel : IReadonlyListViewModel<WebsiteError>
 {
-   public required ListModes ListMode { get; set; }
-   
-   public required List<WebsiteError>? Items { get; set; }
+   public required IReadOnlyList<WebsiteError>? Items { get; set; }
 
    [SetsRequiredMembers]
-   public ListViewModel(
-      IEnumerable<WebsiteError> errors,
-      ListModes mode = ListModes.Readonly)
+   public ListViewModel(IEnumerable<WebsiteError> errors)
    {
       Items = errors.ToList();
-      ListMode = mode;
    }
 }

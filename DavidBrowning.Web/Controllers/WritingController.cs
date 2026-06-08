@@ -29,7 +29,7 @@ public class WritingController : Controller
       IWritingStore writingStore,
       ISlugService slugs,
       ISlugLookupService<WritingTag> tagStore,
-      JsonDataBuilder jsonDataBuilder)
+      StructuredDataBuilder jsonDataBuilder)
    {
       _pageSize = configurationManager.GetValue<int>("Content:PageSize");
       _jsonCache = jsonCache;
@@ -200,5 +200,5 @@ public class WritingController : Controller
    private readonly ISlugService _slugService;
    private readonly ISlugLookupService<WritingTag> _tagLookup;
    private readonly MarkdownPostContentRenderer _postRendered;
-   private readonly JsonDataBuilder _jsonDataBuilder;
+   private readonly StructuredDataBuilder _jsonDataBuilder;
 }

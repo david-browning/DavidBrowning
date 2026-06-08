@@ -48,10 +48,6 @@ public sealed class CredentialEditViewModel
 
    public bool IsActive { get; set; } = true;
 
-   public DateTime? CreatedAtUtc { get; init; }
-
-   public DateTime? UpdatedAtUtc { get; init; }
-
    public CredentialEditViewModel()
    {
    }
@@ -70,7 +66,5 @@ public sealed class CredentialEditViewModel
       CredentialUrl = credential.CredentialUrl;
       SortOrder = credential.SortOrder;
       IsActive = credential.IsActive;
-      CreatedAtUtc = credential.CreatedAtUtc;
-      UpdatedAtUtc = credential.UpdatedAtUtc;
    }
 }

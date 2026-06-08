@@ -7,16 +7,13 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class PostStyleListViewModel : IListViewModel<PostStyle>
+public class PostStyleListViewModel : IReadonlyListViewModel<PostStyle>
 {
-   public required ListModes ListMode { get; set; }
-   
-   public List<PostStyle>? Items {  get; set; }
+   public IReadOnlyList<PostStyle>? Items {  get; set; }
 
    [SetsRequiredMembers]
    public PostStyleListViewModel(IEnumerable<PostStyle> styles)
    {
       Items = styles.ToList();
-      ListMode = ListModes.Readonly;
    }
 }

@@ -13,7 +13,7 @@ namespace DavidBrowning.Models;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(AssetKey), IsUnique = true)]
-public sealed class SiteAsset
+public sealed class SiteAsset : IDateCreatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }

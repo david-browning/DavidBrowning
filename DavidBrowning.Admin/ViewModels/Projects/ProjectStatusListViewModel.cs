@@ -6,15 +6,12 @@ using DavidBrowning.Models.Projects;
 
 namespace DavidBrowning.Admin.ViewModels.Projects;
 
-public class ProjectStatusListViewModel : IListViewModel<ProjectStatus>
-{
-   public ListModes ListMode { get;set; }
-   
-   public List<ProjectStatus>? Items { get; set; }
+public class ProjectStatusListViewModel : IReadonlyListViewModel<ProjectStatus>
+{   
+   public IReadOnlyList<ProjectStatus>? Items { get; set; }
 
    public ProjectStatusListViewModel(IEnumerable<ProjectStatus> statuses)
    {
-      ListMode = ListModes.Readonly;
       Items = statuses.ToList();
    }
 }

@@ -38,12 +38,6 @@ public sealed class InterestEditViewModel
    [StringLength(DataConstants.MaxIconCssClassLength)]
    public string? IconCssClass { get; set; }
 
-   // Display-only metadata. Do not trust posted values when saving.
-   public DateTime? CreatedAtUtc { get; init; }
-
-   // Display-only metadata. Do not trust posted values when saving.
-   public DateTime? UpdatedAtUtc { get; init; }
-
    public InterestEditViewModel()
    {
    }
@@ -58,7 +52,5 @@ public sealed class InterestEditViewModel
       IsActive = interest.IsActive;
       SortOrder = interest.SortOrder;
       IconCssClass = interest.IconCssClass;
-      CreatedAtUtc = interest.CreatedAtUtc;
-      UpdatedAtUtc = interest.UpdatedAtUtc;
    }
 }

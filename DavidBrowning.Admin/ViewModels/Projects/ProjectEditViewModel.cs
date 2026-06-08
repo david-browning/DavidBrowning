@@ -72,12 +72,6 @@ public sealed class ProjectEditViewModel : IValidatableObject
 
    public ISet<int> ProjectStackTagIds { get; set; } = new HashSet<int>();
 
-   // Display-only metadata. Do not trust posted values when saving.
-   public DateTime? CreatedAtUtc { get; init; }
-
-   // Display-only metadata. Do not trust posted values when saving.
-   public DateTime? UpdatedAtUtc { get; init; }
-
    public ProjectEditViewModel()
    {
    }
@@ -106,8 +100,6 @@ public sealed class ProjectEditViewModel : IValidatableObject
       ProjectStackTagIds = project.StackTagLinks
          .Select(link => link.ProjectStackTagId)
          .ToHashSet();
-      CreatedAtUtc = project.CreatedAtUtc;
-      UpdatedAtUtc = project.UpdatedAtUtc;
    }
 
    public IEnumerable<ValidationResult> Validate(

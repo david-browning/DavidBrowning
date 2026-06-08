@@ -11,9 +11,9 @@ namespace DavidBrowning.Infrastructure;
 /// <summary>
 /// Used to build JsonObjects that get emitted in HTML for Seo.
 /// </summary>
-public class JsonDataBuilder
+public class StructuredDataBuilder
 {
-   public JsonDataBuilder(
+   public StructuredDataBuilder(
       IOptions<SiteMetadataOptions> metadataOptions,
       UrlBuilder urlBuilder)
    {

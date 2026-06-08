@@ -123,7 +123,7 @@ public static partial class Program
       builder.Services.AddMemoryCache();
       builder.Services.AddSingleton<UrlBuilder>();
       builder.Services.AddSingleton<TimezoneConverter>();
-      builder.Services.AddSingleton<JsonDataBuilder>();
+      builder.Services.AddSingleton<StructuredDataBuilder>();
       builder.Services.AddSingleton<ISlugService, BasicSlugService>();
       builder.Services.AddSingleton<SitemapBuilder>();
 

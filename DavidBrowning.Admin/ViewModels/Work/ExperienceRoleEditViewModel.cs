@@ -35,10 +35,6 @@ public sealed class ExperienceRoleEditViewModel
 
    public bool IsActive { get; set; } = true;
 
-   public DateTime? CreatedAtUtc { get; init; }
-
-   public DateTime? UpdatedAtUtc { get; init; }
-
    public ExperienceRoleEditViewModel()
    {
    }
@@ -53,7 +49,5 @@ public sealed class ExperienceRoleEditViewModel
       Description = role.Description;
       SortOrder = role.SortOrder;
       IsActive = role.IsActive;
-      CreatedAtUtc = role.CreatedAtUtc;
-      UpdatedAtUtc = role.UpdatedAtUtc;
    }
 }

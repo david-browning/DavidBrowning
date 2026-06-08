@@ -7,5 +7,4 @@ public enum ListModes
    Radio,
    Checkbox,
    Edit,
-   Readonly
 }

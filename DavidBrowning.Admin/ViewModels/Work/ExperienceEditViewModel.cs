@@ -28,10 +28,6 @@ public sealed class ExperienceEditViewModel
 
    public bool IsActive { get; set; } = true;
 
-   public DateTime? CreatedAtUtc { get; init; }
-
-   public DateTime? UpdatedAtUtc { get; init; }
-
    public ExperienceEditViewModel()
    {
    }
@@ -44,7 +40,5 @@ public sealed class ExperienceEditViewModel
       LocationDisplayText = experience.LocationDisplayText;
       SortOrder = experience.SortOrder;
       IsActive = experience.IsActive;
-      CreatedAtUtc = experience.CreatedAtUtc;
-      UpdatedAtUtc = experience.UpdatedAtUtc;
    }
 }

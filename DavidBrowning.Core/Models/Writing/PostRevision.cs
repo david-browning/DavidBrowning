@@ -11,7 +11,7 @@ namespace DavidBrowning.Models.Writing;
 /// </summary>
 [PrimaryKey("Id")]
 [Index(nameof(PostId), nameof(RevisionNumber), IsUnique = true)]
-public sealed class PostRevision
+public sealed class PostRevision : IDateCreatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }

@@ -33,9 +33,6 @@ public sealed class PostRevisionEditViewModel
 
    public string? Content { get; set; }
 
-   // Display-only metadata. Do not trust posted values when saving.
-   public DateTime? CreatedAtUtc { get; init; }
-
    public PostRevisionEditViewModel()
    {
    }
@@ -49,6 +46,5 @@ public sealed class PostRevisionEditViewModel
       ContentFormat = revision.ContentFormat;
       CreatedBy = revision.CreatedBy;
       Content = revision.Content;
-      CreatedAtUtc = revision.CreatedAtUtc;
    }
 }

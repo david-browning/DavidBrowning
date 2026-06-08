@@ -25,7 +25,7 @@ public class ProjectsController : Controller
       IProjectStore project,
       ISlugService slugService,
       UrlBuilder urlBuilder,
-      JsonDataBuilder dataBuilder,
+      StructuredDataBuilder dataBuilder,
       MarkdownProjectContentRenderer projectRenderer,
       ISlugLookupService<ProjectStackTag> stackLookup,
       ISlugLookupService<ProjectOrigin> originLookup,
@@ -323,5 +323,5 @@ public class ProjectsController : Controller
    private readonly ISlugLookupService<ProjectStatus> _statusLookup;
    private readonly ISlugLookupService<ProjectTag> _tagLookup;
    private readonly UrlBuilder _urlBuilder;
-   private readonly JsonDataBuilder _jsonDataBuilder;
+   private readonly StructuredDataBuilder _jsonDataBuilder;
 }

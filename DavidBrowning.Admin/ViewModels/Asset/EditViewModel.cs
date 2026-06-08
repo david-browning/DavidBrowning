@@ -39,8 +39,6 @@ public sealed class EditViewModel
 
    public int? HeightPixels { get; init; }
 
-   public DateTime? CreatedAtUtc { get; init; }
-
    public EditViewModel()
    {
    }
@@ -56,6 +54,5 @@ public sealed class EditViewModel
       SizeBytes = asset.SizeBytes;
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
-      CreatedAtUtc = asset.CreatedAtUtc;
    }
 }
