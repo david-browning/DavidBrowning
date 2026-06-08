@@ -9,7 +9,7 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 public class ProjectLinkViewListModel : IListViewModel<ProjectLinkEditViewModel>
 {
    public ListModes ListMode { get; set; }
-   
+
    public List<ProjectLinkEditViewModel>? Items { get; set; }
 
    public ProjectLinkViewListModel(IEnumerable<ProjectLink> links, ListModes mode)

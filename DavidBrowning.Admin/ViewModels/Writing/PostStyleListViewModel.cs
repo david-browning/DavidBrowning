@@ -9,7 +9,7 @@ namespace DavidBrowning.Admin.ViewModels.Writing;
 
 public class PostStyleListViewModel : IReadonlyListViewModel<PostStyle>
 {
-   public IReadOnlyList<PostStyle>? Items {  get; set; }
+   public IReadOnlyList<PostStyle>? Items { get; set; }
 
    [SetsRequiredMembers]
    public PostStyleListViewModel(IEnumerable<PostStyle> styles)

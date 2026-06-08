@@ -9,11 +9,11 @@ namespace DavidBrowning.Admin.ViewModels.Writing;
 public class PostRevisionListViewModel : IListViewModel<PostRevisionEditViewModel>
 {
    public ListModes ListMode { get; set; }
-   
+
    public List<PostRevisionEditViewModel>? Items { get; set; }
 
    public PostRevisionListViewModel(
-      IEnumerable<PostRevision> revisions, 
+      IEnumerable<PostRevision> revisions,
       ListModes mode)
    {
       ListMode = mode;

@@ -4,7 +4,7 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 
 public class IndexViewModel
 {
-   public required ProjectEditViewModel Create {  get; set; }
+   public required ProjectEditViewModel Create { get; set; }
 
    public required ProjectListViewModel List { get; set; }
 

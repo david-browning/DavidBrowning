@@ -4,7 +4,7 @@ namespace DavidBrowning.Admin.ViewModels.Asset;
 
 public class IndexViewModel
 {
-   public required EditViewModel Create {  get; set; }
+   public required EditViewModel Create { get; set; }
 
    public required ListViewModel List { get; set; }
 }

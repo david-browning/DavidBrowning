@@ -8,7 +8,7 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 
 public class ProjectTypeListViewModel : IReadonlyListViewModel<ProjectType>
 {
-   public IReadOnlyList<ProjectType>? Items {  get; set; }
+   public IReadOnlyList<ProjectType>? Items { get; set; }
 
    public ProjectTypeListViewModel(IEnumerable<ProjectType> types)
    {

@@ -9,11 +9,11 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 public class ProjectStackListViewModel : IListViewModel<ProjectStackEditViewModel>
 {
    public ListModes ListMode { get; set; }
-   
-   public List<ProjectStackEditViewModel>? Items {  get; set; }
+
+   public List<ProjectStackEditViewModel>? Items { get; set; }
 
    public ProjectStackListViewModel(
-      IEnumerable<ProjectStackTag> stacks, 
+      IEnumerable<ProjectStackTag> stacks,
       ListModes mode)
    {
       ListMode = mode;

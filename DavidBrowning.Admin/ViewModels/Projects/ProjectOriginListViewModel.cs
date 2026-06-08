@@ -8,9 +8,9 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 
 public class ProjectOriginListViewModel : IListViewModel<ProjectOriginEditViewModel>
 {
-   public ListModes ListMode {  get; set; }
+   public ListModes ListMode { get; set; }
 
-   public List<ProjectOriginEditViewModel>? Items {  get; set; }
+   public List<ProjectOriginEditViewModel>? Items { get; set; }
 
    public ProjectOriginListViewModel(
       IEnumerable<ProjectOrigin> origins,

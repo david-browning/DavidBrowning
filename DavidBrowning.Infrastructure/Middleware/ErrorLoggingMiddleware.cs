@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace DavidBrowning.Web.Middleware;
+namespace DavidBrowning.Infrastructure.Middleware;
 
-internal sealed class ErrorLoggingMiddleware
+public sealed class ErrorLoggingMiddleware
 {
    public ErrorLoggingMiddleware(
       RequestDelegate next,

@@ -4,7 +4,7 @@ namespace DavidBrowning.Admin.ViewModels.Writing;
 
 public class IndexViewModel
 {
-   public required PostEditViewModel Create {  get; set; }
+   public required PostEditViewModel Create { get; set; }
 
    public required PostListViewModel List { get; set; }
 }

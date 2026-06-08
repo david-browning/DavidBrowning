@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DavidBrowning.Web.ViewModels;
+namespace DavidBrowning.ViewModels;
 
 public sealed class PagerViewModel
 {

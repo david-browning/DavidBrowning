@@ -8,8 +8,8 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 
 public class ProjectTagListViewModel : IListViewModel<ProjectTagEditViewModel>
 {
-   public ListModes ListMode {  get; set; }
-   
+   public ListModes ListMode { get; set; }
+
    public List<ProjectTagEditViewModel>? Items { get; set; }
 
    public ProjectTagListViewModel(

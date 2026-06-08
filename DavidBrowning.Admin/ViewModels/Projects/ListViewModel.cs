@@ -8,8 +8,8 @@ namespace DavidBrowning.Admin.ViewModels.Projects;
 
 public class ListViewModel : IListViewModel<ProjectEditViewModel>
 {
-   public ListModes ListMode {  get; set; }
-   public List<ProjectEditViewModel>? Items {  get; set; }
+   public ListModes ListMode { get; set; }
+   public List<ProjectEditViewModel>? Items { get; set; }
 
    public ListViewModel(IEnumerable<Project> projects, ListModes mode)
    {

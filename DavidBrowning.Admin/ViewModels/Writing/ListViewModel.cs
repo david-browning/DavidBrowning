@@ -8,8 +8,8 @@ namespace DavidBrowning.Admin.ViewModels.Writing;
 
 public class ListViewModel : IListViewModel<PostEditViewModel>
 {
-   public ListModes ListMode {  get; set; }
-   public List<PostEditViewModel>? Items {  get; set; }
+   public ListModes ListMode { get; set; }
+   public List<PostEditViewModel>? Items { get; set; }
 
    public ListViewModel(IEnumerable<Post> posts, ListModes mode)
    {
