@@ -31,7 +31,7 @@ public class ConfigurationHelpers
    public const string DatabaseProviderKey = "Database:Provider";
    public const string EnableCustomErrorsKey =
       "Diagnostics:EnableCustomErrors";
-   public const string _enableDetailedErrorsKey =
+   public const string EnableDetailedErrorsKey =
       "Diagnostics:EntityFrameworkOptions:EnableDetailedErrors";
    public const string EnableSensitiveDataLoggingKey =
       "Diagnostics:EntityFrameworkOptions:EnableSensitiveDataLogging";
