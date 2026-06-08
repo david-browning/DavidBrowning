@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright Â© 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models.Work;
 
 namespace DavidBrowning.Admin.ViewModels.Work;

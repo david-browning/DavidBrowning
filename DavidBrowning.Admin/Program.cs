@@ -1,3 +1,9 @@
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 namespace DavidBrowning.Admin;
 
 public class Program

@@ -8,6 +8,7 @@ using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.Projects;

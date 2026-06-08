@@ -1,55 +1,66 @@
-﻿using System;
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using DavidBrowning.Admin.ViewModels.Asset;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
+
 public class AssetController : Controller
 {
-   public AssetController()
-   {
-
-   }
-
-   public IActionResult Index(CancellationToken cancellationToken)
-   {
-      return View();
-   }
-
-   [HttpGet]
-   public IActionResult Create(CancellationToken cancellationToken)
+   public Task<IActionResult> Index(
+      CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public IActionResult Create(
-      EditViewModel model, 
+   public Task<IActionResult> List(
       CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
 
    [HttpGet]
-   public IActionResult Edit(int id, CancellationToken cancellationToken)
+   public IActionResult Create()
    {
       throw new NotImplementedException();
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public IActionResult Edit(
-      int id, 
-      EditViewModel mode, 
+   public Task<IActionResult> Create(
+      EditViewModel model,
       CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
 
    [HttpGet]
-   public IActionResult Delete(int id, CancellationToken cancellationToken)
+   public Task<IActionResult> Edit(
+      int id,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public Task<IActionResult> Edit(
+      int id,
+      EditViewModel model,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpGet]
+   public Task<IActionResult> Delete(
+      int id,
+      CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
@@ -57,7 +68,7 @@ public class AssetController : Controller
    [HttpPost]
    [ActionName(nameof(Delete))]
    [ValidateAntiForgeryToken]
-   public async Task<IActionResult> DeleteConfirmed(
+   public Task<IActionResult> DeleteConfirmed(
       DeleteViewModel model,
       CancellationToken cancellationToken)
    {
@@ -65,7 +76,7 @@ public class AssetController : Controller
    }
 
    [HttpGet]
-   public async Task<IActionResult> Download(
+   public Task<IActionResult> Download(
       string assetKey,
       CancellationToken cancellationToken)
    {

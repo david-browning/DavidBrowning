@@ -9,6 +9,7 @@ using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.Writing;

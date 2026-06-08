@@ -1,5 +1,7 @@
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System;
 using System.Diagnostics;
-using DavidBrowning.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -21,11 +23,5 @@ public class HomeController : Controller
    public IActionResult Privacy()
    {
       return View();
-   }
-
-   [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-   public IActionResult Error()
-   {
-      return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
    }
 }

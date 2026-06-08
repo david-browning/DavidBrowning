@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 public class ErrorController : Controller
