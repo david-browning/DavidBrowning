@@ -1,0 +1,8 @@
+﻿User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /search
+Disallow: /error
+
+Sitemap: https://davidbrowning.com/sitemap.xml
