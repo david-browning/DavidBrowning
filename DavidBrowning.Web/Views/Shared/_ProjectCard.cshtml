@@ -7,10 +7,17 @@
 *@
 @model DavidBrowning.Models.Projects.Project
 @inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
+@{
+	var url = urlBuilder.GetDetailsUrl(Model.Slug, "projects");
+}
 
 <article class="wb-card h-100 d-flex flex-column">
 	<p class="wb-card-meta">@Model.ProjectType!.DisplayName</p>
-	<h3>@Model.Name</h3>
+	<h3>
+		<a href="@url" class="d-block text-reset text-decoration-none">
+			@Model.Name
+		</a>
+	</h3>
 	<p class="wb-card-meta">Project Facts</p>
 	<div class="row row-cols-1 row-cols-md-2 g-3">
 		<div class="col">
@@ -53,7 +60,7 @@
 	</div>
 
 	<div class="mt-auto pt-4">
-		<a href="@urlBuilder.GetDetailsUrl(Model.Slug, "projects")">
+		<a href="@url">
 			More
 			<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 		</a>

@@ -1,0 +1,178 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.ReorderListViewModel
+
+<section class="card"
+		 data-reorder-list>
+	<div class="card-body">
+		<div class="d-flex flex-column flex-md-row
+		            justify-content-between align-items-md-center
+		            gap-3 mb-4">
+			<div>
+				<h2 class="h4 card-title mb-1">
+					@Model.Title
+				</h2>
+
+				@if (!string.IsNullOrWhiteSpace(Model.Description))
+				{
+					<p class="card-text text-secondary mb-0">
+						@Model.Description
+					</p>
+				}
+			</div>
+
+			<button class="btn btn-primary"
+					type="submit"
+					data-reorder-save
+					disabled>
+				<i class="fa-solid fa-floppy-disk me-2"
+				   aria-hidden="true"></i>
+				Save order
+			</button>
+		</div>
+
+		@if (Model.Items.Count == 0)
+		{
+			<div class="alert alert-secondary mb-0"
+				 role="status">
+				@Model.EmptyMessage
+			</div>
+		}
+		else
+		{
+			<form asp-controller="@Model.ReorderController"
+				  asp-action="@Model.ReorderAction"
+				  method="post"
+				  data-reorder-form>
+
+				<ol class="list-group"
+					data-reorder-items>
+					@for (var index = 0; index < Model.Items.Count; index++)
+					{
+						var item = Model.Items[index];
+
+						var iconCssClass =
+						string.IsNullOrWhiteSpace(item.IconCssClass)
+						? "fa-solid fa-circle-question"
+						: item.IconCssClass;
+
+						<li class="list-group-item"
+							data-reorder-item>
+							<input type="hidden"
+								   name="Items[@index].Id"
+								   value="@item.Id"
+								   data-reorder-id />
+
+							<input type="hidden"
+								   name="Items[@index].SortOrder"
+								   value="@item.SortOrder"
+								   data-reorder-sort-order />
+
+							<div class="d-flex align-items-center gap-3">
+								<div class="d-flex align-items-center
+										            justify-content-center
+										            flex-shrink-0"
+									 style="width: 2rem;"
+									 aria-hidden="true">
+									<i class="@iconCssClass"></i>
+								</div>
+
+								<div class="flex-grow-1 overflow-hidden">
+									<div class="d-flex flex-wrap
+											            align-items-center gap-2">
+										<h3 class="h6 mb-0">
+											@item.DisplayName
+										</h3>
+
+										@if (item.IsActive == true)
+										{
+											<span class="badge text-bg-success">
+												Active
+											</span>
+										}
+										else if (item.IsActive == false)
+										{
+											<span class="badge text-bg-secondary">
+												Hidden
+											</span>
+										}
+									</div>
+
+									@if (!string.IsNullOrWhiteSpace(
+																item.SecondaryText))
+									{
+										<div class="small text-secondary
+													            text-truncate">
+											@item.SecondaryText
+										</div>
+									}
+								</div>
+
+								<div class="d-flex flex-wrap
+										            justify-content-end gap-2">
+									<div class="btn-group"
+										 role="group"
+										 aria-label="Change display order for @item.DisplayName">
+										<button class="btn btn-outline-secondary"
+												type="button"
+												data-reorder-up
+												aria-label="Move @item.DisplayName up">
+											<i class="fa-solid fa-arrow-up"
+											   aria-hidden="true"></i>
+										</button>
+
+										<button class="btn btn-outline-secondary"
+												type="button"
+												data-reorder-down
+												aria-label="Move @item.DisplayName down">
+											<i class="fa-solid fa-arrow-down"
+											   aria-hidden="true"></i>
+										</button>
+									</div>
+
+									<a class="btn btn-outline-primary"
+									   asp-controller="@item.EditController"
+									   asp-action="@item.EditAction"
+									   asp-route-id="@item.Id">
+										<i class="fa-solid fa-pen me-sm-2"
+										   aria-hidden="true"></i>
+										<span class="d-none d-sm-inline">
+											Edit
+										</span>
+									</a>
+
+									<button class="btn btn-outline-danger"
+											type="submit"
+											form="delete-item-@item.Id"
+											data-delete-button>
+										<i class="fa-solid fa-trash me-sm-2"
+										   aria-hidden="true"></i>
+										<span class="d-none d-sm-inline">
+											Delete
+										</span>
+									</button>
+								</div>
+							</div>
+						</li>
+					}
+				</ol>
+			</form>
+
+			@foreach (var item in Model.Items)
+			{
+				<form asp-controller="@item.DeleteController"
+					  asp-action="@item.DeleteAction"
+					  method="post"
+					  id="delete-item-@item.Id"
+					  data-delete-form
+					  data-delete-name="@item.DisplayName">
+					<input type="hidden"
+						   name="Id"
+						   value="@item.Id" />
+				</form>
+			}
+		}
+	</div>
+</section>

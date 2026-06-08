@@ -1,10 +1,9 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
-//
 // Source-available for viewing only. No license granted.
 
 using System;
 using System.ComponentModel.DataAnnotations;
-
+using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
 
 namespace DavidBrowning.Admin.ViewModels.About;
@@ -36,13 +35,18 @@ public sealed class InterestEditViewModel
    public int SortOrder { get; set; }
 
    [StringLength(DataConstants.MaxIconCssClassLength)]
-   public string? IconCssClass { get; set; }
+   public string? SelectedIconCssClass { get; set; }
+
+   public required FontAwesomeIconPickerViewModel IconPicker { get; set; }
 
    public InterestEditViewModel()
    {
    }
 
-   public InterestEditViewModel(Interest interest)
+   [SetsRequiredMembers]
+   public InterestEditViewModel(
+      Interest interest,
+      FontAwesomeIconPickerViewModel picker)
    {
       EditMode = EditModes.Edit;
       Id = interest.Id;
@@ -51,6 +55,7 @@ public sealed class InterestEditViewModel
       Summary = interest.Summary;
       IsActive = interest.IsActive;
       SortOrder = interest.SortOrder;
-      IconCssClass = interest.IconCssClass;
+      SelectedIconCssClass = interest.IconCssClass;
+      IconPicker = picker;
    }
 }

@@ -1,24 +1,47 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Models;
 
 namespace DavidBrowning.Admin.ViewModels.About;
 
-public class InterestListViewModel : IListViewModel<InterestEditViewModel>
+public sealed class InterestListViewModel
 {
-   public required ListModes ListMode { get; set; }
-
-   public List<InterestEditViewModel>? Items { get; set; }
+   public required ReorderListViewModel ReorderList { get; set; }
 
    [SetsRequiredMembers]
-   public InterestListViewModel(
-      IEnumerable<Interest> interests,
-      ListModes mode)
+   public InterestListViewModel(IEnumerable<Interest> interests)
    {
-      Items = interests.Select(i => new InterestEditViewModel(i)).ToList();
-      ListMode = mode;
+      ReorderList = new ReorderListViewModel
+      {
+         Title = "Interests",
+         Description =
+            "Edit About-page interests or change their display order.",
+         EmptyMessage =
+            "No interests have been created yet.",
+         ReorderController = "About",
+         ReorderAction = "InterestReorder",
+         Items = interests
+            .OrderBy(i => i.SortOrder)
+            .ThenBy(i => i.DisplayName)
+            .Select(i => new ReorderListItemViewModel
+            {
+               Id = i.Id,
+               DisplayName = i.DisplayName,
+               SecondaryText = i.Slug,
+               IconCssClass = i.IconCssClass,
+               IsActive = i.IsActive,
+               SortOrder = i.SortOrder,
+               EditController = "About",
+               EditAction = "InterestEdit",
+               DeleteController = "About",
+               DeleteAction = "InterestDelete",
+            })
+            .ToList(),
+      };
    }
 }

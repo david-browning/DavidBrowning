@@ -12,4 +12,24 @@ public interface IUncategorizedStore
 {
    Task<IReadOnlyList<Interest>> GetInterestsAsync(
       CancellationToken cancellationToken = default);
+
+   Task<Interest?> GetInterestAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task InsertInterestAsync(
+      Interest interest,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateInterestAsync(
+      Interest interest,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> DeleteInterestAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task ReorderInterestsAsync(
+      IReadOnlyList<int> idsInDisplayOrder,
+      CancellationToken cancellationToken = default);
 }

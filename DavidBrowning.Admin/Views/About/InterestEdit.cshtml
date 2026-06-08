@@ -1,11 +1,117 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.About.InterestEditViewModel
 
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
+	var isEdit = Model.Id.HasValue;
+	var formAction = isEdit
+		? "InterestEdit"
+		: "InterestCreate";
+
+	var submitText = isEdit
+		? "Save changes"
+		: "Create interest";
 }
+
+<section class="card">
+	<div class="card-body">
+		<h2 class="h4 card-title">
+			@(isEdit ? "Edit interest" : "Create interest")
+		</h2>
+
+		<p class="card-text text-secondary">
+			Interests appear on the About page. Use a short title,
+			a URL-safe slug, a brief description, and a representative icon.
+		</p>
+
+		<form method="post" asp-action="@formAction" asp-controller="About">
+
+			<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+			</div>
+
+			@if (isEdit)
+			{
+				<input asp-for="Id" type="hidden" />
+			}
+
+			<div class="row g-3">
+				<div class="col-12 col-md-6">
+					<label asp-for="DisplayName" class="form-label">
+						Display name
+					</label>
+
+					<input asp-for="DisplayName" class="form-control" autocomplete="off" />
+
+					<span asp-validation-for="DisplayName" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12 col-md-6">
+					<label asp-for="Slug" class="form-label">
+						Slug
+					</label>
+
+					<input asp-for="Slug" class="form-control" autocomplete="off"
+						   aria-describedby="interest-slug-help" />
+
+					<div id="interest-slug-help" class="form-text">
+						Used in URLs and query parameters. Use lowercase
+						letters, numbers, and hyphens.
+					</div>
+
+					<span asp-validation-for="Slug" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12">
+					<label asp-for="Summary" class="form-label">
+						Summary
+					</label>
+
+					<textarea asp-for="Summary" class="form-control" rows="4"></textarea>
+
+					<span asp-validation-for="Summary" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12">
+					<label class="form-label">
+						Icon
+					</label>
+
+					<partial name="_FontAwesomeIconPicker" model="Model.IconPicker" />
+
+					<span asp-validation-for="SelectedIconCssClass" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12">
+					<div class="form-check">
+						<input asp-for="IsActive"
+							   class="form-check-input" />
+
+						<label asp-for="IsActive"
+							   class="form-check-label">
+							Show this interest on the public website
+						</label>
+					</div>
+				</div>
+
+				<div class="col-12">
+					<div class="d-flex gap-2">
+						<button class="btn btn-primary" type="submit">
+							@submitText
+						</button>
+
+						<a class="btn btn-outline-secondary"
+						   asp-controller="About" asp-action="Index">
+							Cancel
+						</a>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>

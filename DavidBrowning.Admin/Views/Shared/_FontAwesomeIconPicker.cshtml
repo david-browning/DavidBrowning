@@ -1,0 +1,40 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Admin.ViewModels.FontAwesomeIconPickerViewModel
+
+<div class="fontawesome-icon-picker"
+	 data-fontawesome-icon-picker>
+	<label class="form-label" for="SelectedIconCSS">
+		Icon
+	</label>
+
+	<div class="input-group">
+		<span class="input-group-text" aria-hidden="true">
+			<i class="@Model.SelectedIconCSS" data-selected-icon-preview></i>
+		</span>
+
+		<input class="form-control" id="SelectedIconCSS" name="SelectedIconCSS"
+			   type="text" value="@Model.SelectedIconCSS"
+			   readonly data-selected-icon-input />
+
+		<button class="btn btn-outline-secondary" type="button" data-clear-icon>
+			Clear
+		</button>
+	</div>
+
+	<span class="text-danger"
+		  asp-validation-for="SelectedIconCSS"></span>
+
+	<div class="fontawesome-icon-grid" role="listbox" aria-label="Available icons">
+		@foreach (string iconCSS in Model.SupportedIconCSSClasses)
+		{
+			bool isSelected = string.Equals(iconCSS, Model.SelectedIconCSS, StringComparison.Ordinal);
+			<button class="fontawesome-icon-option @(isSelected ? "selected" : null)"
+					type="button" role="option" aria-label="@iconCSS"
+					aria-selected="@isSelected.ToString().ToLowerInvariant()"
+					title="@iconCSS" data-icon-css="@iconCSS">
+				<i class="@iconCSS" aria-hidden="true"></i>
+			</button>
+		}
+	</div>
+</div>
