@@ -42,6 +42,8 @@ public sealed class ReorderListItemViewModel
 
 public sealed class ReorderListViewModel
 {
+   public string? EditOffcanvasId { get; init; }
+
    public required string Title { get; set; }
 
    public string? Description { get; set; }

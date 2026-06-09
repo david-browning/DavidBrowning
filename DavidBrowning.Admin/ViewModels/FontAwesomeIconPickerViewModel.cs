@@ -5,7 +5,9 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.ViewModels.About;
 using DavidBrowning.Infrastructure.Assets;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DavidBrowning.Admin.ViewModels;
 
@@ -86,6 +88,35 @@ public sealed partial class FontAwesomeIconPickerViewModel
          iconCssClass,
          StringComparer.Ordinal);
    }
+
+
+   public static async Task<FontAwesomeIconPickerViewModel> LoadAndValidateIconPickerAsync(
+      IContentStore contentStore,
+      InterestEditViewModel model,
+      ModelStateDictionary modelState,
+      CancellationToken cancellationToken)
+   {
+      FontAwesomeIconPickerViewModel iconPicker =
+         await LoadIconPickerAsync(
+            contentStore, model.SelectedIconCssClass, cancellationToken);
+      if (!iconPicker.Supports(model.SelectedIconCssClass))
+      {
+         modelState.AddModelError(nameof(model.SelectedIconCssClass), "Select a supported icon.");
+      }
+
+      model.IconPicker = iconPicker;
+      return iconPicker;
+   }
+
+   public static Task<FontAwesomeIconPickerViewModel> LoadIconPickerAsync(
+      IContentStore contentStore,
+      string? selectedIconCssClass,
+      CancellationToken cancellationToken)
+   {
+      return LoadAsync(
+         contentStore, selectedIconCssClass, cancellationToken: cancellationToken);
+   }
+
 
    [GeneratedRegex(
       @"^fa-(solid|regular|brands)(?:\s+fa-[a-z0-9-]+)+$",

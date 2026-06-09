@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.Extensions;
 using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.About;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
@@ -33,26 +33,14 @@ public sealed class AboutController : Controller
       return View(await GetIndexModelAsync(createModel: null, cancellationToken));
    }
 
-   /*
-    * This action is useful if you later reload only the list partial
-    * through JavaScript. The normal Index view can also render the same
-    * partial during the initial page load.
-    */
    [HttpGet]
    public async Task<IActionResult> InterestList(
       CancellationToken cancellationToken)
    {
-      var interests = await _uncategorizedStore.GetInterestsAsync(
-         cancellationToken);
-
-      return PartialView(nameof(InterestList), new InterestListViewModel(interests));
+      return PartialView(
+         nameof(InterestList), await GetListViewModelAsync(cancellationToken));
    }
 
-   /*
-    * The create form already appears on the About index page.
-    * Keep this endpoint as a convenience redirect rather than rendering
-    * a second standalone create page.
-    */
    [HttpGet]
    public IActionResult InterestCreate()
    {
@@ -65,18 +53,18 @@ public sealed class AboutController : Controller
       InterestEditViewModel model,
       CancellationToken cancellationToken)
    {
-      await LoadAndValidateIconPickerAsync(model, cancellationToken);
+      await FontAwesomeIconPickerViewModel.LoadAndValidateIconPickerAsync(
+         _contentStore, model, ModelState, cancellationToken);
 
       if (!ModelState.IsValid)
       {
-         if (IsHtmxRequest())
+         if (Request.IsHtmxRequest())
          {
             return PartialView(nameof(InterestEdit), model);
          }
 
          return View(
-            nameof(Index),
-            await GetIndexModelAsync(model, cancellationToken));
+            nameof(Index), await GetIndexModelAsync(model, cancellationToken));
       }
 
       var interest = new Interest()
@@ -90,7 +78,7 @@ public sealed class AboutController : Controller
 
       await _uncategorizedStore.InsertInterestAsync(interest, cancellationToken);
 
-      if (IsHtmxRequest())
+      if (Request.IsHtmxRequest())
       {
          return PartialView(
             "InterestCreateResult",
@@ -103,22 +91,21 @@ public sealed class AboutController : Controller
 
    [HttpGet]
    public async Task<IActionResult> InterestEdit(
-      int id,
-      CancellationToken cancellationToken)
+    int id,
+    CancellationToken cancellationToken)
    {
-      Interest? interest =
-         await _uncategorizedStore.GetInterestAsync(id, cancellationToken);
-
+      Interest? interest = await _uncategorizedStore.GetInterestAsync(
+         id, cancellationToken);
       if (interest is null)
       {
          return NotFound();
       }
 
-      FontAwesomeIconPickerViewModel iconPicker =
-         await LoadIconPickerAsync(interest.IconCssClass, cancellationToken);
-
+      FontAwesomeIconPickerViewModel iconPicker = 
+         await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
+            _contentStore, interest.IconCssClass, cancellationToken);
       var model = new InterestEditViewModel(interest, iconPicker);
-      if (IsHtmxRequest())
+      if (Request.IsHtmxRequest())
       {
          return PartialView(nameof(InterestEdit), model);
       }
@@ -132,8 +119,8 @@ public sealed class AboutController : Controller
    InterestEditViewModel model,
    CancellationToken cancellationToken)
    {
-      model.IconPicker = await LoadIconPickerAsync(
-            model.SelectedIconCssClass, cancellationToken);
+      model.IconPicker = await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
+            _contentStore, model.SelectedIconCssClass, cancellationToken);
 
       if (!model.IconPicker.Supports(model.SelectedIconCssClass))
       {
@@ -146,23 +133,27 @@ public sealed class AboutController : Controller
          return PartialView(nameof(InterestEdit), model);
       }
 
+      var updatedInterest = model.ToInterest();
       bool updated = await _uncategorizedStore.UpdateInterestAsync(
-         model.ToInterest(), cancellationToken);
+         updatedInterest, cancellationToken);
       if (!updated)
       {
          return NotFound();
       }
 
-      InterestListViewModel listModel = await GetListViewModelAsync(cancellationToken);
-
-      if (IsHtmxRequest())
+      if (Request.IsHtmxRequest())
       {
-         Response.Headers.Append("HX-Trigger", "interestUpdated");
+         Response.TriggerAdminOffcanvasClose(
+            AboutAdminIds.InterestEditOffcanvas);
 
-         return PartialView("InterestEditSuccess", listModel);
+         return PartialView(
+            "_InterestListRefresh",
+            await GetListViewModelAsync(cancellationToken));
       }
 
-      TempData["SuccessMessage"] = "Interest updated.";
+      TempData["SuccessMessage"] =
+         $"Updated interest \"{updatedInterest.DisplayName}\".";
+
       return RedirectToAction(nameof(Index));
    }
 
@@ -242,21 +233,15 @@ public sealed class AboutController : Controller
       return RedirectToAction(nameof(Index));
    }
 
-   private bool IsHtmxRequest()
-   {
-      return string.Equals(Request.Headers["HX-Request"], "true",
-         StringComparison.OrdinalIgnoreCase);
-   }
-
    private async Task<IndexViewModel> GetIndexModelAsync(
       InterestEditViewModel? createModel,
       CancellationToken cancellationToken)
    {
       string? selectedIconCssClass = createModel?.SelectedIconCssClass;
 
-      FontAwesomeIconPickerViewModel iconPicker =
-         await LoadIconPickerAsync(selectedIconCssClass, cancellationToken);
-
+      var iconPicker =
+         await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
+            _contentStore, selectedIconCssClass, cancellationToken);
 
 
       createModel ??= new InterestEditViewModel()
@@ -271,44 +256,55 @@ public sealed class AboutController : Controller
       {
          Create = createModel,
          List = await GetListViewModelAsync(cancellationToken),
+         EditOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = AboutAdminIds.InterestEditOffcanvas,
+            Title = "Edit interest",
+            Placeholder = "Select an interest to edit.",
+            LoadingText = "Loading interest...",
+         },
       };
    }
 
    private async Task<InterestListViewModel> GetListViewModelAsync(
       CancellationToken cancellationToken)
    {
-      IReadOnlyList<Interest> interests = 
+      IReadOnlyList<Interest> interests =
          await _uncategorizedStore.GetInterestsAsync(cancellationToken);
-      return new InterestListViewModel(interests);
-   }
-
-
-   private async Task<FontAwesomeIconPickerViewModel> LoadAndValidateIconPickerAsync(
-      InterestEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      FontAwesomeIconPickerViewModel iconPicker =
-         await LoadIconPickerAsync(model.SelectedIconCssClass, cancellationToken);
-
-      if (!iconPicker.Supports(model.SelectedIconCssClass))
+      return new InterestListViewModel()
       {
-         ModelState.AddModelError(nameof(model.SelectedIconCssClass), "Select a supported icon.");
-      }
+         ReorderList = new ReorderListViewModel
+         {
+            Title = "Interests",
+            Description =
+            "Edit About-page interests or change their display order.",
+            EmptyMessage =
+            "No interests have been created yet.",
+            ReorderController = "About",
+            ReorderAction = "InterestReorder",
+            EditOffcanvasId = AboutAdminIds.InterestEditOffcanvas,
 
-      model.IconPicker = iconPicker;
-      return iconPicker;
+            Items = interests
+            .OrderBy(interest => interest.SortOrder)
+            .ThenBy(interest => interest.DisplayName)
+            .Select(interest => new ReorderListItemViewModel
+            {
+               Id = interest.Id,
+               DisplayName = interest.DisplayName,
+               SecondaryText = interest.Slug,
+               IconCssClass = interest.IconCssClass,
+               IsActive = interest.IsActive,
+               SortOrder = interest.SortOrder,
+               EditController = "About",
+               EditAction = "InterestEdit",
+               DeleteController = "About",
+               DeleteAction = "InterestDelete",
+            })
+            .ToList(),
+         }
+      };
    }
-
-   private Task<FontAwesomeIconPickerViewModel> LoadIconPickerAsync(
-      string? selectedIconCssClass,
-      CancellationToken cancellationToken)
-   {
-      return FontAwesomeIconPickerViewModel.LoadAsync(
-         _contentStore,
-         selectedIconCssClass,
-         cancellationToken: cancellationToken);
-   }
-
+   
    private readonly IUncategorizedStore _uncategorizedStore;
    private readonly IContentStore _contentStore;
 }

@@ -10,7 +10,10 @@
 
 <div class="container py-4">
 	<header class="mb-4">
-		<h1 class="h2 mb-1">About</h1>
+		<h1 class="h2 mb-1">
+			About
+		</h1>
+
 		<p class="text-secondary mb-0">
 			Manage the content displayed on the public About page.
 		</p>
@@ -31,39 +34,4 @@
 	</div>
 </div>
 
-<div class="offcanvas offcanvas-end admin-edit-sidebar"
-	 tabindex="-1" id="interest-edit-sidebar"
-	 aria-labelledby="interest-edit-sidebar-title">
-	<div class="offcanvas-header border-bottom">
-		<h2 class="offcanvas-title h5 mb-0"
-			id="interest-edit-sidebar-title">
-			Edit interest
-		</h2>
-
-		<button class="btn-close"
-				type="button"
-				data-bs-dismiss="offcanvas"
-				aria-label="Close">
-		</button>
-	</div>
-
-	<div class="offcanvas-body position-relative">
-		<div id="interest-edit-sidebar-body">
-			<p class="text-secondary">
-				Select an interest to edit.
-			</p>
-		</div>
-
-		<div id="interest-edit-sidebar-overlay"
-			 class="admin-form-overlay htmx-indicator"
-			 role="status" aria-live="polite" aria-label="Loading interest">
-			<div class="spinner-border admin-form-spinner text-primary"
-				 aria-hidden="true">
-			</div>
-
-			<span class="visually-hidden">
-				Loading interest...
-			</span>
-		</div>
-	</div>
-</div>
+<partial name="_AdminOffcanvas" model="Model.EditOffcanvas" />
