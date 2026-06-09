@@ -97,3 +97,7 @@ body {
    border-width: 0.45rem;
    color: var(--bs-primary);
 }
+
+.admin-edit-sidebar {
+   --bs-offcanvas-width: min(42rem, 100vw);
+}

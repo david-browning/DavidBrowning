@@ -1,24 +1,31 @@
-﻿@*
+﻿@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@*
    Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.About.InterestEditViewModel
 
 @{
-	var isEdit = Model.Id.HasValue;
-	var formAction = isEdit
-		? "InterestEdit"
-		: "InterestCreate";
+	bool isEditMode = Model.EditMode == EditModes.Edit;
 
-	var submitText = isEdit
-		? "Save changes"
-		: "Create interest";
+	string formAction = isEditMode
+	   ? nameof(AboutController.InterestEdit)
+	   : nameof(AboutController.InterestCreate);
+
+	string htmxTarget = isEditMode
+	   ? "#interest-edit-sidebar-body"
+	   : "#interest-create-region";
+
+	string overlaySelector = isEditMode
+	   ? "#interest-edit-sidebar-overlay"
+	   : "#interest-create-overlay";
 }
 
 <section class="card">
 	<div class="card-body">
 		<h2 class="h4 card-title">
-			@(isEdit ? "Edit interest" : "Create interest")
+			@(isEditMode ? "Edit interest" : "Create interest")
 		</h2>
 
 		<p class="card-text text-secondary">
@@ -26,16 +33,19 @@
 			a URL-safe slug, a brief description, and a representative icon.
 		</p>
 		<div class="admin-form-region">
-			<form method="post" asp-action="@formAction" asp-controller="About"
+			<form method="post"
+				  asp-controller="About"
+				  asp-action="@formAction"
 				  hx-post="@Url.Action(formAction, "About")"
-				  hx-target="#interest-create-region" hx-swap="innerHTML"
-				  hx-disabled-elt="find input, find select, find textarea, find button"
-				  hx-indicator="#interest-form-overlay">
+				  hx-target="@htmxTarget"
+				  hx-swap="innerHTML"
+				  hx-disabled-elt="find fieldset"
+				  hx-indicator="@overlaySelector">
 
 				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
 				</div>
 
-				@if (isEdit)
+				@if (isEditMode)
 				{
 					<input asp-for="Id" type="hidden" />
 				}
@@ -101,7 +111,7 @@
 					<div class="col-12">
 						<div class="d-flex gap-2">
 							<button class="btn btn-primary" type="submit">
-								@submitText
+								Submit
 							</button>
 
 							<a class="btn btn-outline-secondary"
@@ -112,17 +122,7 @@
 					</div>
 				</div>
 			</form>
-
-			<div id="interest-form-overlay"
-				 class="admin-form-overlay htmx-indicator"
-				 role="status" aria-live="polite" aria-label="Saving">
-				<i class="fa-solid fa-spinner fa-spin admin-form-spinner"
-				   aria-hidden="true"></i>
-				<span class="visually-hidden">
-					Saving...
-				</span>
-			</div>
-
+			<partial name="_Waiting" />
 		</div>
 	</div>
 </section>

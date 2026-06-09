@@ -114,11 +114,18 @@
 									<a class="btn btn-outline-primary"
 									   asp-controller="@item.EditController"
 									   asp-action="@item.EditAction"
-									   asp-route-id="@item.Id">
-										<i class="fa-solid fa-pen me-sm-2"
-										   aria-hidden="true"></i>
-										<span class="d-none d-sm-inline">
-											Edit
+									   asp-route-id="@item.Id"
+									   hx-get="@Url.Action( item.EditAction,item.EditController,new { id = item.Id, })"
+									   hx-target="#interest-edit-sidebar-body"
+									   hx-swap="innerHTML"
+									   hx-indicator="#interest-edit-sidebar-overlay"
+									   data-bs-toggle="offcanvas"
+									   data-bs-target="#interest-edit-sidebar"
+									   aria-controls="interest-edit-sidebar"
+									   title="Edit @item.DisplayName">
+										<i class="fa-solid fa-pen" aria-hidden="true"></i>
+										<span class="visually-hidden">
+											Edit @item.DisplayName
 										</span>
 									</a>
 

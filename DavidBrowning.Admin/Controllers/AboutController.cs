@@ -11,6 +11,7 @@ using DavidBrowning.Admin.ViewModels.About;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
@@ -105,8 +106,9 @@ public sealed class AboutController : Controller
       int id,
       CancellationToken cancellationToken)
    {
-      Interest? interest = await _uncategorizedStore.GetInterestAsync(
-         id, cancellationToken);
+      Interest? interest =
+         await _uncategorizedStore.GetInterestAsync(id, cancellationToken);
+
       if (interest is null)
       {
          return NotFound();
@@ -114,51 +116,53 @@ public sealed class AboutController : Controller
 
       FontAwesomeIconPickerViewModel iconPicker =
          await LoadIconPickerAsync(interest.IconCssClass, cancellationToken);
-      return View(nameof(InterestEdit), new InterestEditViewModel(interest, iconPicker));
+
+      var model = new InterestEditViewModel(interest, iconPicker);
+      if (IsHtmxRequest())
+      {
+         return PartialView(nameof(InterestEdit), model);
+      }
+
+      return View(nameof(InterestEdit), model);
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
    public async Task<IActionResult> InterestEdit(
-      int id,
-      InterestEditViewModel model,
-      CancellationToken cancellationToken)
+   InterestEditViewModel model,
+   CancellationToken cancellationToken)
    {
-      if (model.Id != id)
-      {
-         return BadRequest();
-      }
+      model.IconPicker = await LoadIconPickerAsync(
+            model.SelectedIconCssClass, cancellationToken);
 
-      await LoadAndValidateIconPickerAsync(model, cancellationToken);
+      if (!model.IconPicker.Supports(model.SelectedIconCssClass))
+      {
+         ModelState.AddModelError(
+            nameof(model.SelectedIconCssClass), "Select a supported icon.");
+      }
 
       if (!ModelState.IsValid)
       {
-         return View(nameof(Index), await GetIndexModelAsync(model, cancellationToken));
+         return PartialView(nameof(InterestEdit), model);
       }
 
-      var interest = await _uncategorizedStore.GetInterestAsync(id, cancellationToken);
-      if (interest is null)
+      bool updated = await _uncategorizedStore.UpdateInterestAsync(
+         model.ToInterest(), cancellationToken);
+      if (!updated)
       {
          return NotFound();
       }
 
-      /*
-       * Map only editable fields.
-       *
-       * Do not trust SortOrder from the edit form. Ordering belongs to
-       * the reorderable list UI, not to the single-item editor.
-       */
-      interest.Slug = model.Slug!;
-      interest.DisplayName = model.DisplayName!;
-      interest.Summary = model.Summary!;
-      interest.IsActive = model.IsActive;
-      interest.IconCssClass = model.SelectedIconCssClass;
+      InterestListViewModel listModel = await GetListViewModelAsync(cancellationToken);
 
-      await _uncategorizedStore.UpdateInterestAsync(
-         interest, cancellationToken);
+      if (IsHtmxRequest())
+      {
+         Response.Headers.Append("HX-Trigger", "interestUpdated");
 
-      TempData["SuccessMessage"] = $"Updated interest \"{interest.DisplayName}\".";
+         return PartialView("InterestEditSuccess", listModel);
+      }
 
+      TempData["SuccessMessage"] = "Interest updated.";
       return RedirectToAction(nameof(Index));
    }
 
@@ -185,6 +189,7 @@ public sealed class AboutController : Controller
    }
 
    [HttpPost]
+   [ActionName(nameof(InterestDelete))]
    [ValidateAntiForgeryToken]
    public async Task<IActionResult> InterestDeleteConfirmed(
       int id,
@@ -192,7 +197,6 @@ public sealed class AboutController : Controller
    {
       var interest = await _uncategorizedStore.GetInterestAsync(
          id, cancellationToken);
-
       if (interest is null)
       {
          return NotFound();
@@ -240,9 +244,7 @@ public sealed class AboutController : Controller
 
    private bool IsHtmxRequest()
    {
-      return string.Equals(
-         Request.Headers["HX-Request"],
-         "true",
+      return string.Equals(Request.Headers["HX-Request"], "true",
          StringComparison.OrdinalIgnoreCase);
    }
 
@@ -255,8 +257,7 @@ public sealed class AboutController : Controller
       FontAwesomeIconPickerViewModel iconPicker =
          await LoadIconPickerAsync(selectedIconCssClass, cancellationToken);
 
-      IReadOnlyList<Interest> interests =
-         await _uncategorizedStore.GetInterestsAsync(cancellationToken);
+
 
       createModel ??= new InterestEditViewModel()
       {
@@ -269,9 +270,18 @@ public sealed class AboutController : Controller
       return new IndexViewModel()
       {
          Create = createModel,
-         List = new InterestListViewModel(interests),
+         List = await GetListViewModelAsync(cancellationToken),
       };
    }
+
+   private async Task<InterestListViewModel> GetListViewModelAsync(
+      CancellationToken cancellationToken)
+   {
+      IReadOnlyList<Interest> interests = 
+         await _uncategorizedStore.GetInterestsAsync(cancellationToken);
+      return new InterestListViewModel(interests);
+   }
+
 
    private async Task<FontAwesomeIconPickerViewModel> LoadAndValidateIconPickerAsync(
       InterestEditViewModel model,

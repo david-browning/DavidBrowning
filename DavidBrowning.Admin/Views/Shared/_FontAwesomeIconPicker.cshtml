@@ -9,11 +9,9 @@
 		<span class="input-group-text" aria-hidden="true">
 			<i class="@Model.SelectedIconCssClass" data-selected-icon-preview></i>
 		</span>
-
 		<input class="form-control" id="SelectedIconCssClass" name="SelectedIconCssClass"
 			   type="text" value="@Model.SelectedIconCssClass" readonly
 			   data-selected-icon-input />
-
 		<button class="btn btn-outline-secondary" type="button" data-clear-icon>
 			Clear
 		</button>
@@ -25,7 +23,6 @@
 		@foreach (string iconCssClass in Model.SupportedIconCssClasses)
 		{
 			bool isSelected = string.Equals(iconCssClass, Model.SelectedIconCssClass, StringComparison.Ordinal);
-
 			<button class="fontawesome-icon-option @(isSelected ? "selected" : null)"
 					type="button" role="option" aria-label="@iconCssClass"
 					aria-selected="@isSelected.ToString().ToLowerInvariant()"

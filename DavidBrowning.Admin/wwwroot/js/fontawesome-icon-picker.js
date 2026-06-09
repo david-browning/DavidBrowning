@@ -4,17 +4,22 @@
 (() => {
    "use strict";
 
-   function setSelectedIcon(picker, selectedIconCSS) {
+   function setSelectedIcon(picker, selectedIconCssClass) {
       const input = picker.querySelector("[data-selected-icon-input]");
       const preview = picker.querySelector("[data-selected-icon-preview]");
       const options = picker.querySelectorAll("[data-icon-css]");
 
-      input.value = selectedIconCSS;
-      preview.className = selectedIconCSS;
+      if (!(input instanceof HTMLInputElement) ||
+         !(preview instanceof HTMLElement)) {
+         console.error("Malformed Font Awesome icon picker.", picker);
+         return;
+      }
+
+      input.value = selectedIconCssClass;
+      preview.className = selectedIconCssClass;
 
       for (const option of options) {
-         const isSelected = option.dataset.iconCss === selectedIconCSS;
-
+         const isSelected = option.dataset.iconCss === selectedIconCssClass;
          option.classList.toggle("selected", isSelected);
          option.setAttribute("aria-selected", isSelected.toString());
       }

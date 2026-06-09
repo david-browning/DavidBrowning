@@ -18,8 +18,7 @@ public sealed class InterestEditViewModel
 
    [Required]
    [StringLength(DataConstants.MaxSlugLength)]
-   [RegularExpression(
-      DataConstants.SlugRegex,
+   [RegularExpression(DataConstants.SlugRegex,
       ErrorMessage = DataConstants.SlugRegexError)]
    public string? Slug { get; set; }
 
@@ -62,5 +61,27 @@ public sealed class InterestEditViewModel
       SortOrder = interest.SortOrder;
       SelectedIconCssClass = interest.IconCssClass;
       IconPicker = picker;
+   }
+
+   public Interest ToInterest()
+   {
+      if (Id is null)
+      {
+         throw new ArgumentException(nameof(Id));
+      }
+
+      ArgumentException.ThrowIfNullOrEmpty(Slug, nameof(Slug));
+      ArgumentException.ThrowIfNullOrEmpty(DisplayName, nameof(DisplayName));
+      ArgumentException.ThrowIfNullOrEmpty(Summary, nameof(Summary));
+
+      return new()
+      {
+         Id = Id.Value,
+         Slug = Slug,
+         DisplayName = DisplayName,
+         Summary = Summary,
+         IsActive = IsActive,
+         IconCssClass = SelectedIconCssClass,
+      };
    }
 }
