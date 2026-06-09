@@ -1,125 +1,138 @@
-﻿(() => {
-	"use strict";
+﻿// Copyright © 2026 David Browning. All rights reserved.
+//
+// Source-available for viewing only. No license granted.
 
-	const reorderLists = document.querySelectorAll("[data-reorder-list]");
+(() => {
+   "use strict";
 
-	reorderLists.forEach(reorderList => {
-		const form =
-			reorderList.querySelector("[data-reorder-form]");
+   const reorderListSelector = "[data-reorder-list]";
+   const deleteFormSelector = "[data-delete-form]";
 
-		const itemsContainer =
-			reorderList.querySelector("[data-reorder-items]");
+   function wireReorderList(reorderList) {
+      if (!(reorderList instanceof HTMLElement)) {
+         return;
+      }
 
-		const saveButton =
-			reorderList.querySelector("[data-reorder-save]");
+      if (reorderList.dataset.reorderListWired === "true") {
+         return;
+      }
 
-		if (!form || !itemsContainer || !saveButton) {
-			return;
-		}
+      const form = reorderList.querySelector(
+         "[data-reorder-form]");
 
-		const getItems = () =>
-			Array.from(
-				itemsContainer.querySelectorAll("[data-reorder-item]"));
+      const itemsContainer = reorderList.querySelector(
+         "[data-reorder-items]");
 
-		const updateIndexes = () => {
-			const items = getItems();
+      const saveButton = reorderList.querySelector(
+         "[data-reorder-save]");
 
-			items.forEach((item, index) => {
-				const idInput =
-					item.querySelector("[data-reorder-id]");
+      if (!(form instanceof HTMLFormElement) ||
+         !(itemsContainer instanceof HTMLElement) ||
+         !(saveButton instanceof HTMLButtonElement)) {
+         console.error(
+            "Malformed reorder list.",
+            reorderList);
 
-				const sortOrderInput =
-					item.querySelector("[data-reorder-sort-order]");
+         return;
+      }
 
-				const moveUpButton =
-					item.querySelector("[data-reorder-up]");
+      reorderList.dataset.reorderListWired = "true";
 
-				const moveDownButton =
-					item.querySelector("[data-reorder-down]");
+      function updateSortOrder() {
+         const items = itemsContainer.querySelectorAll(
+            "[data-reorder-item]");
 
-				if (idInput) {
-					idInput.name = `Items[${index}].Id`;
-				}
+         items.forEach((item, index) => {
+            const input = item.querySelector(
+               "[data-sort-order-input]");
 
-				if (sortOrderInput) {
-					sortOrderInput.name =
-						`Items[${index}].SortOrder`;
+            if (input instanceof HTMLInputElement) {
+               input.value = index.toString();
+            }
+         });
 
-					sortOrderInput.value =
-						index.toString();
-				}
+         saveButton.disabled = false;
+      }
 
-				if (moveUpButton) {
-					moveUpButton.disabled =
-						index === 0;
-				}
+      reorderList.addEventListener("click", event => {
+         const button = event.target.closest(
+            "[data-reorder-direction]");
 
-				if (moveDownButton) {
-					moveDownButton.disabled =
-						index === items.length - 1;
-				}
-			});
-		};
+         if (!(button instanceof HTMLButtonElement)) {
+            return;
+         }
 
-		const markDirty = () => {
-			saveButton.disabled = false;
-		};
+         const item = button.closest("[data-reorder-item]");
 
-		saveButton.addEventListener("click", () => {
-			form.requestSubmit();
-		});
+         if (!(item instanceof HTMLElement)) {
+            return;
+         }
 
-		itemsContainer.addEventListener("click", event => {
-			const moveUpButton =
-				event.target.closest("[data-reorder-up]");
+         const direction = button.dataset.reorderDirection;
 
-			const moveDownButton =
-				event.target.closest("[data-reorder-down]");
+         if (direction === "up") {
+            const previous = item.previousElementSibling;
 
-			if (!moveUpButton && !moveDownButton) {
-				return;
-			}
+            if (previous !== null) {
+               itemsContainer.insertBefore(item, previous);
+               updateSortOrder();
+            }
+         }
+         else if (direction === "down") {
+            const next = item.nextElementSibling;
 
-			const item =
-				event.target.closest("[data-reorder-item]");
+            if (next !== null) {
+               itemsContainer.insertBefore(next, item);
+               updateSortOrder();
+            }
+         }
+      });
+   }
 
-			if (!item) {
-				return;
-			}
+   function wireDeleteForm(form) {
+      if (!(form instanceof HTMLFormElement)) {
+         return;
+      }
 
-			if (moveUpButton && item.previousElementSibling) {
-				itemsContainer.insertBefore(
-					item,
-					item.previousElementSibling);
-			}
+      if (form.dataset.deleteFormWired === "true") {
+         return;
+      }
 
-			if (moveDownButton && item.nextElementSibling) {
-				itemsContainer.insertBefore(
-					item.nextElementSibling,
-					item);
-			}
+      form.dataset.deleteFormWired = "true";
 
-			updateIndexes();
-			markDirty();
-		});
+      form.addEventListener("submit", event => {
+         const displayName =
+            form.dataset.deleteName ?? "this item";
 
-		updateIndexes();
-	});
+         if (!window.confirm(`Delete ${displayName}?`)) {
+            event.preventDefault();
+         }
+      });
+   }
 
-	document
-		.querySelectorAll("[data-delete-form]")
-		.forEach(form => {
-			form.addEventListener("submit", event => {
-				const displayName =
-					form.dataset.deleteName ?? "this item";
+   function wireAll(root = document) {
+      if (root instanceof Element &&
+         root.matches(reorderListSelector)) {
+         wireReorderList(root);
+      }
 
-				const confirmed = window.confirm(
-					`Delete "${displayName}"? ` +
-					"This cannot be undone.");
+      root.querySelectorAll(reorderListSelector)
+         .forEach(wireReorderList);
 
-				if (!confirmed) {
-					event.preventDefault();
-				}
-			});
-		});
+      if (root instanceof Element &&
+         root.matches(deleteFormSelector)) {
+         wireDeleteForm(root);
+      }
+
+      root.querySelectorAll(deleteFormSelector)
+         .forEach(wireDeleteForm);
+   }
+
+   document.addEventListener(
+      "DOMContentLoaded",
+      () => wireAll());
+
+   document.body.addEventListener(
+      "htmx:afterSwap",
+      event => wireAll(event.detail.target));
 })();

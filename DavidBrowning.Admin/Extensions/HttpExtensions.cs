@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DavidBrowning.Admin.Extensions;
 
-public static class HttpResponseExtensions
+public static class HttpExtensions
 {
    public static void TriggerAdminOffcanvasClose(
       this HttpResponse response,

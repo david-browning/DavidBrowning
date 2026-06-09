@@ -2,21 +2,22 @@
    Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
+@using DavidBrowning.Admin.ViewModels
 @model DavidBrowning.Admin.ViewModels.ReorderListViewModel
 @{
 	bool useEditOffcanvas =
 	   !string.IsNullOrWhiteSpace(Model.EditOffcanvasId);
 
 	string? editOffcanvasSelector = useEditOffcanvas
-	   ? $"#{Model.EditOffcanvasId}"
+	   ? AdminOffcanvasIds.Selector(Model.EditOffcanvasId!)
 	   : null;
 
 	string? editOffcanvasBodySelector = useEditOffcanvas
-	   ? $"{editOffcanvasSelector}-body"
+	   ? AdminOffcanvasIds.BodySelector(Model.EditOffcanvasId!)
 	   : null;
 
 	string? editOffcanvasOverlaySelector = useEditOffcanvas
-	   ? $"{editOffcanvasSelector}-overlay"
+	   ? AdminOffcanvasIds.OverlaySelector(Model.EditOffcanvasId!)
 	   : null;
 }
 
@@ -121,19 +122,20 @@
 											   aria-hidden="true"></i>
 										</button>
 									</div>
-
 									<a class="btn btn-outline-primary"
 									   asp-controller="@item.EditController"
 									   asp-action="@item.EditAction"
 									   asp-route-id="@item.Id"
-									   hx-get="@(useEditOffcanvas ? Url.Action(item.EditAction,				 		  item.EditController, new { id = item.Id,}) : null)"
+									   hx-get="@(useEditOffcanvas ? Url.Action(item.EditAction, item.EditController, new { id = item.Id, }) : null)"
 									   hx-target="@editOffcanvasBodySelector"
 									   hx-swap="@(useEditOffcanvas ? "innerHTML" : null)"
 									   hx-indicator="@editOffcanvasOverlaySelector"
 									   data-bs-toggle="@(useEditOffcanvas ? "offcanvas" : null)"
 									   data-bs-target="@editOffcanvasSelector"
 									   aria-controls="@(useEditOffcanvas ? Model.EditOffcanvasId : null)">
-										<i class="fa-solid fa-pen" aria-hidden="true"></i>
+										<i class="fa-solid fa-pen"
+										   aria-hidden="true"></i>
+
 										<span class="visually-hidden">
 											Edit @item.DisplayName
 										</span>

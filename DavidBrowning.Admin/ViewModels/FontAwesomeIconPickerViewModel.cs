@@ -96,9 +96,8 @@ public sealed partial class FontAwesomeIconPickerViewModel
       ModelStateDictionary modelState,
       CancellationToken cancellationToken)
    {
-      FontAwesomeIconPickerViewModel iconPicker =
-         await LoadIconPickerAsync(
-            contentStore, model.SelectedIconCssClass, cancellationToken);
+      FontAwesomeIconPickerViewModel iconPicker = await LoadIconPickerAsync(
+         contentStore, model.SelectedIconCssClass, cancellationToken);
       if (!iconPicker.Supports(model.SelectedIconCssClass))
       {
          modelState.AddModelError(nameof(model.SelectedIconCssClass), "Select a supported icon.");

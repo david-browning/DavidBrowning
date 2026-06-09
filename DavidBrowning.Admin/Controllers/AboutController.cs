@@ -33,20 +33,6 @@ public sealed class AboutController : Controller
       return View(await GetIndexModelAsync(createModel: null, cancellationToken));
    }
 
-   [HttpGet]
-   public async Task<IActionResult> InterestList(
-      CancellationToken cancellationToken)
-   {
-      return PartialView(
-         nameof(InterestList), await GetListViewModelAsync(cancellationToken));
-   }
-
-   [HttpGet]
-   public IActionResult InterestCreate()
-   {
-      return RedirectToAction(nameof(Index));
-   }
-
    [HttpPost]
    [ValidateAntiForgeryToken]
    public async Task<IActionResult> InterestCreate(
@@ -91,8 +77,8 @@ public sealed class AboutController : Controller
 
    [HttpGet]
    public async Task<IActionResult> InterestEdit(
-    int id,
-    CancellationToken cancellationToken)
+      int id,
+      CancellationToken cancellationToken)
    {
       Interest? interest = await _uncategorizedStore.GetInterestAsync(
          id, cancellationToken);
@@ -116,8 +102,8 @@ public sealed class AboutController : Controller
    [HttpPost]
    [ValidateAntiForgeryToken]
    public async Task<IActionResult> InterestEdit(
-   InterestEditViewModel model,
-   CancellationToken cancellationToken)
+      InterestEditViewModel model,
+      CancellationToken cancellationToken)
    {
       model.IconPicker = await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
             _contentStore, model.SelectedIconCssClass, cancellationToken);
@@ -157,32 +143,9 @@ public sealed class AboutController : Controller
       return RedirectToAction(nameof(Index));
    }
 
-   [HttpGet]
-   public async Task<IActionResult> InterestDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      var interest = await _uncategorizedStore.GetInterestAsync(
-         id, cancellationToken);
-
-      if (interest is null)
-      {
-         return NotFound();
-      }
-
-      return View(nameof(InterestDelete),
-         new InterestDeleteViewModel
-         {
-            Id = interest.Id,
-            DisplayName = interest.DisplayName,
-            Slug = interest.Slug,
-         });
-   }
-
    [HttpPost]
-   [ActionName(nameof(InterestDelete))]
    [ValidateAntiForgeryToken]
-   public async Task<IActionResult> InterestDeleteConfirmed(
+   public async Task<IActionResult> InterestDelete(
       int id,
       CancellationToken cancellationToken)
    {
