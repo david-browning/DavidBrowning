@@ -3,4 +3,11 @@
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.About.InterestListViewModel
-<partial name="_ReorderList" model="Model.ReorderList" />
+
+<div class="text-success" role="status">
+	Interest updated.
+</div>
+
+<div id="interest-list-region" hx-swap-oob="innerHTML">
+	<partial name="InterestList" model="Model" />
+</div>

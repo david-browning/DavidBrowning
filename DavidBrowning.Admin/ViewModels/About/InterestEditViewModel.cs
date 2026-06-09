@@ -1,11 +1,12 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
-//
 // Source-available for viewing only. No license granted.
 
 using System;
 using System.ComponentModel.DataAnnotations;
-
+using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.About;
 
@@ -17,8 +18,7 @@ public sealed class InterestEditViewModel
 
    [Required]
    [StringLength(DataConstants.MaxSlugLength)]
-   [RegularExpression(
-      DataConstants.SlugRegex,
+   [RegularExpression(DataConstants.SlugRegex,
       ErrorMessage = DataConstants.SlugRegexError)]
    public string? Slug { get; set; }
 
@@ -35,14 +35,22 @@ public sealed class InterestEditViewModel
    [Range(0, int.MaxValue)]
    public int SortOrder { get; set; }
 
+   [Required]
    [StringLength(DataConstants.MaxIconCssClassLength)]
-   public string? IconCssClass { get; set; }
+   public string? SelectedIconCssClass { get; set; }
+
+   [BindNever]
+   [ValidateNever]
+   public required FontAwesomeIconPickerViewModel IconPicker { get; set; }
 
    public InterestEditViewModel()
    {
    }
 
-   public InterestEditViewModel(Interest interest)
+   [SetsRequiredMembers]
+   public InterestEditViewModel(
+      Interest interest,
+      FontAwesomeIconPickerViewModel picker)
    {
       EditMode = EditModes.Edit;
       Id = interest.Id;
@@ -51,6 +59,29 @@ public sealed class InterestEditViewModel
       Summary = interest.Summary;
       IsActive = interest.IsActive;
       SortOrder = interest.SortOrder;
-      IconCssClass = interest.IconCssClass;
+      SelectedIconCssClass = interest.IconCssClass;
+      IconPicker = picker;
+   }
+
+   public Interest ToInterest()
+   {
+      if (Id is null)
+      {
+         throw new ArgumentException(nameof(Id));
+      }
+
+      ArgumentException.ThrowIfNullOrEmpty(Slug, nameof(Slug));
+      ArgumentException.ThrowIfNullOrEmpty(DisplayName, nameof(DisplayName));
+      ArgumentException.ThrowIfNullOrEmpty(Summary, nameof(Summary));
+
+      return new()
+      {
+         Id = Id.Value,
+         Slug = Slug,
+         DisplayName = DisplayName,
+         Summary = Summary,
+         IsActive = IsActive,
+         IconCssClass = SelectedIconCssClass,
+      };
    }
 }

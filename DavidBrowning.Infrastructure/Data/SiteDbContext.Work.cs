@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using DavidBrowning.Models;
 using DavidBrowning.Models.Work;
 using Microsoft.EntityFrameworkCore;
 namespace DavidBrowning.Infrastructure.Data;
@@ -8,10 +9,41 @@ public sealed partial class SiteDbContext
 {
    private static void ConfigureWork(ModelBuilder modelBuilder)
    {
+      ConfigureInterests(modelBuilder);
       ConfigureExperiences(modelBuilder);
       ConfigureExperienceRoles(modelBuilder);
       ConfigureExperienceRoleBullets(modelBuilder);
       ConfigureCredentials(modelBuilder);
+   }
+
+   private static void ConfigureInterests(ModelBuilder modelBuilder)
+   {
+      modelBuilder.Entity<Interest>(entity =>
+      {
+         entity.ToTable("db_Interests");
+
+         entity.HasKey(interest => interest.Id);
+
+         entity.Property(interest => interest.SortOrder)
+            .HasDefaultValue(0)
+            .IsRequired();
+
+         entity.Property(interest => interest.IsActive)
+            .HasDefaultValue(true)
+            .IsRequired();
+
+         entity.Property(interest => interest.CreatedAtUtc)
+            .HasColumnType("datetime2(0)")
+            .HasDefaultValueSql("sysutcdatetime()")
+            .IsRequired();
+
+         entity.Property(interest => interest.UpdatedAtUtc)
+            .HasColumnType("datetime2(0)")
+            .HasDefaultValueSql("sysutcdatetime()")
+            .IsRequired();
+
+         entity.HasIndex(interest => interest.SortOrder);
+      });
    }
 
    private static void ConfigureExperiences(ModelBuilder modelBuilder)

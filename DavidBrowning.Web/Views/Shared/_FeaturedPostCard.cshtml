@@ -2,11 +2,17 @@
    Source-available for viewing only. No license granted. *@
 @inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 @model DavidBrowning.Models.Writing.Post
-
+@{
+	var url = urlBuilder.GetDetailsUrl(Model.Slug, "writing");
+}
 
 <article class="wb-card h-100 d-flex flex-column">
 	<p class="wb-card-meta">@Model.PostStyle!.DisplayName</p>
-	<h3>@Model.Title</h3>
+	<h3>
+		<a href="@url" class="d-block text-reset text-decoration-none">
+			@Model.Title
+		</a>
+	</h3>
 	<p class="text-secondary">
 		@Model.Summary
 	</p>
@@ -27,7 +33,7 @@
 		</ul>
 	</div>
 	<div class="mt-auto pt-4">
-		<a href="@urlBuilder.GetDetailsUrl(Model.Slug, "writing")">
+		<a href="@url">
 			More
 			<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 		</a>

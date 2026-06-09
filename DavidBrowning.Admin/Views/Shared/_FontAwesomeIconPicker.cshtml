@@ -1,0 +1,35 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.FontAwesomeIconPickerViewModel
+
+<div class="fontawesome-icon-picker" data-fontawesome-icon-picker>
+	<div class="input-group">
+		<span class="input-group-text" aria-hidden="true">
+			<i class="@Model.SelectedIconCssClass" data-selected-icon-preview></i>
+		</span>
+		<input class="form-control" id="SelectedIconCssClass" name="SelectedIconCssClass"
+			   type="text" value="@Model.SelectedIconCssClass" readonly
+			   data-selected-icon-input />
+		<button class="btn btn-outline-secondary" type="button" data-clear-icon>
+			Clear
+		</button>
+	</div>
+
+	<div class="fontawesome-icon-grid"
+		 role="listbox"
+		 aria-label="Available icons">
+		@foreach (string iconCssClass in Model.SupportedIconCssClasses)
+		{
+			bool isSelected = string.Equals(iconCssClass, Model.SelectedIconCssClass, StringComparison.Ordinal);
+			<button class="fontawesome-icon-option @(isSelected ? "selected" : null)"
+					type="button" role="option" aria-label="@iconCssClass"
+					aria-selected="@isSelected.ToString().ToLowerInvariant()"
+					title="@iconCssClass" data-icon-css="@iconCssClass">
+				<i class="@iconCssClass"
+				   aria-hidden="true"></i>
+			</button>
+		}
+	</div>
+</div>
