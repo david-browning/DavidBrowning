@@ -25,93 +25,104 @@
 			Interests appear on the About page. Use a short title,
 			a URL-safe slug, a brief description, and a representative icon.
 		</p>
+		<div class="admin-form-region">
+			<form method="post" asp-action="@formAction" asp-controller="About"
+				  hx-post="@Url.Action(formAction, "About")"
+				  hx-target="#interest-create-region" hx-swap="innerHTML"
+				  hx-disabled-elt="find input, find select, find textarea, find button"
+				  hx-indicator="#interest-form-overlay">
 
-		<form method="post" asp-action="@formAction" asp-controller="About">
-
-			<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
-			</div>
-
-			@if (isEdit)
-			{
-				<input asp-for="Id" type="hidden" />
-			}
-
-			<div class="row g-3">
-				<div class="col-12 col-md-6">
-					<label asp-for="DisplayName" class="form-label">
-						Display name
-					</label>
-
-					<input asp-for="DisplayName" class="form-control" autocomplete="off" />
-
-					<span asp-validation-for="DisplayName" class="text-danger">
-					</span>
+				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
 				</div>
 
-				<div class="col-12 col-md-6">
-					<label asp-for="Slug" class="form-label">
-						Slug
-					</label>
+				@if (isEdit)
+				{
+					<input asp-for="Id" type="hidden" />
+				}
 
-					<input asp-for="Slug" class="form-control" autocomplete="off"
-						   aria-describedby="interest-slug-help" />
-
-					<div id="interest-slug-help" class="form-text">
-						Used in URLs and query parameters. Use lowercase
-						letters, numbers, and hyphens.
-					</div>
-
-					<span asp-validation-for="Slug" class="text-danger">
-					</span>
-				</div>
-
-				<div class="col-12">
-					<label asp-for="Summary" class="form-label">
-						Summary
-					</label>
-
-					<textarea asp-for="Summary" class="form-control" rows="4"></textarea>
-
-					<span asp-validation-for="Summary" class="text-danger">
-					</span>
-				</div>
-
-				<div class="col-12">
-					<label class="form-label">
-						Icon
-					</label>
-
-					<partial name="_FontAwesomeIconPicker" model="Model.IconPicker" />
-
-					<span asp-validation-for="SelectedIconCssClass" class="text-danger">
-					</span>
-				</div>
-
-				<div class="col-12">
-					<div class="form-check">
-						<input asp-for="IsActive"
-							   class="form-check-input" />
-
-						<label asp-for="IsActive"
-							   class="form-check-label">
-							Show this interest on the public website
+				<div class="row g-3">
+					<div class="col-12 col-md-6">
+						<label asp-for="DisplayName" class="form-label">
+							Display name
 						</label>
+
+						<input asp-for="DisplayName" class="form-control" autocomplete="off" />
+
+						<span asp-validation-for="DisplayName" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12 col-md-6">
+						<label asp-for="Slug" class="form-label">
+							Slug
+						</label>
+
+						<input asp-for="Slug" class="form-control" autocomplete="off"
+							   aria-describedby="interest-slug-help" />
+
+						<div id="interest-slug-help" class="form-text">
+							Used in URLs and query parameters. Use lowercase
+							letters, numbers, and hyphens.
+						</div>
+
+						<span asp-validation-for="Slug" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12">
+						<label asp-for="Summary" class="form-label">
+							Summary
+						</label>
+
+						<textarea asp-for="Summary" class="form-control" rows="4"></textarea>
+
+						<span asp-validation-for="Summary" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12">
+						<partial name="_FontAwesomeIconPicker" model="Model.IconPicker" />
+						<span asp-validation-for="SelectedIconCssClass" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12">
+						<div class="form-check">
+							<input asp-for="IsActive"
+								   class="form-check-input" />
+
+							<label asp-for="IsActive"
+								   class="form-check-label">
+								Show this interest on the public website
+							</label>
+						</div>
+					</div>
+
+					<div class="col-12">
+						<div class="d-flex gap-2">
+							<button class="btn btn-primary" type="submit">
+								@submitText
+							</button>
+
+							<a class="btn btn-outline-secondary"
+							   asp-controller="About" asp-action="Index">
+								Cancel
+							</a>
+						</div>
 					</div>
 				</div>
+			</form>
 
-				<div class="col-12">
-					<div class="d-flex gap-2">
-						<button class="btn btn-primary" type="submit">
-							@submitText
-						</button>
-
-						<a class="btn btn-outline-secondary"
-						   asp-controller="About" asp-action="Index">
-							Cancel
-						</a>
-					</div>
-				</div>
+			<div id="interest-form-overlay"
+				 class="admin-form-overlay htmx-indicator"
+				 role="status" aria-live="polite" aria-label="Saving">
+				<i class="fa-solid fa-spinner fa-spin admin-form-spinner"
+				   aria-hidden="true"></i>
+				<span class="visually-hidden">
+					Saving...
+				</span>
 			</div>
-		</form>
+
+		</div>
 	</div>
 </section>

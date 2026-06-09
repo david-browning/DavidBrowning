@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.About;
 
@@ -34,9 +36,12 @@ public sealed class InterestEditViewModel
    [Range(0, int.MaxValue)]
    public int SortOrder { get; set; }
 
+   [Required]
    [StringLength(DataConstants.MaxIconCssClassLength)]
    public string? SelectedIconCssClass { get; set; }
 
+   [BindNever]
+   [ValidateNever]
    public required FontAwesomeIconPickerViewModel IconPicker { get; set; }
 
    public InterestEditViewModel()

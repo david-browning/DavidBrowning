@@ -60,3 +60,40 @@ body {
       background-color: var(--bs-primary);
       color: var(--bs-white);
    }
+
+
+.admin-form-region {
+   position: relative;
+}
+
+.admin-form-overlay {
+   position: absolute;
+   inset: 0;
+   z-index: 10;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background-color: rgba(var(--bs-body-bg-rgb), 0.72);
+   backdrop-filter: blur(1px);
+}
+
+   .admin-form-overlay.htmx-indicator {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 120ms ease-in-out 180ms, visibility 0ms linear 180ms;
+   }
+
+   .admin-form-overlay.htmx-request {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transition-delay: 180ms;
+   }
+
+.admin-form-spinner {
+   width: 8rem;
+   height: 8rem;
+   border-width: 0.45rem;
+   color: var(--bs-primary);
+}

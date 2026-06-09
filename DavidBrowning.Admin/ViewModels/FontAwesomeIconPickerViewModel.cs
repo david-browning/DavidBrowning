@@ -11,15 +11,20 @@ namespace DavidBrowning.Admin.ViewModels;
 
 public sealed partial class FontAwesomeIconPickerViewModel
 {
-   public const string DefaultAssetKey = "Documents/fontawesome-icons.json";
+   public const string DefaultAssetKey =
+      "Documents/fontawesome-icons.json";
 
-   public required IReadOnlyList<string> SupportedIconCSSClasses { get; init; }
+   public required IReadOnlyList<string> SupportedIconCssClasses
+   {
+      get;
+      init;
+   }
 
-   public string? SelectedIconCSS { get; init; }
+   public string? SelectedIconCssClass { get; init; }
 
    public static async Task<FontAwesomeIconPickerViewModel> LoadAsync(
       IContentStore contentStore,
-      string? selectedIconCSS = null,
+      string? selectedIconCssClass = null,
       string assetKey = DefaultAssetKey,
       CancellationToken cancellationToken = default)
    {
@@ -36,8 +41,8 @@ public sealed partial class FontAwesomeIconPickerViewModel
             "readable JSON text.");
       }
 
-      string[]? configuredIcons = JsonSerializer.Deserialize<string[]>(
-         asset.Text);
+      string[]? configuredIcons =
+         JsonSerializer.Deserialize<string[]>(asset.Text);
 
       if (configuredIcons is null)
       {
@@ -55,7 +60,7 @@ public sealed partial class FontAwesomeIconPickerViewModel
 
       foreach (string icon in supportedIcons)
       {
-         if (!IconCSSPattern().IsMatch(icon))
+         if (!IconCssPattern().IsMatch(icon))
          {
             throw new InvalidOperationException(
                $"Font Awesome icon asset '{assetKey}' contains an " +
@@ -65,25 +70,25 @@ public sealed partial class FontAwesomeIconPickerViewModel
 
       return new FontAwesomeIconPickerViewModel()
       {
-         SelectedIconCSS = selectedIconCSS,
-         SupportedIconCSSClasses = supportedIcons,
+         SelectedIconCssClass = selectedIconCssClass,
+         SupportedIconCssClasses = supportedIcons,
       };
    }
 
-   public bool Supports(string? iconCSS)
+   public bool Supports(string? iconCssClass)
    {
-      if (string.IsNullOrWhiteSpace(iconCSS))
+      if (string.IsNullOrWhiteSpace(iconCssClass))
       {
          return true;
       }
 
-      return SupportedIconCSSClasses.Contains(
-         iconCSS,
+      return SupportedIconCssClasses.Contains(
+         iconCssClass,
          StringComparer.Ordinal);
    }
 
    [GeneratedRegex(
       @"^fa-(solid|regular|brands)(?:\s+fa-[a-z0-9-]+)+$",
       RegexOptions.CultureInvariant)]
-   private static partial Regex IconCSSPattern();
+   private static partial Regex IconCssPattern();
 }
