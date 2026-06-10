@@ -1,5 +1,5 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
 @using DavidBrowning.Admin.ViewModels.Work;
@@ -17,17 +17,21 @@
 			Manage the content on the Work page and upload a resume.
 		</p>
 	</header>
-	<div class="row g-4 align-items-start">
-		<div class="col">
-			<div id="@WorkAdminIds.ResumeUploadregion">
+	<div class="row g-4">
+		<div class="col-12 col-lg-4 d-flex">
+			<div id="@WorkAdminIds.ResumeUploadregion" class="w-100">
 				<partial name="ResumePreview" model="Model.Resume" />
 			</div>
 		</div>
-		<div class="col">
-			<partial name="ExperiencePreview" model="Model.ExperiencePreview" />
+		<div class="col-12 col-lg-4 d-flex">
+			<div class="w-100">
+				<partial name="ExperiencePreview" model="Model.ExperiencePreview" />
+			</div>
 		</div>
-		<div class="col">
-			<partial name="CredentialPreview" model="Model.CredentialPreview" />
+		<div class="col-12 col-lg-4 d-flex">
+			<div class="w-100">
+				<partial name="CredentialPreview" model="Model.CredentialPreview" />
+			</div>
 		</div>
 	</div>
 </div>

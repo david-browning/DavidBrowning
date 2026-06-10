@@ -12,10 +12,11 @@ namespace DavidBrowning.Admin.Controllers;
 public partial class WorkController
 {
    [HttpGet]
-   public Task<IActionResult> CredentialIndex(
+   public async Task<IActionResult> CredentialIndex(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return View(
+         await GetCredentialIndexViewModelAsync(null, cancellationToken));
    }
 
    [HttpPost]
@@ -61,7 +62,6 @@ public partial class WorkController
    {
       throw new NotImplementedException();
    }
-
 
    private Task<IndexViewModel> GetCredentialIndexViewModelAsync(
       EditViewModel? existingCreateModel,

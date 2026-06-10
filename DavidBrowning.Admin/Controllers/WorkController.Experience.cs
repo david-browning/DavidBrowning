@@ -12,10 +12,11 @@ namespace DavidBrowning.Admin.Controllers;
 public partial class WorkController
 {
    [HttpGet]
-   public Task<IActionResult> ExperienceIndex(
+   public async Task<IActionResult> ExperienceIndex(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return View(
+         await GetExperienceIndexViewModelAsync(null, cancellationToken));
    }
 
    [HttpPost]

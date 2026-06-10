@@ -4,9 +4,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Admin.Extensions;
 using DavidBrowning.Admin.ViewModels.Work.Resume;
-using Microsoft.AspNetCore.Http;
+using DavidBrowning.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
@@ -26,7 +25,7 @@ public partial class WorkController
       IndexViewModel model,
       CancellationToken cancellationToken)
    {
-      LoadAndValidateUploadResume(model, cancellationToken);
+      await LoadAndValidateUploadResumeAsync(model, cancellationToken);
       if (!ModelState.IsValid)
       {
          return PartialView("ResumePreview", model);
@@ -81,26 +80,55 @@ public partial class WorkController
       }
    }
 
-   private void LoadAndValidateUploadResume(
+   private async Task LoadAndValidateUploadResumeAsync(
       IndexViewModel model,
       CancellationToken cancellationToken)
    {
-      IFormFile? upload = model.UploadedFile;
-      if (upload is null || upload.Length == 0)
+      if (model.UploadedFile is null || model.UploadedFile.Length == 0)
       {
-         ModelState.AddModelError(
-            nameof(model.UploadedFile), "Select a file to upload.");
+         ModelState.AddModelError(nameof(model.UploadedFile), 
+            "Select a PDF file to upload.");
          return;
       }
-
-      if(upload.ContentType != "application/pdf")
+      else
       {
-         ModelState.AddModelError(
-            nameof(model.UploadedFile), "File is not a PDF");
+         const long maximumResumeSizeBytes = 5 * 1024 * 1024;
+
+         if (model.UploadedFile.Length >
+             maximumResumeSizeBytes)
+         {
+            ModelState.AddModelError(nameof(model.UploadedFile), 
+               "The resume must be 5 MB or smaller.");
+            return;
+         }
+
+         if (!string.Equals(Path.GetExtension(model.UploadedFile.FileName), 
+            ".pdf", StringComparison.OrdinalIgnoreCase))
+         {
+            ModelState.AddModelError(nameof(model.UploadedFile), 
+               "The selected file must have a .pdf extension.");
+            return;
+         }
+
+         if (!string.Equals(model.UploadedFile.ContentType, "application/pdf", 
+            StringComparison.OrdinalIgnoreCase))
+         {
+            ModelState.AddModelError(nameof(model.UploadedFile), 
+               "The selected file must have the PDF content type.");
+            return;
+         }
+
+         if (!await PdfFileValidator.HasPdfSignatureAsync(
+            model.UploadedFile, cancellationToken))
+         {
+            ModelState.AddModelError(nameof(model.UploadedFile), 
+               "The selected file does not contain a valid PDF signature.");
+            return;
+         }
       }
 
-      model.ContentType = upload.ContentType;
-      model.OriginalFileName = upload.FileName;
-      model.SizeBytes = upload.Length;
+      model.ContentType = model.UploadedFile!.ContentType;
+      model.OriginalFileName = model.UploadedFile!.FileName;
+      model.SizeBytes = model.UploadedFile!.Length;
    }
 }
