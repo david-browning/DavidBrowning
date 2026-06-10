@@ -68,7 +68,7 @@ public sealed class SiteAsset : IDateCreatedTrackedEntity
    /// When this asset record was created.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime CreatedAtUtc { get; set; }
+   public DateTime CreatedAtUtc { get; set; }
 
    public ICollection<PostRevisionAssetLink> PostRevisionLinks { get; } =
       new List<PostRevisionAssetLink>();

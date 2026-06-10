@@ -1,11 +1,14 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using System;
 using System.ComponentModel.DataAnnotations;
 
 using DavidBrowning.Models;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.Asset;
 
@@ -22,20 +25,40 @@ public sealed class EditViewModel
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? AltText { get; set; }
 
-   // Required for create, optional for edit. Enforce that conditional rule
-   // in the controller or application service.
-   public IFormFile? UploadedFile { get; set; }
-
    // Display-only metadata. Derive these values from the stored file.
-   public string? ContentType { get; init; }
+   public string? ContentType { get; set; }
 
-   public string? OriginalFileName { get; init; }
+   public string? OriginalFileName { get; set; }
 
-   public long? SizeBytes { get; init; }
+   public long? SizeBytes { get; set; }
 
-   public int? WidthPixels { get; init; }
+   public int? WidthPixels { get; set; }
 
-   public int? HeightPixels { get; init; }
+   public int? HeightPixels { get; set; }
+
+   /// <summary>
+   /// New file selected by the user. Required when creating an asset.
+   /// Optional when editing metadata for an existing asset.
+   /// </summary>
+   public IFormFile? UploadFile { get; set; }
+
+
+   [BindNever]
+   [ValidateNever]
+   public required ContentTypePickerViewModel ContentTypePicker
+   {
+      get;
+      set;
+   }
+
+   public bool CanDownload
+   {
+      get
+      {
+         return EditMode == EditModes.Edit &&
+            !string.IsNullOrWhiteSpace(AssetKey);
+      }
+   }
 
    public EditViewModel()
    {
@@ -52,5 +75,28 @@ public sealed class EditViewModel
       SizeBytes = asset.SizeBytes;
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
+   }
+
+   public SiteAsset ToAsset()
+   {
+      ArgumentException.ThrowIfNullOrEmpty(AssetKey);
+      ArgumentException.ThrowIfNullOrEmpty(ContentType);
+      if(SizeBytes is null)
+      {
+         throw new NullReferenceException(nameof(SizeBytes));
+      }
+
+      return new SiteAsset()
+      {
+         Id = Id ?? 0,
+         AssetKey = AssetKey,
+         AltText = AltText,
+         ContentType = ContentType,
+         OriginalFileName = OriginalFileName,
+         SizeBytes = SizeBytes.Value,
+         WidthPixels = WidthPixels,
+         HeightPixels = HeightPixels,
+         // Date is populated by the EF core callbacks.
+      };
    }
 }

@@ -6,16 +6,12 @@ using DavidBrowning.Models.Projects;
 
 namespace DavidBrowning.Admin.ViewModels.Projects;
 
-public class ProjectVisibilityListViewModel : IListViewModel<ProjectVisibility>
+public class ProjectVisibilityListViewModel
 {
-   public ListModes ListMode { get; set; }
    public List<ProjectVisibility>? Items { get; set; }
 
-   public ProjectVisibilityListViewModel(
-      IEnumerable<ProjectVisibility> visibilities,
-      ListModes mode)
+   public ProjectVisibilityListViewModel(IEnumerable<ProjectVisibility> visibilities)
    {
-      ListMode = mode;
       Items = visibilities.ToList();
    }
 }

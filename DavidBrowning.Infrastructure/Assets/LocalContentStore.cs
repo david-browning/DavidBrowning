@@ -1,6 +1,5 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -67,7 +66,6 @@ public sealed class LocalContentStore : IContentStore
       CancellationToken cancellationToken = default)
    {
       cancellationToken.ThrowIfCancellationRequested();
-
       var fullPath = GetAssetFullPath(assetKey);
 
       if (!File.Exists(fullPath))
@@ -80,6 +78,93 @@ public sealed class LocalContentStore : IContentStore
       Stream stream = File.OpenRead(fullPath);
 
       return Task.FromResult(stream);
+   }
+
+   public async Task<ContentWriteResults> WriteAsync(
+      string assetKey,
+      Stream contentStream,
+      CancellationToken cancellationToken = default)
+   {
+      cancellationToken.ThrowIfCancellationRequested();
+      var fullPath = GetAssetFullPath(assetKey);
+
+      if (File.Exists(fullPath))
+      {
+         await WriteContentAsync(contentStream, fullPath, cancellationToken);
+         return ContentWriteResults.Overwritten;
+      }
+
+      await WriteContentAsync(contentStream, fullPath, cancellationToken);
+      return ContentWriteResults.CreatedNew;
+   }
+
+   private static async Task WriteContentAsync(
+      Stream contentStream,
+      string fullPath,
+      CancellationToken cancellationToken)
+   {
+      ArgumentNullException.ThrowIfNull(contentStream);
+      ArgumentException.ThrowIfNullOrWhiteSpace(fullPath);
+      string? directoryPath = Path.GetDirectoryName(fullPath);
+      if (string.IsNullOrWhiteSpace(directoryPath))
+      {
+         throw new InvalidOperationException(
+            $"Could not determine the parent directory for '{fullPath}'.");
+      }
+
+      Directory.CreateDirectory(directoryPath);
+
+      string temporaryPath = Path.Combine(
+         directoryPath, $".{Path.GetFileName(fullPath)}.{Guid.NewGuid():N}.tmp");
+
+      try
+      {
+         await using (var destinationStream = new FileStream(
+            temporaryPath, new FileStreamOptions()
+            {
+               Access = FileAccess.Write,
+               Mode = FileMode.CreateNew,
+               Share = FileShare.None,
+               Options = FileOptions.Asynchronous | FileOptions.SequentialScan,
+            }))
+         {
+            await contentStream.CopyToAsync(
+               destinationStream, cancellationToken);
+
+            await destinationStream.FlushAsync(cancellationToken);
+         }
+
+         File.Move(temporaryPath, fullPath, overwrite: true);
+      }
+      catch
+      {
+         TryDeleteFile(temporaryPath);
+         throw;
+      }
+   }
+
+   public Task DeleteFileAsync(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(assetKey);
+      cancellationToken.ThrowIfCancellationRequested();
+      var fullPath = GetAssetFullPath(assetKey);
+      File.Delete(fullPath);
+      return Task.CompletedTask;
+   }
+
+   private static void TryDeleteFile(string fullPath)
+   {
+      try
+      {
+         File.Delete(fullPath);
+      }
+      catch
+      {
+         // Preserve the original write failure.
+         // A stale temporary file is less important than the root cause.
+      }
    }
 
    private string GetAssetFullPath(string assetKey)
@@ -96,6 +181,12 @@ public sealed class LocalContentStore : IContentStore
          throw new ArgumentException(
             "Asset keys cannot begin with a slash.",
             nameof(assetKey));
+      }
+
+      if (assetKey.Contains("..", StringComparison.Ordinal))
+      {
+         throw new InvalidOperationException(
+            $"Asset key contains an invalid path segment: '{assetKey}'.");
       }
 
       if (Path.IsPathRooted(assetKey))
@@ -125,8 +216,7 @@ public sealed class LocalContentStore : IContentStore
       if (!fullPath.StartsWith(contentRoot, comparison))
       {
          throw new ArgumentException(
-            "Asset key escapes the configured content root.",
-            nameof(assetKey));
+            "Asset key escapes the configured content root.", nameof(assetKey));
       }
 
       return fullPath;

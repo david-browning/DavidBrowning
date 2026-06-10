@@ -32,4 +32,23 @@ public interface IUncategorizedStore
    Task ReorderInterestsAsync(
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default);
+
+   Task<IReadOnlyList<SiteAsset>> GetSiteAssetsAsync(
+      CancellationToken cancellationToken= default);
+
+   Task<SiteAsset?> GetAssetAsync(
+      int id, 
+      CancellationToken cancellationToken = default);
+
+   Task<bool> DeleteAssetAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateAssetAsync(
+      SiteAsset asset,
+      CancellationToken cancellationToken = default);
+
+   Task InsertAssetAsync(
+      SiteAsset asset,
+      CancellationToken cancellationToken = default);
 }

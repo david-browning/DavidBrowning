@@ -1,0 +1,33 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Asset.ContentTypePickerViewModel
+
+<div class="mb-3">
+	<label class="form-label" for="ContentType">
+		Content type
+	</label>
+
+	<select class="form-select" id="ContentType" name="ContentType">
+		<option value="">
+			Select a content type
+		</option>
+
+		@foreach (IGrouping<string,
+				DavidBrowning.Admin.ViewModels.Asset.ContentTypeOptionViewModel>
+				category in Model.Options.GroupBy(option => option.Category))
+		{
+			<optgroup label="@category.Key">
+				@foreach (var option in category)
+				{
+					bool isSelected = string.Equals(option.ContentType, Model.SelectedContentType, StringComparison.OrdinalIgnoreCase);
+					<option value="@option.ContentType"
+							selected="@isSelected">
+						@option.DisplayName (@option.ContentType)
+					</option>
+				}
+			</optgroup>
+		}
+	</select>
+</div>

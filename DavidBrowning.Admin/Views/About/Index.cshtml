@@ -5,33 +5,33 @@
 @model DavidBrowning.Admin.ViewModels.About.IndexViewModel
 
 @{
-	ViewData["Title"] = "About";
+    ViewData["Title"] = "About";
 }
 
 <div class="container py-4">
-	<header class="mb-4">
-		<h1 class="h2 mb-1">
-			About
-		</h1>
+    <header class="mb-4">
+        <h1>
+            About
+        </h1>
 
-		<p class="text-secondary mb-0">
-			Manage the content displayed on the public About page.
-		</p>
-	</header>
+        <p class="text-secondary">
+            Manage the content displayed on the public About page.
+        </p>
+    </header>
 
-	<div class="row g-4 align-items-start">
-		<div class="col-12 col-xl-5">
-			<div id="interest-create-region">
-				<partial name="InterestEdit" model="Model.Create" />
-			</div>
-		</div>
+    <div class="row g-4 align-items-start">
+        <div class="col-12 col-xl-5">
+            <div id="interest-create-region">
+                <partial name="InterestEdit" model="Model.Create" />
+            </div>
+        </div>
 
-		<div class="col-12 col-xl-7">
-			<div id="interest-list-region">
-				<partial name="InterestList" model="Model.List" />
-			</div>
-		</div>
-	</div>
+        <div class="col-12 col-xl-7">
+            <div id="interest-list-region">
+                <partial name="InterestList" model="Model.List" />
+            </div>
+        </div>
+    </div>
 </div>
 
 <partial name="_AdminOffcanvas" model="Model.EditOffcanvas" />

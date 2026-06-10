@@ -143,6 +143,71 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
          interests.Count);
    }
 
+   public async Task<IReadOnlyList<SiteAsset>> GetSiteAssetsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _context.SiteAssets
+         .AsNoTracking()
+         .ToListAsync(cancellationToken);
+   }
+
+   public async Task<SiteAsset?> GetAssetAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return await _context.SiteAssets
+         .AsNoTracking()
+         .FirstOrDefaultAsync(s =>  s.Id == id, cancellationToken);
+   }
+
+   public async Task<bool> DeleteAssetAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      var asset = await _context.SiteAssets
+         .SingleOrDefaultAsync(asset => asset.Id == id, cancellationToken);
+      if (asset is null)
+      {
+         return false;
+      }
+
+      _context.SiteAssets.Remove(asset);
+      await _context.SaveChangesAsync(cancellationToken);
+      return true;
+   }
+
+   public async Task<bool> UpdateAssetAsync(
+      SiteAsset asset,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(asset);
+      var existing = await _context.SiteAssets
+         .SingleOrDefaultAsync(e =>  e.Id == asset.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.AltText = asset.AltText;
+      existing.AssetKey = asset.AssetKey;
+      existing.ContentType = asset.ContentType;
+      existing.HeightPixels = asset.HeightPixels;
+      existing.WidthPixels = asset.WidthPixels;
+      existing.OriginalFileName = asset.OriginalFileName;
+      existing.SizeBytes = asset.SizeBytes;
+
+      await _context.SaveChangesAsync(cancellationToken);
+      return true;
+   }
+
+   public async Task InsertAssetAsync(
+      SiteAsset asset,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(asset);
+      await _context.SiteAssets.AddAsync(asset, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+   }
 
    private readonly ILogger<SqlUncategorizedStore> _logger;
    private readonly SiteDbContext _context;

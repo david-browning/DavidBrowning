@@ -1,11 +1,192 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Asset.EditViewModel
-
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Asset
 @{
+	bool isEditMode = Model.EditMode == EditModes.Edit;
+	string formAction = isEditMode ? nameof(AssetController.Edit) :
+	  nameof(AssetController.Create);
+	string htmxTarget = isEditMode ?
+	  AdminOffcanvasIds.BodySelector(AssetAdminIds.AssetEditOffcanvas) :
+	  $"#{AssetAdminIds.AssetCreateRegion}";
+	string overlaySelector = isEditMode ?
+	  AdminOffcanvasIds.OverlaySelector(AssetAdminIds.AssetEditOffcanvas) :
+	  $"#{AssetAdminIds.AssetCreateOverlay}";
+
+	string editorId = Model.EditMode == EditModes.Edit ? 
+	  $"asset-edit-{Model.Id}" : "asset-create";
+
+	string uploadFileInputId = $"{editorId}-upload-file";
 }
+
+<section class="card">
+	<div class="card-body">
+		<h2 class="h4 card-title">
+			@(isEditMode ? "Edit Asset" : "Create Asset")
+		</h2>
+		<p class="card-text text-secondary">
+			Assets are files stored in the content store and referenced by database
+			objects by using a slug.
+		</p>
+		<div class="admin-form-region">
+			<form method="post" asp-controller="Asset" asp-action="@formAction"
+				  data-asset-edit-mode="@isEditMode.ToString().ToLowerInvariant()"
+				  hx-post="@Url.Action(formAction, "Asset")" hx-target="@htmxTarget"
+				  hx-swap="innerHTML" hx-disabled-elt="find fieldset"
+				  hx-indicator="@overlaySelector"
+				  enctype="multipart/form-data" hx-encoding="multipart/form-data">
+				<fieldset data-asset-upload-form>
+					<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+					</div>
+
+					@if (isEditMode)
+					{
+						<input asp-for="Id" type="hidden" />
+					}
+
+					@if (Model.CanDownload)
+					{
+						<a class="btn btn-outline-secondary"
+						   asp-controller="Asset" asp-action="Download"
+						   asp-route-id="@Model.Id">
+							<i class="fa-solid fa-download me-1" aria-hidden="true"></i>
+							Download asset
+						</a>
+					}
+
+					<div class="row g-3">
+						<div class="col mb-3">
+							<label class="form-label" for="@uploadFileInputId">
+								File
+							</label>
+
+							<div class="d-flex flex-wrap align-items-center gap-2">
+								<input class="visually-hidden" id="@uploadFileInputId"
+									   asp-for="UploadFile" type="file"
+									   data-asset-file-input />
+								<label class="btn btn-outline-primary" for="@uploadFileInputId">
+									<i class="fa-solid fa-folder-open me-1" aria-hidden="true"></i>
+									Choose file
+								</label>
+								<span class="text-secondary" data-asset-file-summary>
+									No new file selected
+								</span>
+							</div>
+
+							<span class="text-danger"
+								  asp-validation-for="UploadFile">
+							</span>
+						</div>
+					</div>
+
+					<div class="row g-3">
+						<div class="col-12 col-md-6">
+							<label asp-for="AssetKey" class="form-label">
+								Key Label
+							</label>
+							<input asp-for="AssetKey" class="form-control"
+								   data-asset-key-input autocomplete="off" />
+							<span asp-validation-for="AssetKey" class="text-danger"></span>
+						</div>
+
+						<div class="col-12 col-md-6">
+							<partial name="_ContentTypePicker" model="Model.ContentTypePicker" />
+							<span asp-validation-for="ContentType" class="text-danger">
+							</span>
+						</div>
+
+						<div class="col-12">
+							<label asp-for="AltText" class="form-label">
+								Alt Text
+							</label>
+							<input asp-for="AltText" class="form-control" autocomplete="off" />
+							<span asp-validation-for="AltText" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="row g-3 mb-3">
+						<div class="col-12 col-md-6">
+							<label class="form-label">
+								Original file name
+							</label>
+							<input class="form-control" value="@Model.OriginalFileName"
+								   asp-for="OriginalFileName"
+								   readonly data-original-file-name-preview />
+						</div>
+
+						<div class="col-12 col-md-6">
+							<label class="form-label">
+								File size (b)
+							</label>
+							<input class="form-control" value="@Model.SizeBytes"
+								   asp-for="SizeBytes"
+								   readonly data-file-size-preview />
+						</div>
+					</div>
+
+					<div class="row g-3 mb-3">
+						<div class="col-12 col-md-6">
+							<label class="form-label">
+								Width
+							</label>
+							<input class="form-control" value="@Model.WidthPixels"
+								   asp-for="WidthPixels"
+								   readonly data-image-width-preview />
+						</div>
+
+						<div class="col-12 col-md-6">
+							<label class="form-label">
+								Height
+							</label>
+							<input class="form-control" value="@Model.HeightPixels"
+								   asp-for="HeightPixels"
+								   readonly data-image-height-preview />
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<img class="img-fluid rounded border d-none"
+							 alt="Selected image preview" data-image-preview />
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-12">
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary" type="submit">
+									Submit
+								</button>
+
+								@if (isEditMode)
+								{
+									<button class="btn btn-outline-secondary"
+											type="button" data-bs-dismiss="offcanvas">
+										Cancel
+									</button>
+								}
+								else
+								{
+									<a class="btn btn-outline-secondary"
+									   asp-controller="Asset" asp-action="Index">
+										Cancel
+									</a>
+								}
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			@if (!isEditMode)
+			{
+				<div id="@AssetAdminIds.AssetCreateOverlay"
+					 class="admin-form-overlay htmx-indicator"
+					 role="status" aria-live="polite" aria-label="Saving asset">
+					<partial name="_Waiting" />
+				</div>
+			}
+		</div>
+	</div>
+</section>

@@ -2,6 +2,12 @@
 // Source-available for viewing only. No license granted.
 namespace DavidBrowning.Infrastructure.Assets;
 
+public enum ContentWriteResults
+{
+   CreatedNew,
+   Overwritten,
+}
+
 public interface IContentStore
 {
    /// <summary>
@@ -25,5 +31,14 @@ public interface IContentStore
    /// </summary>
    Task<Stream> OpenReadAsync(
       string assetKey,
+      CancellationToken cancellationToken = default);
+
+   Task<ContentWriteResults> WriteAsync(
+      string assetKey, 
+      Stream contentStream, 
+      CancellationToken cancellationToken = default);
+
+   Task DeleteFileAsync(
+      string assetKey, 
       CancellationToken cancellationToken = default);
 }

@@ -30,4 +30,19 @@ public sealed class DummyContentStore : IContentStore
    {
       throw new NotImplementedException();
    }
+
+   public Task<ContentWriteResults> WriteAsync(string assetKey,
+      Stream
+      contentStream,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task DeleteFileAsync(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
 }

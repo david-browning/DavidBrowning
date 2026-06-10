@@ -6,7 +6,7 @@ using DavidBrowning.Models.Projects;
 
 namespace DavidBrowning.Admin.ViewModels.Projects;
 
-public class ProjectTypeListViewModel : IReadonlyListViewModel<ProjectType>
+public class ProjectTypeListViewModel
 {
    public IReadOnlyList<ProjectType>? Items { get; set; }
 

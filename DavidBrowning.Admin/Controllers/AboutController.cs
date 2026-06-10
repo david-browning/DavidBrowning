@@ -30,7 +30,7 @@ public sealed class AboutController : Controller
    public async Task<IActionResult> Index(
       CancellationToken cancellationToken)
    {
-      return View(await GetIndexModelAsync(createModel: null, cancellationToken));
+      return View(await GetIndexModelAsync(null, cancellationToken));
    }
 
    [HttpPost]
@@ -240,30 +240,33 @@ public sealed class AboutController : Controller
          {
             Title = "Interests",
             Description =
-            "Edit About-page interests or change their display order.",
+               "Edit About-page interests or change their display order.",
             EmptyMessage =
-            "No interests have been created yet.",
-            ReorderController = "About",
-            ReorderAction = "InterestReorder",
+               "No interests have been created yet.",
+            ReoderParameters = new ReoderParameters()
+            {
+               ReorderController = "About",
+               ReorderAction = "InterestReorder",
+            },
             EditOffcanvasId = AboutAdminIds.InterestEditOffcanvas,
 
             Items = interests
-            .OrderBy(interest => interest.SortOrder)
-            .ThenBy(interest => interest.DisplayName)
-            .Select(interest => new ReorderListItemViewModel
-            {
-               Id = interest.Id,
-               DisplayName = interest.DisplayName,
-               SecondaryText = interest.Slug,
-               IconCssClass = interest.IconCssClass,
-               IsActive = interest.IsActive,
-               SortOrder = interest.SortOrder,
-               EditController = "About",
-               EditAction = "InterestEdit",
-               DeleteController = "About",
-               DeleteAction = "InterestDelete",
-            })
-            .ToList(),
+               .OrderBy(interest => interest.SortOrder)
+               .ThenBy(interest => interest.DisplayName)
+               .Select(interest => new ReorderListItemViewModel
+               {
+                  Id = interest.Id,
+                  DisplayName = interest.DisplayName,
+                  SecondaryText = interest.Slug,
+                  IconCssClass = interest.IconCssClass,
+                  IsActive = interest.IsActive,
+                  SortOrder = interest.SortOrder,
+                  EditController = "About",
+                  EditAction = "InterestEdit",
+                  DeleteController = "About",
+                  DeleteAction = "InterestDelete",
+               })
+               .ToList(),
          }
       };
    }
