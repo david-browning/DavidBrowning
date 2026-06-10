@@ -8,143 +8,139 @@
 @using DavidBrowning.Admin.ViewModels.About
 
 @{
-	bool isEditMode =
-	   Model.EditMode == EditModes.Edit;
+    bool isEditMode = Model.EditMode == EditModes.Edit;
 
-	string formAction = isEditMode
-	   ? nameof(AboutController.InterestEdit)
-	   : nameof(AboutController.InterestCreate);
+    string formAction = isEditMode ? nameof(AboutController.InterestEdit) : 
+      nameof(AboutController.InterestCreate);
 
-	string htmxTarget = isEditMode
-	   ? AdminOffcanvasIds.BodySelector(
-		  AboutAdminIds.InterestEditOffcanvas)
-	   : "#interest-create-region";
+    string htmxTarget = isEditMode ? 
+      AdminOffcanvasIds.BodySelector(AboutAdminIds.InterestEditOffcanvas) : 
+      "#interest-create-region";
 
-	string overlaySelector = isEditMode
-	   ? AdminOffcanvasIds.OverlaySelector(
-		  AboutAdminIds.InterestEditOffcanvas)
-	   : "#interest-create-overlay";
+    string overlaySelector = isEditMode ? 
+      AdminOffcanvasIds.OverlaySelector(AboutAdminIds.InterestEditOffcanvas) : 
+      "#interest-create-overlay";
 }
 
 <section class="card">
-	<div class="card-body">
-		<h2 class="h4 card-title">
-			@(isEditMode ? "Edit interest" : "Create interest")
-		</h2>
+    <div class="card-body">
+        <h2 class="h4 card-title">
+            @(isEditMode ? "Edit interest" : "Create interest")
+        </h2>
 
-		<p class="card-text text-secondary">
-			Interests appear on the About page. Use a short title,
-			a URL-safe slug, a brief description, and a representative icon.
-		</p>
-		<div class="admin-form-region">
-			<form method="post"
-				  asp-controller="About"
-				  asp-action="@formAction"
-				  hx-post="@Url.Action(formAction, "About")"
-				  hx-target="@htmxTarget"
-				  hx-swap="innerHTML"
-				  hx-disabled-elt="find fieldset"
-				  hx-indicator="@overlaySelector">
-				<fieldset>
-					<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
-					</div>
+        <p class="card-text text-secondary">
+            Interests appear on the About page. Use a short title,
+            a URL-safe slug, a brief description, and a representative icon.
+        </p>
+        <div class="admin-form-region">
+            <form method="post"
+                  asp-controller="About"
+                  asp-action="@formAction"
+                  hx-post="@Url.Action(formAction, "About")"
+                  hx-target="@htmxTarget"
+                  hx-swap="innerHTML"
+                  hx-disabled-elt="find fieldset"
+                  hx-indicator="@overlaySelector">
+                <fieldset>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+                    </div>
 
-					@if (isEditMode)
-					{
-						<input asp-for="Id" type="hidden" />
-					}
+                    @if (isEditMode)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
 
-					<div class="row g-3">
-						<div class="col-12 col-md-6">
-							<label asp-for="DisplayName" class="form-label">
-								Display name
-							</label>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="DisplayName" class="form-label">
+                                Display name
+                            </label>
 
-							<input asp-for="DisplayName" class="form-control" autocomplete="off" />
+                            <input asp-for="DisplayName" class="form-control" autocomplete="off" />
 
-							<span asp-validation-for="DisplayName" class="text-danger">
-							</span>
-						</div>
+                            <span asp-validation-for="DisplayName" class="text-danger">
+                            </span>
+                        </div>
 
-						<div class="col-12 col-md-6">
-							<label asp-for="Slug" class="form-label">
-								Slug
-							</label>
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Slug" class="form-label">
+                                Slug
+                            </label>
 
-							<input asp-for="Slug" class="form-control" autocomplete="off"
-								   aria-describedby="interest-slug-help" />
+                            <input asp-for="Slug" class="form-control" autocomplete="off"
+                                   aria-describedby="interest-slug-help" />
 
-							<div id="interest-slug-help" class="form-text">
-								Used in URLs and query parameters. Use lowercase
-								letters, numbers, and hyphens.
-							</div>
+                            <div id="interest-slug-help" class="form-text">
+                                Used in URLs and query parameters. Use lowercase
+                                letters, numbers, and hyphens.
+                            </div>
 
-							<span asp-validation-for="Slug" class="text-danger">
-							</span>
-						</div>
+                            <span asp-validation-for="Slug" class="text-danger">
+                            </span>
+                        </div>
 
-						<div class="col-12">
-							<label asp-for="Summary" class="form-label">
-								Summary
-							</label>
+                        <div class="col-12">
+                            <label asp-for="Summary" class="form-label">
+                                Summary
+                            </label>
 
-							<textarea asp-for="Summary" class="form-control" rows="4"></textarea>
+                            <textarea asp-for="Summary" class="form-control" rows="4"></textarea>
 
-							<span asp-validation-for="Summary" class="text-danger">
-							</span>
-						</div>
+                            <span asp-validation-for="Summary" class="text-danger">
+                            </span>
+                        </div>
 
-						<div class="col-12">
-							<partial name="_FontAwesomeIconPicker" model="Model.IconPicker" />
-							<span asp-validation-for="SelectedIconCssClass" class="text-danger">
-							</span>
-						</div>
+                        <div class="col-12">
+                            <partial name="_FontAwesomeIconPicker" model="Model.IconPicker" />
+                            <span asp-validation-for="SelectedIconCssClass" class="text-danger">
+                            </span>
+                        </div>
 
-						<div class="col-12">
-							<div class="form-check">
-								<input asp-for="IsActive"
-									   class="form-check-input" />
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input asp-for="IsActive"
+                                       class="form-check-input" />
 
-								<label asp-for="IsActive"
-									   class="form-check-label">
-									Show this interest on the public website
-								</label>
-							</div>
-						</div>
+                                <label asp-for="IsActive"
+                                       class="form-check-label">
+                                    Show this interest on the public website
+                                </label>
+                            </div>
+                        </div>
 
-						<div class="col-12">
-							<div class="d-flex gap-2">
-								<button class="btn btn-primary" type="submit">
-									Submit
-								</button>
+                        <div class="col-12">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" type="submit">
+                                    Submit
+                                </button>
 
-								@if (isEditMode)
-								{
-									<button class="btn btn-outline-secondary"
-											type="button" data-bs-dismiss="offcanvas">
-										Cancel
-									</button>
-								}
-								else
-								{
-									<a class="btn btn-outline-secondary"
-									   asp-controller="About" asp-action="Index">
-										Cancel
-									</a>
-								}
-							</div>
-						</div>
-					</div>
-				</fieldset>
-			</form>
-			@if (!isEditMode)
-			{
-				<div id="interest-create-overlay"
-					 class="admin-form-overlay htmx-indicator"
-					 role="status" aria-live="polite" aria-label="Saving interest">
-					<partial name="_Waiting" />
-				</div>
-			}
-		</div>
-	</div>
+                                @if (isEditMode)
+                                {
+                                    <button class="btn btn-outline-secondary"
+                                            type="button" data-bs-dismiss="offcanvas">
+                                        Cancel
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-outline-secondary"
+                                       asp-controller="About" asp-action="Index">
+                                        Cancel
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            @if (!isEditMode)
+            {
+                <div id="interest-create-overlay"
+                     class="admin-form-overlay htmx-indicator"
+                     role="status" aria-live="polite" aria-label="Saving interest">
+                    <partial name="_Waiting" />
+                </div>
+            }
+        </div>
+    </div>
 </section>

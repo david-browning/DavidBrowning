@@ -3,9 +3,33 @@
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Asset.IndexViewModel
-
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
+	ViewData["Title"] = "Assets";
 }
+
+<div class="container py-4">
+	<header class="mb-4">
+		<h1>
+			Assets
+		</h1>
+		<p class="text-secondary">
+			Manage assets stored in the content store and database references.
+		</p>
+	</header>
+
+	<div class="row g-4 align-items-start">
+		<div class="col-12 col-xl-5">
+			<div id="@DavidBrowning.Admin.ViewModels.Asset.AssetAdminIds.AssetCreateRegion">
+				<partial name="Edit" model="Model.Create" />
+			</div>
+		</div>
+
+		<div class="col-12 col-xl-7">
+			<div id="@DavidBrowning.Admin.ViewModels.Asset.AssetAdminIds.AssetListRegion">
+				<partial name="List" model="Model.List" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_AdminOffcanvas" model="Model.EditOffcanvas" />

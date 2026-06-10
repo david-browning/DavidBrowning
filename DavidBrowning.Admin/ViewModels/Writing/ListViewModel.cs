@@ -6,14 +6,12 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class ListViewModel : IListViewModel<PostEditViewModel>
+public class ListViewModel
 {
-   public ListModes ListMode { get; set; }
    public List<PostEditViewModel>? Items { get; set; }
 
-   public ListViewModel(IEnumerable<Post> posts, ListModes mode)
+   public ListViewModel(IEnumerable<Post> posts)
    {
-      ListMode = mode;
       Items = posts.Select(p => new PostEditViewModel(p)).ToList();
    }
 }

@@ -7,7 +7,7 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class PostStyleListViewModel : IReadonlyListViewModel<PostStyle>
+public class PostStyleListViewModel
 {
    public IReadOnlyList<PostStyle>? Items { get; set; }
 

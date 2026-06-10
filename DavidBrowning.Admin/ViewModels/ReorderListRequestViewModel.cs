@@ -51,9 +51,14 @@ public sealed class ReorderListViewModel
    public string EmptyMessage { get; set; } =
       "No items have been created yet.";
 
+   public ReoderParameters? ReoderParameters { get; set; } = null;
+
+   public required IReadOnlyList<ReorderListItemViewModel> Items { get; set; }
+}
+
+public sealed class ReoderParameters
+{
    public required string ReorderController { get; set; }
 
    public required string ReorderAction { get; set; }
-
-   public required IReadOnlyList<ReorderListItemViewModel> Items { get; set; }
 }

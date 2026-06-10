@@ -7,18 +7,13 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class WritingTagListViewModel : IListViewModel<WritingTagEditViewModel>
+public class WritingTagListViewModel
 {
-   public ListModes ListMode { get; set; }
-
    public List<WritingTagEditViewModel>? Items { get; set; }
 
    [SetsRequiredMembers]
-   public WritingTagListViewModel(
-      IEnumerable<WritingTag> tags,
-      ListModes mode)
+   public WritingTagListViewModel(IEnumerable<WritingTag> tags)
    {
       Items = tags.Select(t => new WritingTagEditViewModel(t)).ToList();
-      ListMode = mode;
    }
 }

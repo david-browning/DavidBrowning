@@ -1,0 +1,92 @@
+[
+   {
+      "contentType": "audio/mpeg",
+      "displayName": "MP3 audio",
+      "category": "Audio",
+      "extensions": [ ".mp4" ]
+   },
+   {
+      "contentType": "application/pdf",
+      "displayName": "PDF document",
+      "category": "Documents",
+      "extensions": [ ".pdf" ]
+   },
+   {
+      "contentType": "application/json",
+      "displayName": "JSON document",
+      "category": "Documents",
+      "extensions": [ ".json" ]
+   },
+   {
+      "contentType": "image/gif",
+      "displayName": "GIF image",
+      "category": "Images",
+      "extensions": [ ".gif" ]
+   },
+   {
+      "contentType": "image/jpeg",
+      "displayName": "JPEG image",
+      "category": "Images",
+      "extensions": [ ".jpg", ".jpeg" ]
+   },
+   {
+      "contentType": "image/png",
+      "displayName": "PNG image",
+      "category": "Images",
+      "extensions": [ ".png" ]
+   },
+   {
+      "contentType": "image/webp",
+      "displayName": "WebP image",
+      "category": "Images",
+      "extensions": [ ".webp" ]
+   },
+   {
+      "contentType": "image/svg+xml",
+      "displayName": "SVG image",
+      "category": "Images",
+      "extensions": [ ".svg" ]
+   },
+   {
+      "contentType": "text/plain",
+      "displayName": "Plain-text document",
+      "category": "Text",
+      "extensions": [ ".txt" ]
+   },
+   {
+      "contentType": "text/css",
+      "displayName": "CSS stylesheet",
+      "category": "Text",
+      "extensions": [ ".css" ]
+   },
+   {
+      "contentType": "text/csv",
+      "displayName": "CSV document",
+      "category": "Text",
+      "extensions": [ ".csv" ]
+   },
+   {
+      "contentType": "text/html",
+      "displayName": "HTML document",
+      "category": "Text",
+      "extensions": [ ".html" ]
+   },
+   {
+      "contentType": "text/markdown",
+      "displayName": "Markdown document",
+      "category": "Text",
+      "extensions": [ ".md", ".markdown" ]
+   },
+   {
+      "contentType": "video/mp4",
+      "displayName": "MP4 video",
+      "category": "Video",
+      "extensions": [ ".mp4" ]
+   },
+   {
+      "contentType": "application/zip",
+      "displayName": "ZIP archive",
+      "category": "Archives",
+      "extensions": [ ".zip" ]
+   }
+]

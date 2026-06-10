@@ -6,17 +6,12 @@ using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class PostRevisionListViewModel : IListViewModel<PostRevisionEditViewModel>
+public class PostRevisionListViewModel
 {
-   public ListModes ListMode { get; set; }
-
    public List<PostRevisionEditViewModel>? Items { get; set; }
 
-   public PostRevisionListViewModel(
-      IEnumerable<PostRevision> revisions,
-      ListModes mode)
+   public PostRevisionListViewModel(IEnumerable<PostRevision> revisions)
    {
-      ListMode = mode;
       Items = revisions.Select(r => new PostRevisionEditViewModel(r)).ToList();
    }
 }

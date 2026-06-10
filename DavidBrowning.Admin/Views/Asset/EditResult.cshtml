@@ -1,0 +1,14 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Asset.ListViewModel
+
+<div class="text-success" role="status">
+	Asset updated.
+</div>
+
+<div id="@DavidBrowning.Admin.ViewModels.Asset.AssetAdminIds.AssetListRegion"
+	 hx-swap-oob="innerHTML">
+	<partial name="List" model="Model" />
+</div>
