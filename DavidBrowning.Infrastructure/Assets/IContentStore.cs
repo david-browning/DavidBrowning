@@ -26,6 +26,10 @@ public interface IContentStore
       string assetKey,
       CancellationToken cancellationToken = default);
 
+   Task<bool> AssetExists(
+      string assetKey,
+      CancellationToken cancellationToken = default);
+
    /// <summary>
    /// Opens a readable stream for an asset.
    /// </summary>

@@ -24,6 +24,12 @@ public sealed class DummyContentStore : IContentStore
       return Task.FromResult(ret);
    }
 
+   public Task<bool> AssetExists(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
    public Task<Stream> OpenReadAsync(
       string assetKey,
       CancellationToken cancellationToken = default)

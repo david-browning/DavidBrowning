@@ -46,13 +46,13 @@ public sealed class Experience : IDateCreatedTrackedEntity, IDateUpdatedTrackedE
    /// When the experience record was created.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime CreatedAtUtc { get; set; }
+   public DateTime CreatedAtUtc { get; set; }
 
    /// <summary>
    /// When the experience record was last updated.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime UpdatedAtUtc { get; set; }
+   public DateTime UpdatedAtUtc { get; set; }
 
    public ICollection<ExperienceRole> Roles { get; } =
       new List<ExperienceRole>();

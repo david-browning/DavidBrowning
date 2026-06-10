@@ -10,8 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Middleware\**" />
+    <Content Remove="Middleware\**" />
+    <EmbeddedResource Remove="Middleware\**" />
+    <None Remove="Middleware\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ContentAssets\Images\" />
-    <Folder Include="Middleware\" />
     <Folder Include="ViewModels\Error\" />
   </ItemGroup>
    <ItemGroup>
