@@ -24,4 +24,8 @@
     <Folder Include="ContentAssets\Documents\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="ViewModels\Work\Credentials\IndexViewModel.cs" />
+  </ItemGroup>
+
 </Project>

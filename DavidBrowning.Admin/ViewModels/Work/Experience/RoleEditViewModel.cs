@@ -1,16 +1,15 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
-//
 // Source-available for viewing only. No license granted.
-
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
+using System.Linq;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Work;
 
-namespace DavidBrowning.Admin.ViewModels.Work;
+namespace DavidBrowning.Admin.ViewModels.Work.Experience;
 
-public sealed class ExperienceRoleEditViewModel
+public sealed class RoleEditViewModel
 {
    public EditModes EditMode { get; set; } = EditModes.Create;
 
@@ -30,16 +29,15 @@ public sealed class ExperienceRoleEditViewModel
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? Description { get; set; }
 
-   [Range(0, int.MaxValue)]
-   public int SortOrder { get; set; }
-
    public bool IsActive { get; set; } = true;
 
-   public ExperienceRoleEditViewModel()
+   public IList<RoleBulletEditViewModel>? Bullets { get; set; }
+
+   public RoleEditViewModel()
    {
    }
 
-   public ExperienceRoleEditViewModel(ExperienceRole role)
+   public RoleEditViewModel(ExperienceRole role)
    {
       EditMode = EditModes.Edit;
       Id = role.Id;
@@ -47,7 +45,24 @@ public sealed class ExperienceRoleEditViewModel
       Title = role.Title;
       DateDisplayText = role.DateDisplayText;
       Description = role.Description;
-      SortOrder = role.SortOrder;
       IsActive = role.IsActive;
+      Bullets = role.Bullets.Select(b => new RoleBulletEditViewModel(b)).ToList();
+   }
+
+   public ExperienceRole ToRole()
+   {
+      ArgumentNullException.ThrowIfNull(Id);
+      ArgumentNullException.ThrowIfNull(ExperienceId);
+      ArgumentNullException.ThrowIfNull(Title);
+
+      return new()
+      {
+         Id = Id.Value,
+         ExperienceId = ExperienceId.Value,
+         Title = Title,
+         DateDisplayText = DateDisplayText,
+         Description = Description,
+         IsActive = IsActive,
+      };
    }
 }

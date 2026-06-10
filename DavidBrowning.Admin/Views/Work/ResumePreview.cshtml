@@ -1,0 +1,114 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels.Work;
+@model DavidBrowning.Admin.ViewModels.Work.Resume.IndexViewModel
+@{
+	var fileName = string.IsNullOrEmpty(Model.FileName) ?
+	  "No upload" : Model.FileName;
+	var fileBytes = Model.SizeBytes ?? 0;
+	var contentType = string.IsNullOrEmpty(Model.ContentType) ?
+	  "No upload" : Model.ContentType;
+}
+<section class="card">
+	<div class="card-body">
+		<h2>
+			Resume
+		</h2>
+		<p class="card-text text-secondary">
+			Check and upload a new resume.
+		</p>
+		<div class="admin-form-region">
+			<form method="post" asp-controller="Work" asp-action="ResumeUpload"
+				  hx-post="@Url.Action(nameof(WorkController.ResumeUpload), "Work")"
+				  hx-target="#@WorkAdminIds.ResumeUploadregion"
+				  hx-indicator="#@WorkAdminIds.ResumeUploadOverlay"
+				  hx-swap="innerHTML" hx-disabled-elt="find fieldset"
+				  enctype="multipart/form-data" hx-encoding="multipart/form-data">
+				<fieldset>
+					<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+					</div>
+
+					<div class="row mb-3">
+						<div class="col mb-3">
+							<div class="d-flex flex-wrap align-items-center gap-2">
+								<input class="visually-hidden" asp-for="UploadedFile"
+									   data-asset-file-input type="file" />
+								<label class="btn btn-outline-primary" asp-for="UploadedFile">
+									<i class="fa-solid fa-folder-open me-1" aria-hidden="true"></i>
+									Choose file
+								</label>
+								<span class="text-secondary" data-asset-file-summary>
+									@fileName
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<span class="text-danger" asp-validation-for="UploadedFile">
+					</span>
+
+					<div class="row mb-3">
+						<div class="col-12">
+							<label asp-for="AssetKey" class="form-label">
+								Asset Key
+							</label>
+							<input asp-for="AssetKey" class="form-control"
+								   value="@Model.AssetKey"
+								   readonly data-asset-key-input autocomplete="off" />
+						</div>
+						<div class="col-12">
+							<label asp-for="FileName" class="form-label">
+								File Name
+							</label>
+							<input asp-for="FileName" class="form-control"
+								   value="@Model.FileName"
+								   readonly data-original-file-name-preview />
+						</div>
+						<div class="col-12 col-md-6">
+							<label class="form-label" asp-for="SizeBytes">
+								File size (b)
+							</label>
+							<input class="form-control" asp-for="SizeBytes"
+								   value="@Model.SizeBytes"
+								   readonly data-file-size-preview />
+						</div>
+						<div class="col-12 col-md-6">
+							<label class="form-label" asp-for="ContentType">
+								Type
+							</label>
+							<input class="form-control" asp-for="ContentType"
+								   value="@Model.ContentType"
+								   readonly data-file-type />
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-12">
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary" type="submit">
+									<i class="fa-solid fa-upload me-1" aria-hidden="true"></i>
+									Upload
+								</button>
+								@if (Model.CanDownload)
+								{
+									<a class="btn btn-outline-secondary"
+									   asp-controller="Work" asp-action="DownloadResume">
+										<i class="fa-solid fa-download me-1" aria-hidden="true"></i>
+										Download Resume
+									</a>
+								}
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<div id="@WorkAdminIds.ResumeUploadOverlay" aria-live="polite"
+				 class="admin-form-overlay htmx-indicator" role="status">
+				<partial name="_Waiting" />
+			</div>
+		</div>
+	</div>
+</section>

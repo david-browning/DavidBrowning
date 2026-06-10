@@ -1,16 +1,13 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
-//
 // Source-available for viewing only. No license granted.
-
 using System;
 using System.ComponentModel.DataAnnotations;
-
 using DavidBrowning.Models;
 using DavidBrowning.Models.Work;
 
-namespace DavidBrowning.Admin.ViewModels.Work;
+namespace DavidBrowning.Admin.ViewModels.Work.Credentials;
 
-public sealed class CredentialEditViewModel
+public sealed class EditViewModel
 {
    public EditModes EditMode { get; set; } = EditModes.Create;
 
@@ -43,16 +40,13 @@ public sealed class CredentialEditViewModel
    [Url]
    public string? CredentialUrl { get; set; }
 
-   [Range(0, int.MaxValue)]
-   public int SortOrder { get; set; }
-
    public bool IsActive { get; set; } = true;
 
-   public CredentialEditViewModel()
+   public EditViewModel()
    {
    }
 
-   public CredentialEditViewModel(Credential credential)
+   public EditViewModel(Credential credential)
    {
       EditMode = EditModes.Edit;
       Id = credential.Id;
@@ -64,7 +58,27 @@ public sealed class CredentialEditViewModel
       DateDisplayText = credential.DateDisplayText;
       Description = credential.Description;
       CredentialUrl = credential.CredentialUrl;
-      SortOrder = credential.SortOrder;
       IsActive = credential.IsActive;
+   }
+
+   public Credential ToCredential()
+   {
+      ArgumentNullException.ThrowIfNull(Id);
+      ArgumentNullException.ThrowIfNull(IssuingOrganization);
+      ArgumentNullException.ThrowIfNull(Name);
+
+      return new()
+      {
+         Id = Id.Value,
+         IssuingOrganization = IssuingOrganization,
+         Name = Name,
+         Type = Type,
+         AwardedMonth = AwardedMonth,
+         AwardedYear = AwardedYear,
+         DateDisplayText = DateDisplayText,
+         Description = Description,
+         CredentialUrl = CredentialUrl,
+         IsActive = IsActive,
+      };
    }
 }

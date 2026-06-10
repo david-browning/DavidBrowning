@@ -1,258 +1,62 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using DavidBrowning.Admin.ViewModels.Work;
-
+using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Infrastructure.Data.Stores;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
-public class WorkController : Controller
+public partial class WorkController : Controller
 {
-   public Task<IActionResult> Index(
-      CancellationToken cancellationToken)
+   public WorkController(
+      IContentPipeline renderPipeline,
+      IContentStore store,
+      IWorkStore workStore)
    {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> CredentialList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult CredentialCreate()
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> CredentialCreate(
-      CredentialEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
+      _renderPipeline = renderPipeline;
+      _workStore = workStore;
+      _contentStore = store;
    }
 
    [HttpGet]
-   public Task<IActionResult> CredentialEdit(
-      int id,
+   public async Task<IActionResult> Index(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return View(await GetIndexViewModelAsync(cancellationToken));
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> CredentialEdit(
-      int id,
-      CredentialEditViewModel model,
+   private async Task<IndexViewModel> GetIndexViewModelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var credentials = await _workStore.GetCredentialsAsync(cancellationToken);
+      var experiences = await _workStore.GetExperienceAsync(cancellationToken);
+
+      return new IndexViewModel()
+      {
+         Resume = await GetResumeIndexViewModelAsync(cancellationToken),
+         CredentialPreview = credentials.Select(
+            c => new ViewModels.Work.Credentials.PreviewViewModel()
+         {
+               Id = c.Id,
+               IssuingOrganization = c.IssuingOrganization,
+               Name = c.Name,
+         }).ToList(),
+         ExperiencePreview = experiences.Select(
+            e => new ViewModels.Work.Experience.PreviewViewModel()
+         {
+               CompanyName = e.CompanyName,
+               Id = e.Id,
+               Roles = e.Roles.ToList(),
+         }).ToList(),
+      };
    }
 
-   [HttpGet]
-   public Task<IActionResult> CredentialDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ActionName(nameof(CredentialDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> CredentialDeleteConfirmed(
-      CredentialDeleteViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> ExperienceList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult ExperienceCreate()
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceCreate(
-      ExperienceEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> ExperienceEdit(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceEdit(
-      int id,
-      ExperienceEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> ExperienceDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ActionName(nameof(ExperienceDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceDeleteConfirmed(
-      ExperienceDeleteViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> ExperienceRoleList(
-      int experienceId,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult ExperienceRoleCreate(
-      int experienceId)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleCreate(
-      ExperienceRoleEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> ExperienceRoleEdit(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleEdit(
-      int id,
-      ExperienceRoleEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> ExperienceRoleDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ActionName(nameof(ExperienceRoleDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleDeleteConfirmed(
-      ExperienceRoleDeleteViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> ExperienceRoleBulletList(
-      int experienceRoleId,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult ExperienceRoleBulletCreate(
-      int experienceRoleId)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleBulletCreate(
-      ExperienceRoleBulletEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> ExperienceRoleBulletEdit(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleBulletEdit(
-      int id,
-      ExperienceRoleBulletEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> ExperienceRoleBulletDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ActionName(nameof(ExperienceRoleBulletDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleBulletDeleteConfirmed(
-      ExperienceRoleBulletDeleteViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> StyleList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
+   private readonly IContentPipeline _renderPipeline;
+   private readonly IWorkStore _workStore;
+   private readonly IContentStore _contentStore;
 }
