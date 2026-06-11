@@ -164,13 +164,6 @@ public partial class WorkController
       };
    }
 
-   //private Task<IReadOnlyList<ExperienceRole>> GetCompanyRoles(
-   //   int experienceId,
-   //   CancellationToken cancellationToken)
-   //{
-
-   //}
-
    private async Task<ReorderListViewModel> GetRolesListModelAsync(
       IReadOnlyList<ExperienceRole> roles,
       CancellationToken cancellationToken)
@@ -192,20 +185,6 @@ public partial class WorkController
          }).ToList(),
       };
    }
-
-   //private async Task<EditViewModel> GetExperienceEditViewModel(
-   //   IReadOnlyList<ExperienceRole> roles,
-   //   CancellationToken cancellationToken)
-   //{
-   //   return new EditViewModel()
-   //   {
-   //      Roles = new RoleEditListViewModel()
-   //      {
-   //         Create = new RoleEditViewModel(),
-   //         Roles = await GetRolesListModelAsync(roles, cancellationToken),
-   //      }
-   //   };
-   //}
 
    private async Task<ListViewModel> GetExperienceListViewModelAsync(
       IReadOnlyList<Experience> workExperience,

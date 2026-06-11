@@ -6,7 +6,7 @@ namespace DavidBrowning.Admin.ViewModels.Work.Experience;
 
 public class RoleEditListViewModel
 {
-   public RoleEditViewModel? Create { get; set; }
+   public required RoleEditViewModel Create { get; set; }
 
    public required ReorderListViewModel Roles { get; set; }
 }

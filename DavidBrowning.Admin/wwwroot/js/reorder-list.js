@@ -21,11 +21,13 @@
       const itemsContainer = reorderList.querySelector("[data-reorder-items]");
       const saveButton = reorderList.querySelector("[data-reorder-save]");
 
-      if (!(form instanceof HTMLFormElement) ||
-         !(itemsContainer instanceof HTMLElement) ||
+      if (!(form instanceof HTMLFormElement)) {
+         return;
+      }
+
+      if (!(itemsContainer instanceof HTMLElement) ||
          !(saveButton instanceof HTMLButtonElement)) {
          console.error("Malformed reorder list.", reorderList);
-
          return;
       }
 
