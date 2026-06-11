@@ -13,14 +13,15 @@ namespace DavidBrowning.Admin.Controllers;
 public partial class WorkController
 {
 
-   [HttpGet]
-   public async Task<IActionResult> ResumeIndex(
-      CancellationToken cancellationToken)
-   {
-      return View(await GetResumeIndexViewModelAsync(cancellationToken));
-   }
+   //[HttpGet]
+   //public async Task<IActionResult> ResumeIndex(
+   //   CancellationToken cancellationToken)
+   //{
+   //   return View(await GetResumeIndexViewModelAsync(cancellationToken));
+   //}
 
    [HttpPost]
+   [ValidateAntiForgeryToken]
    public async Task<IActionResult> ResumeUpload(
       IndexViewModel model,
       CancellationToken cancellationToken)

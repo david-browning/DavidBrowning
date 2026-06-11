@@ -19,6 +19,8 @@
 	string? editOffcanvasOverlaySelector = useEditOffcanvas
 	   ? AdminOffcanvasIds.OverlaySelector(Model.EditOffcanvasId!)
 	   : null;
+
+	string reorderFormId = $"reorder-form-{Guid.NewGuid():N}";
 }
 
 <section class="card" data-reorder-list>
@@ -39,10 +41,11 @@
 
 			@if (Model.ReoderParameters is not null)
 			{
-				<button class="btn btn-primary" type="submit" data-reorder-save disabled>
+				<button class="btn btn-primary" type="submit" form="@reorderFormId"
+						data-reorder-save disabled>
 					<i class="fa-solid fa-floppy-disk me-2" aria-hidden="true"></i>
 					Save order
-			   </button>
+				</button>
 			}
 		</div>
 
@@ -56,12 +59,12 @@
 		else
 		{
 			var controller = Model.ReoderParameters is not null ?
-			   Model.ReoderParameters.ReorderController :
-			   string.Empty;
+			Model.ReoderParameters.ReorderController :
+			string.Empty;
 			var action = Model.ReoderParameters is not null ?
-			   Model.ReoderParameters.ReorderAction :
-			   string.Empty;
-			<form asp-controller="@controller"
+			Model.ReoderParameters.ReorderAction :
+			string.Empty;
+			<form id="@reorderFormId" asp-controller="@controller"
 				  asp-action="@action" method="post" data-reorder-form>
 				<ol class="list-group"
 					data-reorder-items>
@@ -78,7 +81,7 @@
 								   value="@item.Id" data-reorder-id />
 
 							<input type="hidden" name="Items[@index].SortOrder"
-								   value="@item.SortOrder" data-reorder-sort-order />
+								   value="@item.SortOrder" data-sort-order-input />
 
 							<div class="d-flex align-items-center gap-3">
 								<div class="d-flex align-items-center justify-content-center flex-shrink-0"
@@ -118,16 +121,17 @@
 									@if (Model.ReoderParameters is not null)
 									{
 										<div class="btn-group" role="group"
-										aria-label="Change display order for @item.DisplayName">
-											<button class="btn btn-outline-secondary"
-											type="button" data-reorder-up aria-label="Move @item.DisplayName up">
+											 aria-label="Change display order for @item.DisplayName">
+											<button class="btn btn-outline-secondary" type="button"
+													data-reorder-direction="up"
+													aria-label="Move @item.DisplayName up">
 												<i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
 											</button>
 
-											<button class="btn btn-outline-secondary"
-											type="button" data-reorder-down aria-label="Move @item.DisplayName down">
-												<i class="fa-solid fa-arrow-down"
-												aria-hidden="true"></i>
+											<button class="btn btn-outline-secondary" type="button"
+													data-reorder-direction="down"
+													aria-label="Move @item.DisplayName down">
+												<i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
 											</button>
 										</div>
 									}

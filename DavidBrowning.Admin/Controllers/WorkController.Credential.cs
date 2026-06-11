@@ -35,7 +35,8 @@ public partial class WorkController
       var cred = model.ToCredential();
       await _workStore.InsertCredentialAsync(cred, cancellationToken);
       return PartialView(
-         "CredentialEdit", await GetEditViewModelAsync(cancellationToken));
+         "CredentialCreateRefresh", 
+         await GetCredentialIndexViewModelAsync(null, cancellationToken));
    }
 
    [HttpGet]
@@ -161,7 +162,7 @@ public partial class WorkController
             ReoderParameters = new ReoderParameters()
             {
                ReorderController = "Work",
-               ReorderAction = "CredentialReorder",
+               ReorderAction = nameof(CredentialReorder),
             },
             EditOffcanvasId =
                ViewModels.Work.WorkAdminIds.CredentialEditOffcanvas,
@@ -177,9 +178,9 @@ public partial class WorkController
                   IsActive = c.IsActive,
                   SortOrder = c.SortOrder,
                   EditController = "Work",
-                  EditAction = "CredentialEdit",
+                  EditAction = nameof(CredentialEdit),
                   DeleteController = "Work",
-                  DeleteAction = "Delete",
+                  DeleteAction = nameof(CredentialDelete),
                })
                .ToList()
          }

@@ -1,83 +1,166 @@
-﻿(() => {
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+
+(() => {
    "use strict";
 
-   document.querySelectorAll("[data-credential-edit-form]")
-      .forEach(initializeCredentialDateEditor);
+   const formSelector =
+      "[data-credential-edit-form]";
 
-   function initializeCredentialDateEditor(form) {
-      const monthInput = form.querySelector("[data-awarded-month]");
+   const monthSelector =
+      "[data-awarded-month]";
 
-      const yearInput = form.querySelector("[data-awarded-year]");
+   const yearSelector =
+      "[data-awarded-year]";
 
-      const displayInput = form.querySelector("[data-awarded-date-display]");
+   const displaySelector =
+      "[data-awarded-date-display]";
 
-      if (!monthInput || !yearInput || !displayInput) {
-         return;
-      }
+   document.addEventListener(
+      "DOMContentLoaded",
+      () => initializeCredentialEditors(document));
 
-      let isDisplayTextManuallyEdited =
-         !isInitiallyAutoManaged(monthInput, yearInput, displayInput);
+   document.body.addEventListener(
+      "htmx:afterSwap",
+      event => initializeCredentialEditors(
+         event.detail.target));
 
-      monthInput.addEventListener("change",
-         updateDisplayText);
+   document.addEventListener(
+      "change",
+      event => {
+         if (event.target instanceof Element &&
+            event.target.matches(monthSelector)) {
+            updateDisplayText(event.target);
+         }
+      });
 
-      yearInput.addEventListener("input",
-         updateDisplayText);
-
-      displayInput.addEventListener("input",
-         () => {
-            isDisplayTextManuallyEdited = true;
-         });
-
-      form.addEventListener("reset",
-         () => {
-            /*
-             * The browser restores the initial input values after the
-             * reset event fires. Wait until that has happened before
-             * recalculating the state.
-             */
-            window.setTimeout(
-               () => {
-                  isDisplayTextManuallyEdited =
-                     !isInitiallyAutoManaged(monthInput, yearInput, displayInput);
-               },
-               0);
-         });
-
-      function updateDisplayText() {
-         if (isDisplayTextManuallyEdited) {
+   document.addEventListener(
+      "input",
+      event => {
+         if (!(event.target instanceof Element)) {
             return;
          }
 
-         displayInput.value = buildDisplayText(monthInput, yearInput);
+         if (event.target.matches(yearSelector)) {
+            updateDisplayText(event.target);
+            return;
+         }
+
+         if (event.target.matches(displaySelector)) {
+            event.target.dataset.manuallyEdited =
+               "true";
+         }
+      });
+
+   document.addEventListener(
+      "reset",
+      event => {
+         if (!(event.target instanceof HTMLFormElement) ||
+            !event.target.matches(formSelector)) {
+            return;
+         }
+
+         window.setTimeout(
+            () => initializeCredentialEditor(
+               event.target),
+            0);
+      });
+
+   function initializeCredentialEditors(root) {
+      if (root instanceof Element &&
+         root.matches(formSelector)) {
+         initializeCredentialEditor(root);
       }
+
+      root.querySelectorAll(formSelector)
+         .forEach(initializeCredentialEditor);
    }
 
-   function isInitiallyAutoManaged(monthInput, yearInput, displayInput) {
-      const currentDisplayText = displayInput.value.trim();
-
-      if (currentDisplayText.length === 0) {
-         return true;
+   function initializeCredentialEditor(form) {
+      if (!(form instanceof HTMLFormElement)) {
+         return;
       }
 
-      const generatedDisplayText = buildDisplayText(monthInput, yearInput);
+      const monthInput =
+         form.querySelector(monthSelector);
 
-      /*
-       * Existing edit forms may already contain a generated display
-       * value such as "June 2026". Continue auto-managing that value.
-       *
-       * Preserve anything custom, such as:
-       *    "Expected June 2026"
-       *    "Spring 2026"
-       *    "In progress"
-       */
-      return currentDisplayText === generatedDisplayText;
+      const yearInput =
+         form.querySelector(yearSelector);
+
+      const displayInput =
+         form.querySelector(displaySelector);
+
+      if (!(monthInput instanceof HTMLSelectElement) ||
+         !(yearInput instanceof HTMLInputElement) ||
+         !(displayInput instanceof HTMLInputElement)) {
+         return;
+      }
+
+      const currentText =
+         displayInput.value.trim();
+
+      const generatedText =
+         buildDisplayText(
+            monthInput,
+            yearInput);
+
+      displayInput.dataset.manuallyEdited =
+         currentText.length > 0 &&
+            currentText !== generatedText
+            ? "true"
+            : "false";
    }
 
-   function buildDisplayText(monthInput, yearInput) {
-      const selectedMonth = monthInput.options[monthInput.selectedIndex];
-      const month = selectedMonth?.value ? selectedMonth.text : "";
-      const year = yearInput.value.trim();
-      return [month, year].filter(value => value.length > 0).join(" ");
+   function updateDisplayText(changedInput) {
+      const form =
+         changedInput.closest(formSelector);
+
+      if (!(form instanceof HTMLFormElement)) {
+         return;
+      }
+
+      const monthInput =
+         form.querySelector(monthSelector);
+
+      const yearInput =
+         form.querySelector(yearSelector);
+
+      const displayInput =
+         form.querySelector(displaySelector);
+
+      if (!(monthInput instanceof HTMLSelectElement) ||
+         !(yearInput instanceof HTMLInputElement) ||
+         !(displayInput instanceof HTMLInputElement)) {
+         return;
+      }
+
+      if (displayInput.dataset.manuallyEdited === "true") {
+         return;
+      }
+
+      displayInput.value =
+         buildDisplayText(
+            monthInput,
+            yearInput);
+   }
+
+   function buildDisplayText(
+      monthInput,
+      yearInput) {
+      const selectedMonth =
+         monthInput.options[
+         monthInput.selectedIndex];
+
+      const month =
+         selectedMonth?.value
+            ? selectedMonth.text
+            : "";
+
+      const year =
+         yearInput.value.trim();
+
+      return [month, year]
+         .filter(value => value.length > 0)
+         .join(" ");
    }
 })();
