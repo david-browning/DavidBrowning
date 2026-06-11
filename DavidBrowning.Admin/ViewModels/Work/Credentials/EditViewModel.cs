@@ -69,13 +69,12 @@ public sealed class EditViewModel
 
    public Credential ToCredential()
    {
-      ArgumentNullException.ThrowIfNull(Id);
       ArgumentNullException.ThrowIfNull(IssuingOrganization);
       ArgumentNullException.ThrowIfNull(Name);
 
       return new()
       {
-         Id = Id.Value,
+         Id = Id ?? 0,
          IssuingOrganization = IssuingOrganization,
          Name = Name,
          Type = Type,
