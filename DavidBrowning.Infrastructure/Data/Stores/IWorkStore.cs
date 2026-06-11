@@ -42,6 +42,10 @@ public interface IWorkStore
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<ExperienceRole>> GetExperienceRolesAsync(
+      int experienceId,
+      CancellationToken cancellationToken= default);
+
    /// <summary>
    /// Gets active degrees, certifications, and other credentials.
    /// </summary>

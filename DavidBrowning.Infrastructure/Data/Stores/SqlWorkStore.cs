@@ -128,6 +128,16 @@ public sealed class SqlWorkStore : IWorkStore
       await _dbContext.SaveChangesAsync(cancellationToken);
    }
 
+   public async Task<IReadOnlyList<ExperienceRole>> GetExperienceRolesAsync(
+      int experienceId,
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.ExperienceRoles
+         .AsNoTracking()
+         .Where(role => role.ExperienceId == experienceId)
+         .ToListAsync();
+   }
+
    public async Task<IReadOnlyList<Credential>> GetCredentialsAsync(
       CancellationToken cancellationToken = default)
    {

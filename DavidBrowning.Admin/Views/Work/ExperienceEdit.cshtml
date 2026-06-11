@@ -9,16 +9,16 @@
 @{
 	bool isEditMode = Model.EditMode == EditModes.Edit;
 	string formAction = isEditMode ? nameof(WorkController.ExperienceEdit) :
-			nameof(WorkController.ExperienceCreate);
+		  nameof(WorkController.ExperienceCreate);
 	string htmxTarget = isEditMode ?
-				AdminOffcanvasIds.BodySelector(WorkAdminIds.ExperienceEditOffcanvas) :
-				$"#{WorkAdminIds.ExperienceCreateRegion}";
+			 AdminOffcanvasIds.BodySelector(WorkAdminIds.ExperienceEditOffcanvas) :
+			 $"#{WorkAdminIds.ExperienceCreateRegion}";
 	string overlaySelector = isEditMode ?
-				AdminOffcanvasIds.OverlaySelector(WorkAdminIds.ExperienceEditOffcanvas) :
-				$"#{WorkAdminIds.ExperienceCreateOverlay}";
+			 AdminOffcanvasIds.OverlaySelector(WorkAdminIds.ExperienceEditOffcanvas) :
+			 $"#{WorkAdminIds.ExperienceCreateOverlay}";
 
 	string editorId = isEditMode ?
-			$"experience-edit-{Model.Id}" : $"experience-create";
+		  $"experience-edit-{Model.Id}" : $"experience-create";
 }
 
 <section class="card">
@@ -63,10 +63,26 @@
 						</div>
 					</div>
 
+					<div class="row mb-3">
+						<div class="col-12">
+							<label asp-for="LocationDisplayText" class="form-label"></label>
+							<input asp-for="LocationDisplayText" class="form-control" autocomplete="off" />
+							<span asp-validation-for="LocationDisplayText" class="text-danger"></span>
+						</div>
+					</div>
 
+					<div class="row mb-3">
+						<div class="col-12">
+							<partial name="RoleEditList" model="Model.Roles" />
+						</div>
+					</div>
 
-
-
+					<div class="form-check mb-3">
+						<input asp-for="IsActive" class="form-check-input" type="checkbox" />
+						<label asp-for="IsActive" class="form-check-label">
+							Show on work page
+						</label>
+					</div>
 
 					<div class="row mb-3">
 						<div class="col-12">

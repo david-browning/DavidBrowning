@@ -128,7 +128,7 @@ public partial class WorkController
       EditViewModel? existingCreateModel,
       CancellationToken cancellationToken)
    {
-      existingCreateModel ??= await GetCredentialEditViewModelAsync(
+      existingCreateModel ??= GetCredentialEditViewModel(
          cancellationToken);
       return new IndexViewModel()
       {
@@ -142,12 +142,12 @@ public partial class WorkController
       };
    }
 
-   private async Task<EditViewModel> GetCredentialEditViewModelAsync(
-      CancellationToken  cancellationToken)
+   private EditViewModel GetCredentialEditViewModel(
+      CancellationToken cancellationToken)
    {
       return new EditViewModel()
       {
-         
+
       };
    }
 

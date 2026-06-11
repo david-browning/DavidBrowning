@@ -3,8 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DavidBrowning.Admin.Controllers;
 using DavidBrowning.Models;
+using DavidBrowning.Models.Work;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.Work.Experience;
 
@@ -25,23 +29,53 @@ public sealed class EditViewModel
 
    public bool IsActive { get; set; } = true;
 
-   public IList<RoleEditViewModel>? Roles { get; set; }
+   [ValidateNever]
+   public required RoleEditListViewModel Roles { get; set; }
 
+   [SetsRequiredMembers]
    public EditViewModel()
    {
+      Roles = new RoleEditListViewModel()
+      {
+         Roles = new ReorderListViewModel()
+         { 
+            Items = new List<ReorderListItemViewModel>(),
+            Title = "Roles",
+            Description = "Add company roles",
+            ReoderParameters = new ReoderParameters()
+            {
+               ReorderAction = nameof(WorkController.ExperienceRoleReorder),
+               ReorderController = "Work",
+            },
+         },
+         Create = new RoleEditViewModel()
+         {
+
+         }
+      };
    }
 
-   public EditViewModel(DavidBrowning.Models.Work.Experience experience)
+   [SetsRequiredMembers]
+   public EditViewModel(
+      Models.Work.Experience experience,
+      ReorderListViewModel roleModel)
    {
       EditMode = EditModes.Edit;
       Id = experience.Id;
       CompanyName = experience.CompanyName;
       LocationDisplayText = experience.LocationDisplayText;
       IsActive = experience.IsActive;
-      Roles = experience.Roles.Select(r => new RoleEditViewModel(r)).ToList();
+      Roles = new RoleEditListViewModel()
+      {
+         Roles = roleModel,
+         Create = new RoleEditViewModel()
+         {
+            
+         },
+      };
    }
 
-   public DavidBrowning.Models.Work.Experience ToExperience()
+   public Models.Work.Experience ToExperience()
    {
       ArgumentNullException.ThrowIfNullOrEmpty(CompanyName);
 
@@ -51,6 +85,7 @@ public sealed class EditViewModel
          CompanyName = CompanyName,
          LocationDisplayText = LocationDisplayText,
          IsActive = IsActive,
+         Roles = new List<ExperienceRole>(),
       };
    }
 }

@@ -1,12 +1,14 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Admin.Extensions;
 using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Work.Experience;
+using DavidBrowning.Models.Work;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
@@ -51,7 +53,11 @@ public partial class WorkController
          return NotFound();
       }
 
-      var model = new EditViewModel(exp);
+      var roles = await _workStore.GetExperienceRolesAsync(
+         id, cancellationToken);
+      var model = new EditViewModel(
+         exp, 
+         await GetRolesListModelAsync(roles, cancellationToken));
       return PartialView(nameof(ExperienceEdit), model);
    }
 
@@ -69,15 +75,18 @@ public partial class WorkController
       var exp = model.ToExperience();
       bool updated = await _workStore.UpdateExperienceAsync(
          exp, cancellationToken);
-      if(!updated)
+      if (!updated)
       {
          return NotFound();
       }
 
       Response.TriggerAdminOffcanvasClose(
          ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas);
-      return PartialView("ExperienceListRefresh",
-         await GetExperienceListViewModelAsync(cancellationToken));
+      return PartialView(
+         "ExperienceListRefresh",
+         await GetExperienceListViewModelAsync(
+            await _workStore.GetExperienceAsync(cancellationToken), 
+            cancellationToken));
    }
 
    [HttpPost]
@@ -125,16 +134,28 @@ public partial class WorkController
       return RedirectToAction(nameof(ExperienceIndex));
    }
 
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public Task<IActionResult> ExperienceRoleReorder(
+      ReorderListRequestViewModel model,
+      CancellationToken cancellationToken)
+   { 
+      throw new NotImplementedException();
+   }
+
    private async Task<IndexViewModel> GetExperienceIndexViewModelAsync(
       EditViewModel? existingCreateModel,
       CancellationToken cancellationToken)
    {
-      existingCreateModel ??= await GetExperienceEditViewModelAsync(
+      var workExperience = await _workStore.GetExperienceAsync(
          cancellationToken);
+      existingCreateModel ??= new EditViewModel();
       return new IndexViewModel()
       {
          Create = existingCreateModel,
-         List = await GetExperienceListViewModelAsync(cancellationToken),
+         List = await GetExperienceListViewModelAsync(
+            workExperience, cancellationToken),
          EditOffcanvas = new AdminOffcanvasViewModel()
          {
             Id = ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas,
@@ -143,19 +164,66 @@ public partial class WorkController
       };
    }
 
-   private async Task<EditViewModel> GetExperienceEditViewModelAsync(
+   //private Task<IReadOnlyList<ExperienceRole>> GetCompanyRoles(
+   //   int experienceId,
+   //   CancellationToken cancellationToken)
+   //{
+
+   //}
+
+   private async Task<ReorderListViewModel> GetRolesListModelAsync(
+      IReadOnlyList<ExperienceRole> roles,
       CancellationToken cancellationToken)
    {
-      return new EditViewModel()
+      return new ReorderListViewModel()
       {
-
+         Title = "Roles",
+         Items = roles.Select(role => new ReorderListItemViewModel()
+         {
+            Id = role.Id,
+            DisplayName = role.Title,
+            SecondaryText = role.DateDisplayText,
+            SortOrder = role.SortOrder,
+            IsActive = role.IsActive,
+            DeleteAction = "Work",
+            DeleteController = "",
+            EditAction = "Work",
+            EditController = "",
+         }).ToList(),
       };
    }
 
+   //private async Task<EditViewModel> GetExperienceEditViewModel(
+   //   IReadOnlyList<ExperienceRole> roles,
+   //   CancellationToken cancellationToken)
+   //{
+   //   return new EditViewModel()
+   //   {
+   //      Roles = new RoleEditListViewModel()
+   //      {
+   //         Create = new RoleEditViewModel(),
+   //         Roles = await GetRolesListModelAsync(roles, cancellationToken),
+   //      }
+   //   };
+   //}
+
    private async Task<ListViewModel> GetExperienceListViewModelAsync(
+      IReadOnlyList<Experience> workExperience,
       CancellationToken cancellationToken)
    {
-      var experience = await _workStore.GetExperienceAsync(cancellationToken);
+      var items = workExperience.Select(e => new ReorderListItemViewModel()
+      {
+         Id = e.Id,
+         DisplayName = e.CompanyName,
+         SecondaryText = $"{e.Roles.Count} roles",
+         IsActive = e.IsActive,
+         SortOrder = e.SortOrder,
+         EditController = "Work",
+         EditAction = nameof(ExperienceEdit),
+         DeleteController = "Work",
+         DeleteAction = nameof(ExperienceDelete),
+      }).ToList();
+
       return new ListViewModel()
       {
          ReorderList = new ReorderListViewModel()
@@ -167,19 +235,7 @@ public partial class WorkController
                ReorderAction = nameof(ExperienceReorder),
             },
             EditOffcanvasId = ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas,
-            Items = experience.Select(e => new ReorderListItemViewModel()
-            {
-               Id = e.Id,
-               DisplayName = e.CompanyName,
-               SecondaryText = $"{e.Roles.Count} roles",
-               IsActive = e.IsActive,
-               SortOrder = e.SortOrder,
-               EditController = "Work",
-               EditAction = nameof(ExperienceEdit),
-               DeleteController = "Work",
-               DeleteAction = nameof(ExperienceDelete),
-            })
-            .ToList()
+            Items = items,
          }
       };
    }

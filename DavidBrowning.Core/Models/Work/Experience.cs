@@ -56,6 +56,6 @@ public sealed class Experience :
    /// </summary>
    public DateTime UpdatedAtUtc { get; set; }
 
-   public ICollection<ExperienceRole> Roles { get; } =
+   public ICollection<ExperienceRole> Roles { get; set;  } =
       new List<ExperienceRole>();
 }
