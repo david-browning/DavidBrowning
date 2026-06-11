@@ -15,9 +15,11 @@ public sealed class EditViewModel
    public int? Id { get; set; }
 
    [Required]
+   [Display(Name = "Company Name")]
    [StringLength(DataConstants.MaxNameLength)]
    public string? CompanyName { get; set; }
 
+   [Display(Name = "Company Location")]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? LocationDisplayText { get; set; }
 
@@ -41,12 +43,11 @@ public sealed class EditViewModel
 
    public DavidBrowning.Models.Work.Experience ToExperience()
    {
-      ArgumentNullException.ThrowIfNull(Id);
       ArgumentNullException.ThrowIfNullOrEmpty(CompanyName);
 
       return new()
       {
-         Id = Id.Value,
+         Id = Id ?? 0,
          CompanyName = CompanyName,
          LocationDisplayText = LocationDisplayText,
          IsActive = IsActive,

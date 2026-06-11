@@ -54,6 +54,7 @@ public sealed class AboutController : Controller
 
       var interest = model.ToInterest();
       await _uncategorizedStore.InsertInterestAsync(interest, cancellationToken);
+      ModelState.Clear();
 
       if (Request.IsHtmxRequest())
       {

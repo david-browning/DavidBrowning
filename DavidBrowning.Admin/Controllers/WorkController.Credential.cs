@@ -34,6 +34,7 @@ public partial class WorkController
 
       var cred = model.ToCredential();
       await _workStore.InsertCredentialAsync(cred, cancellationToken);
+      ModelState.Clear();
       return PartialView(
          "CredentialCreateRefresh", 
          await GetCredentialIndexViewModelAsync(null, cancellationToken));
@@ -127,8 +128,8 @@ public partial class WorkController
       EditViewModel? existingCreateModel,
       CancellationToken cancellationToken)
    {
-      existingCreateModel ??= await GetEditViewModelAsync(cancellationToken);
-
+      existingCreateModel ??= await GetCredentialEditViewModelAsync(
+         cancellationToken);
       return new IndexViewModel()
       {
          Create = existingCreateModel,
@@ -141,7 +142,7 @@ public partial class WorkController
       };
    }
 
-   private async Task<EditViewModel> GetEditViewModelAsync(
+   private async Task<EditViewModel> GetCredentialEditViewModelAsync(
       CancellationToken  cancellationToken)
    {
       return new EditViewModel()
@@ -167,10 +168,7 @@ public partial class WorkController
             EditOffcanvasId =
                ViewModels.Work.WorkAdminIds.CredentialEditOffcanvas,
 
-            Items = credentials
-               .OrderBy(c => c.SortOrder)
-               .ThenBy(c => c.IssuingOrganization)
-               .Select(c => new ReorderListItemViewModel()
+            Items = credentials.Select(c => new ReorderListItemViewModel()
                {
                   Id = c.Id,
                   DisplayName = c.Name,

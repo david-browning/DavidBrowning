@@ -53,13 +53,21 @@ public sealed class SqlWorkStore : IWorkStore
             experience => experience.Id == id, cancellationToken);
    }
 
-   public async Task InsertExperience(
+   public async Task InsertExperienceAsync(
       Experience experience,
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(experience);
       _dbContext.Experiences.Add(experience);
       await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public Task<bool> UpdateExperienceAsync(
+      Experience experience,
+      CancellationToken cancellation = default)
+   {
+      ArgumentNullException.ThrowIfNull(experience);
+      throw new NotImplementedException();
    }
 
    public async Task<bool> DeleteExperienceAsync(

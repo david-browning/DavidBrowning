@@ -18,9 +18,13 @@ public interface IWorkStore
       int id,
       CancellationToken cancellationToken = default);
 
-   Task InsertExperience(
+   Task InsertExperienceAsync(
       Experience experience,
       CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateExperienceAsync(
+      Experience experience,
+      CancellationToken cancellation = default);
 
    Task<bool> DeleteExperienceAsync(
       int id, 

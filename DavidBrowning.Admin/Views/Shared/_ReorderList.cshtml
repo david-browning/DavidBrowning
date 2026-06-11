@@ -71,11 +71,6 @@
 					@for (var index = 0; index < Model.Items.Count; index++)
 					{
 						var item = Model.Items[index];
-
-						var iconCssClass = string.IsNullOrWhiteSpace(item.IconCssClass)
-						? "fa-solid fa-circle-question"
-						: item.IconCssClass;
-
 						<li class="list-group-item" data-reorder-item>
 							<input type="hidden" name="Items[@index].Id"
 								   value="@item.Id" data-reorder-id />
@@ -84,10 +79,13 @@
 								   value="@item.SortOrder" data-sort-order-input />
 
 							<div class="d-flex align-items-center gap-3">
-								<div class="d-flex align-items-center justify-content-center flex-shrink-0"
-									 style="width: 2rem;" aria-hidden="true">
-									<i class="@iconCssClass"></i>
-								</div>
+								@if (!string.IsNullOrEmpty(item.IconCssClass))
+								{
+									<div class="d-flex align-items-center justify-content-center flex-shrink-0"
+										 style="width: 2rem;" aria-hidden="true">
+										<i class="@item.IconCssClass"></i>
+									</div>
+								}
 
 								<div class="flex-grow-1 overflow-hidden">
 									<div class="d-flex flex-wrap align-items-center gap-2">

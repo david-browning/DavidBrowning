@@ -62,6 +62,7 @@ public class AssetController : Controller
       await _contentStore.WriteAsync(assetKey, content, cancellationToken);
       await _uncategorizedStore.InsertAssetAsync(
          model.ToAsset(), cancellationToken);
+      ModelState.Clear();
 
       if (Request.IsHtmxRequest())
       {
