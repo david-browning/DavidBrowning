@@ -14,6 +14,7 @@ public sealed class EditViewModel
    public int? Id { get; set; }
 
    [Required]
+   [Display(Name = "Issuer")]
    [StringLength(DataConstants.MaxNameLength)]
    public string? IssuingOrganization { get; set; }
 
@@ -24,22 +25,27 @@ public sealed class EditViewModel
    [StringLength(DataConstants.MaxLabelLength)]
    public string? Type { get; set; }
 
+   [Display(Name = "Awarded month")]
    [Range(1, 12)]
    public int? AwardedMonth { get; set; }
 
+   [Display(Name = "Awarded year")]
    [Range(1, 9999)]
    public int? AwardedYear { get; set; }
 
+   [Display(Name = "Display date")]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? DateDisplayText { get; set; }
 
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? Description { get; set; }
 
+   [Display(Name = "Credential URL")]
    [StringLength(DataConstants.MaxUrlLength)]
    [Url]
    public string? CredentialUrl { get; set; }
 
+   [Display(Name = "Show on work page")]
    public bool IsActive { get; set; } = true;
 
    public EditViewModel()

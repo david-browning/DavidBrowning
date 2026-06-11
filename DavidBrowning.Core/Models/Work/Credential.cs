@@ -12,7 +12,9 @@ namespace DavidBrowning.Models.Work;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(SortOrder))]
-public sealed class Credential : IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
+public sealed class Credential : 
+   ISortableRecord,
+   IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }

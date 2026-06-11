@@ -1,0 +1,32 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.IndexViewModel
+@{
+	ViewData["Title"] = "Experience";
+}
+
+<div class="container py-4">
+	<header class="mb-4">
+		<h1>
+			Work Experience
+		</h1>
+	</header>
+	<p class="text-secondary">
+		Edit work experience.
+	</p>
+	<div class="row g-4">
+		<div class="col-12 col-xl-5">
+			<div id="@DavidBrowning.Admin.ViewModels.Work.WorkAdminIds.ExperienceCreateRegion">
+				<partial name="ExperienceEdit" model="Model.Create" />
+			</div>
+		</div>
+		<div class="col-12 col-xl-7">
+			<div id="@DavidBrowning.Admin.ViewModels.Work.WorkAdminIds.ExperienceListRegion">
+				<partial name="ExperienceList" model="Model.List" />
+			</div>
+		</div>
+	</div>
+</div>
+<partial name="_AdminOffcanvas" model="Model.EditOffcanvas" />

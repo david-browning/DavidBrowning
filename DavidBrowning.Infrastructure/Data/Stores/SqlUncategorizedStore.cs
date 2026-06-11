@@ -104,43 +104,17 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken)
    {
-      ArgumentNullException.ThrowIfNull(idsInDisplayOrder);
-
-      if (idsInDisplayOrder.Count == 0)
+      int changedRecordCount = await _context.ApplySortOrderAsync<Interest>(
+         idsInDisplayOrder, cancellationToken);
+      if (changedRecordCount == 0)
       {
          return;
       }
 
-      if (idsInDisplayOrder.Distinct().Count() != idsInDisplayOrder.Count)
-      {
-         throw new InvalidOperationException(
-            "The submitted interest order contains duplicate IDs.");
-      }
-
-      List<Interest> interests = await _context.Interests
-         .Where(interest => idsInDisplayOrder.Contains(interest.Id))
-         .ToListAsync(cancellationToken);
-
-      if (interests.Count != idsInDisplayOrder.Count)
-      {
-         throw new InvalidOperationException(
-            "The submitted interest order contains an unknown ID.");
-      }
-
-      Dictionary<int, Interest> interestsById =
-         interests.ToDictionary(interest => interest.Id);
-
-      for (int index = 0; index < idsInDisplayOrder.Count; index++)
-      {
-         int interestId = idsInDisplayOrder[index];
-         interestsById[interestId].SortOrder = index;
-      }
-
       await _context.SaveChangesAsync(cancellationToken);
-
       _logger.LogInformation(
          "Updated the sort order for {InterestCount} interests",
-         interests.Count);
+         changedRecordCount);
    }
 
    public async Task<IReadOnlyList<SiteAsset>> GetSiteAssetsAsync(
@@ -157,7 +131,7 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
    {
       return await _context.SiteAssets
          .AsNoTracking()
-         .FirstOrDefaultAsync(s =>  s.Id == id, cancellationToken);
+         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
    }
 
    public async Task<bool> DeleteAssetAsync(
@@ -182,7 +156,7 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
    {
       ArgumentNullException.ThrowIfNull(asset);
       var existing = await _context.SiteAssets
-         .SingleOrDefaultAsync(e =>  e.Id == asset.Id, cancellationToken);
+         .SingleOrDefaultAsync(e => e.Id == asset.Id, cancellationToken);
       if (existing is null)
       {
          return false;
