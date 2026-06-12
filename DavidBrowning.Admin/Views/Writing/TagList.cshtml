@@ -2,4 +2,77 @@
    Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
-@model DavidBrowning.Admin.ViewModels.Writing.WritingTagListViewModel
+@model DavidBrowning.Admin.ViewModels.Writing.WritingTagPanelViewModel
+
+<section class="card">
+   <div class="card-body">
+      <h2 class="h4 card-title">Writing tags</h2>
+      <p class="card-text text-secondary">
+         Create reusable labels for grouping related posts.
+      </p>
+
+      <form asp-controller="Writing" asp-action="TagCreate" method="post">
+         <div class="mb-3">
+            <label asp-for="Create.DisplayName" class="form-label">
+               Display name
+            </label>
+            <input asp-for="Create.DisplayName" class="form-control"
+                   autocomplete="off" />
+            <span asp-validation-for="Create.DisplayName"
+                  class="text-danger"></span>
+         </div>
+
+         <div class="mb-3">
+            <label asp-for="Create.Slug" class="form-label"></label>
+            <input asp-for="Create.Slug" class="form-control"
+                   autocomplete="off" />
+            <span asp-validation-for="Create.Slug"
+                  class="text-danger"></span>
+         </div>
+
+         <button class="btn btn-primary" type="submit">
+            <i class="fa-solid fa-plus me-1" aria-hidden="true"></i>
+            Add tag
+         </button>
+      </form>
+   </div>
+
+   <div class="card-footer bg-transparent">
+      @if (Model.Items.Count == 0)
+      {
+         <p class="text-secondary mb-0">No writing tags have been created.</p>
+      }
+      else
+      {
+         <ul class="list-group list-group-flush">
+            @foreach (var tag in Model.Items.OrderBy(tag => tag.DisplayName))
+            {
+               <li class="list-group-item px-0">
+                  <div class="d-flex justify-content-between align-items-center gap-2">
+                     <div class="overflow-hidden">
+                        <div class="fw-semibold text-truncate">@tag.DisplayName</div>
+                        <div class="small text-secondary text-truncate">@tag.Slug</div>
+                     </div>
+
+                     <div class="d-flex gap-1 flex-shrink-0">
+                        <a class="btn btn-sm btn-outline-primary"
+                           asp-controller="Writing" asp-action="TagEdit"
+                           asp-route-id="@tag.Id" aria-label="Edit @tag.DisplayName">
+                           <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                        </a>
+
+                        <form asp-controller="Writing" asp-action="TagDelete"
+                              asp-route-id="@tag.Id" method="post">
+                           <button class="btn btn-sm btn-outline-danger"
+                                   type="submit" aria-label="Delete @tag.DisplayName">
+                              <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                           </button>
+                        </form>
+                     </div>
+                  </div>
+               </li>
+            }
+         </ul>
+      }
+   </div>
+</section>

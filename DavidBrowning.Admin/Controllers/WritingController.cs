@@ -1,31 +1,30 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using DavidBrowning.Admin.ViewModels.Writing;
-
+using DavidBrowning.Infrastructure.Data.Stores;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
 public class WritingController : Controller
 {
-   public Task<IActionResult> Index(
-      CancellationToken cancellationToken)
+   public WritingController(IWritingStore writingStore)
    {
-      throw new NotImplementedException();
+      _writingStore = writingStore;
    }
 
-   public Task<IActionResult> PostList(
+   public async Task<IActionResult> Index(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return View(await GetIndexModelAsync(null, null, cancellationToken));
    }
 
    [HttpGet]
-   public IActionResult PostCreate()
+   public Task<IActionResult> PostCreate(CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
@@ -50,56 +49,23 @@ public class WritingController : Controller
    [HttpPost]
    [ValidateAntiForgeryToken]
    public Task<IActionResult> PostEdit(
-      int id,
       PostEditViewModel model,
       CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
 
-   [HttpGet]
-   public Task<IActionResult> PostDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
    [HttpPost]
-   [ActionName(nameof(PostDelete))]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostDeleteConfirmed(
-      PostDeleteViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> RevisionList(
-      int postId,
+   public Task<IActionResult> StyleCreate(
+      PostStyleEditViewModel model,
       CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
 
    [HttpGet]
-   public IActionResult RevisionCreate(
-      int postId)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> RevisionCreate(
-      PostRevisionEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> RevisionEdit(
+   public Task<IActionResult> StyleEdit(
       int id,
       CancellationToken cancellationToken)
    {
@@ -108,56 +74,8 @@ public class WritingController : Controller
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> RevisionEdit(
-      int id,
-      PostRevisionEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> RevisionDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ActionName(nameof(RevisionDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> RevisionDeleteConfirmed(
-      PostRevisionDeleteModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> TagList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult TagCreate()
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagCreate(
-      WritingTagEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> TagEdit(
-      int id,
+   public Task<IActionResult> StyleEdit(
+      PostStyleEditViewModel model,
       CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
@@ -165,26 +83,40 @@ public class WritingController : Controller
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagEdit(
-      int id,
-      WritingTagEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagDelete(
+   public Task<IActionResult> StyleDelete(
       int id,
       CancellationToken cancellationToken)
    {
       throw new NotImplementedException();
    }
 
-   public Task<IActionResult> StyleList(
+   private async Task<IndexViewModel> GetIndexModelAsync(
+      PostStyleEditViewModel? existingPostStyleModel,
+      WritingTagEditViewModel? existingTagModel,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var posts = await _writingStore.GetAllPostsAsync(cancellationToken);
+      var postStyles = await _writingStore.GetPostStylesAsync(cancellationToken);
+      var tags = await _writingStore.GetTagsAsync(cancellationToken);
+      return new IndexViewModel()
+      {
+         Styles = new PostStylePanelViewModel()
+         {
+            Create = existingPostStyleModel ?? new PostStyleEditViewModel(),
+            Items = postStyles.Select(
+               style => new PostStyleEditViewModel(style)).ToList(),
+         },
+         Tags = new WritingTagPanelViewModel()
+         {
+            Create = existingTagModel ?? new WritingTagEditViewModel(),
+            Items = tags.Select(tag => new WritingTagEditViewModel(tag)).ToList(),
+         },
+         Posts = new PostListViewModel()
+         {
+            Items = posts.Select(post => new PostListItemViewModel(post)).ToList(),
+         }
+      };
    }
+
+   private readonly IWritingStore _writingStore;
 }

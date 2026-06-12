@@ -14,6 +14,9 @@ public interface IWritingStore
       int pageSize,
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<Post>> GetAllPostsAsync(
+      CancellationToken cancellationToken = default);
+
    Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
       CancellationToken cancellationToken = default);
 
@@ -31,5 +34,8 @@ public interface IWritingStore
 
    Task<IReadOnlyList<Post>> GetPublishedPostsByTagSlugAsync(
       string tagSlug,
+      CancellationToken cancellationToken = default);
+
+   Task<IReadOnlyList<PostStyle>> GetPostStylesAsync(
       CancellationToken cancellationToken = default);
 }

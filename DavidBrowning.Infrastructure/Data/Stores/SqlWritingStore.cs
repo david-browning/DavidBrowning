@@ -57,6 +57,21 @@ public class SqlWritingStore : IWritingStore
       };
    }
 
+   public async Task<IReadOnlyList<Post>> GetAllPostsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      var posts = _dbContext.Posts
+         .AsNoTracking()
+         .Include(post => post.PostStyle)
+         .Include(post => post.CurrentRevision)
+         .Include(post => post.Tags)
+            .ThenInclude(postTag => postTag.WritingTag)
+         .OrderByDescending(post => post.PublishedDateUtc)
+         .ThenByDescending(post => post.CreatedDateUtc)
+         .ThenByDescending(post => post.Id);
+      return await posts.ToListAsync(cancellationToken);
+   }
+
    public async Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
       CancellationToken cancellationToken = default)
    {
@@ -95,6 +110,15 @@ public class SqlWritingStore : IWritingStore
          .Where(post => post.Tags.Any(postTag => postTag.WritingTag!.Slug == tagSlug))
          .ToListAsync(cancellationToken);
       return posts;
+   }
+
+   public async Task<IReadOnlyList<PostStyle>> GetPostStylesAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.PostStyles
+         .AsNoTracking()
+         .OrderBy(style => style.SortOrder)
+         .ToListAsync(cancellationToken);
    }
 
    private IQueryable<Post> CreatePublishedPostSummaryQuery()

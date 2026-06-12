@@ -1,10 +1,13 @@
-﻿// Copyright Â© 2026 David Browning. All rights reserved.
+﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
-public class IndexViewModel
+public sealed class IndexViewModel
 {
-   public required PostEditViewModel Create { get; set; }
+   public required WritingTagPanelViewModel Tags { get; set; }
 
-   public required PostListViewModel List { get; set; }
+   public required PostStylePanelViewModel Styles { get; set; }
+
+   public required PostListViewModel Posts { get; set; }
 }
