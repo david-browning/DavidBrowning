@@ -61,6 +61,15 @@ public sealed class LocalContentStore : IContentStore
       };
    }
 
+   public async Task<bool> AssetExists(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      cancellationToken.ThrowIfCancellationRequested();
+      var fullPath = GetAssetFullPath(assetKey);
+      return File.Exists(fullPath);
+   }
+
    public Task<Stream> OpenReadAsync(
       string assetKey,
       CancellationToken cancellationToken = default)

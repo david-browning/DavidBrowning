@@ -13,7 +13,7 @@ namespace DavidBrowning.Models.Work;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(ExperienceRoleId), nameof(SortOrder))]
-public sealed class ExperienceRoleBullet
+public sealed class ExperienceRoleBullet : ISortableRecord
 {
    [Required, Key]
    public int Id { get; set; }

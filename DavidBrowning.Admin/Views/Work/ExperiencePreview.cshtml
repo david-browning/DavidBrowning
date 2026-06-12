@@ -1,0 +1,33 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@using System.Linq
+@model IReadOnlyList<DavidBrowning.Admin.ViewModels.Work.Experience.PreviewViewModel>
+@{
+	var numRoles = Model.Select(e => e.Roles!.Count).Sum();
+	var numBullets = Model.Select(e => e.Roles!.Select(r => r.Bullets.Count).Sum()).Sum();
+}
+
+<section class="card h-100">
+	<div class="card-body d-flex flex-column">
+		<h2>Experience</h2>
+
+		<p class="card-text text-secondary">
+			Update job experience, roles, and job accomplishments.
+		</p>
+
+		<ul>
+			<li>@Model.Count employers</li>
+			<li>@numRoles roles</li>
+			<li>@numBullets bullet points</li>
+		</ul>
+
+		<div class="mt-auto">
+			<a class="btn btn-primary" asp-controller="Work" asp-action="ExperienceIndex">
+				<i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+				Manage experience
+			</a>
+		</div>
+	</div>
+</section>

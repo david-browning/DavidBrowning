@@ -11,7 +11,6 @@ using DavidBrowning.Admin.ViewModels.Asset;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
-using DavidBrowning.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +40,7 @@ public class AssetController : Controller
       CancellationToken cancellationToken)
    {
       await LoadAndValidateContentTypePickerAsync(model, cancellationToken);
-      await LoadAndValidateUploadedFileAsync(
+      LoadAndValidateUploadedFile(
          model, uploadRequired: true, cancellationToken);
       if (!ModelState.IsValid)
       {
@@ -63,6 +62,7 @@ public class AssetController : Controller
       await _contentStore.WriteAsync(assetKey, content, cancellationToken);
       await _uncategorizedStore.InsertAssetAsync(
          model.ToAsset(), cancellationToken);
+      ModelState.Clear();
 
       if (Request.IsHtmxRequest())
       {
@@ -107,7 +107,7 @@ public class AssetController : Controller
       CancellationToken cancellationToken)
    {
       await LoadAndValidateContentTypePickerAsync(model, cancellationToken);
-      await LoadAndValidateUploadedFileAsync(
+      LoadAndValidateUploadedFile(
          model, uploadRequired: false, cancellationToken);
       if (!ModelState.IsValid)
       {
@@ -242,7 +242,7 @@ public class AssetController : Controller
       }
    }
 
-   private async Task LoadAndValidateUploadedFileAsync(
+   private void LoadAndValidateUploadedFile(
       EditViewModel model,
       bool uploadRequired,
       CancellationToken cancellationToken)
@@ -267,14 +267,14 @@ public class AssetController : Controller
          return;
       }
 
-      if(model.SizeBytes is null)
+      if (model.SizeBytes is null)
       {
          ModelState.AddModelError(nameof(model.SizeBytes), "File size is not included.");
       }
 
       model.OriginalFileName = originalFileName;
       model.SizeBytes = upload.Length;
-      if(!model.ContentTypePicker.Options.Select(o => o.ContentType)
+      if (!model.ContentTypePicker.Options.Select(o => o.ContentType)
          .Contains(upload.ContentType))
       {
          ModelState.AddModelError(

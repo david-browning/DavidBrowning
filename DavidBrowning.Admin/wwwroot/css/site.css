@@ -99,5 +99,9 @@ body {
 }
 
 .admin-edit-sidebar {
-   --bs-offcanvas-width: min(42rem, 100vw);
+   --bs-offcanvas-width: min(32rem, 100vw);
+}
+
+.admin-edit-sidebar.admin-offcanvas-wide {
+   --bs-offcanvas-width: min(56rem, 100vw);
 }

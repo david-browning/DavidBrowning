@@ -12,6 +12,13 @@ public sealed class AzureBlobContentStore : IContentStore
       throw new NotImplementedException();
    }
 
+   public Task<bool> AssetExists(
+      string assetKey,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
    public Task<Stream> OpenReadAsync(
       string assetKey,
       CancellationToken cancellationToken = default)

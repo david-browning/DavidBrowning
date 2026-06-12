@@ -13,7 +13,9 @@ namespace DavidBrowning.Models.Work;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(ExperienceId), nameof(SortOrder))]
-public sealed class ExperienceRole : IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
+public sealed class ExperienceRole : 
+   ISortableRecord,
+   IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }
@@ -61,13 +63,13 @@ public sealed class ExperienceRole : IDateCreatedTrackedEntity, IDateUpdatedTrac
    /// When the role record was created.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime CreatedAtUtc { get; set; }
+   public DateTime CreatedAtUtc { get; set; }
 
    /// <summary>
    /// When the role record was last updated.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime UpdatedAtUtc { get; set; }
+   public DateTime UpdatedAtUtc { get; set; }
 
    public ICollection<ExperienceRoleBullet> Bullets { get; } =
       new List<ExperienceRoleBullet>();

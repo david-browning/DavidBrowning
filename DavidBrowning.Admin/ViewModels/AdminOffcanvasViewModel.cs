@@ -9,6 +9,8 @@ public sealed class AdminOffcanvasViewModel
 
    public required string Title { get; init; }
 
+   public string? CssClass { get; set; }
+
    public string Placeholder { get; init; } = "Select an item to edit.";
 
    public string LoadingText { get; init; } = "Loading...";

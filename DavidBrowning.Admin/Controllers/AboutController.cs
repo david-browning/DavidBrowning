@@ -1,6 +1,5 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,16 +52,9 @@ public sealed class AboutController : Controller
             nameof(Index), await GetIndexModelAsync(model, cancellationToken));
       }
 
-      var interest = new Interest()
-      {
-         Slug = model.Slug!,
-         DisplayName = model.DisplayName!,
-         Summary = model.Summary!,
-         IsActive = model.IsActive,
-         IconCssClass = model.SelectedIconCssClass,
-      };
-
+      var interest = model.ToInterest();
       await _uncategorizedStore.InsertInterestAsync(interest, cancellationToken);
+      ModelState.Clear();
 
       if (Request.IsHtmxRequest())
       {

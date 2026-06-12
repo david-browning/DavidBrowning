@@ -42,7 +42,7 @@ public class WorkController : Controller
    {
       return RedirectToRoute("GetContentAsset", new
       {
-         assetKey = _resumeAssetKey,
+         assetKey = FixedAssetKeys.ResumePDFAssetKey,
       });
    }
 
@@ -108,7 +108,6 @@ public class WorkController : Controller
       };
    }
 
-   private const string _resumeAssetKey = "documents/resume.pdf";
    private readonly IWorkStore _workStore;
    private readonly IProjectStore _projectStore;
    private readonly JsonCache _jsonCache;

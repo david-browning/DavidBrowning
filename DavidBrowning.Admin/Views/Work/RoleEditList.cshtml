@@ -1,0 +1,22 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditListViewModel
+@using DavidBrowning.Admin.ViewModels.Work
+
+<div class="mt-4">
+	<h3 class="h4">Roles</h3>
+	<p class="text-secondary">
+		Add positions held at this company and arrange their display order.
+	</p>
+
+	<div id="@WorkAdminIds.RoleCreateRegion">
+		<partial name="RoleCreate" model="Model.Create" />
+	</div>
+
+	<div id="@WorkAdminIds.RoleListRegion" class="mt-4"
+		 hx-boost="true" hx-target="#@WorkAdminIds.RoleListRegion" hx-swap="innerHTML">
+		<partial name="_ReorderList" model="Model.Roles" />
+	</div>
+</div>

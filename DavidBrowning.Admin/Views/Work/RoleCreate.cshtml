@@ -1,0 +1,75 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditViewModel
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels.Work
+
+<div class="admin-form-region">
+	<form method="post"
+		  asp-controller="Work"
+		  asp-action="RoleCreate"
+		  hx-post="@Url.Action(nameof(WorkController.RoleCreate), "Work")"
+		  hx-target="#@WorkAdminIds.RoleCreateRegion"
+		  hx-swap="innerHTML"
+		  hx-disabled-elt="find fieldset"
+		  hx-indicator="#@WorkAdminIds.RoleCreateOverlay">
+		<fieldset>
+			<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+			</div>
+
+			<input asp-for="ExperienceId" type="hidden" />
+
+			<div class="row g-3">
+				<div class="col-12">
+					<label asp-for="Title" class="form-label">
+					</label>
+					<input asp-for="Title" class="form-control" autocomplete="off" />
+					<span asp-validation-for="Title" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12">
+					<label asp-for="DateDisplayText" class="form-label">
+					</label>
+					<input asp-for="DateDisplayText" class="form-control"
+						   autocomplete="off" placeholder="Example: 2019–2025" />
+					<span asp-validation-for="DateDisplayText" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12">
+					<label asp-for="Description" class="form-label">
+					</label>
+					<textarea asp-for="Description" class="form-control" rows="3">
+					</textarea>
+					<span asp-validation-for="Description" class="text-danger">
+					</span>
+				</div>
+
+				<div class="col-12">
+					<div class="form-check">
+						<input asp-for="IsActive" class="form-check-input"
+							   type="checkbox" />
+						<label asp-for="IsActive" class="form-check-label">
+							Show on work page
+						</label>
+					</div>
+				</div>
+
+				<div class="col-12">
+					<button class="btn btn-primary" type="submit">
+						Add role
+					</button>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+
+	<div id="@WorkAdminIds.RoleCreateOverlay"
+		 class="admin-form-overlay htmx-indicator" role="status"
+		 aria-live="polite" aria-label="Saving role">
+		<partial name="_Waiting" />
+	</div>
+</div>

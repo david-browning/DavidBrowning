@@ -12,7 +12,9 @@ namespace DavidBrowning.Models.Work;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(SortOrder))]
-public sealed class Credential : IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
+public sealed class Credential : 
+   ISortableRecord,
+   IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {
    [Required, Key]
    public int Id { get; set; }
@@ -84,11 +86,11 @@ public sealed class Credential : IDateCreatedTrackedEntity, IDateUpdatedTrackedE
    /// When the credential record was created.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime CreatedAtUtc { get; set; }
+   public DateTime CreatedAtUtc { get; set; }
 
    /// <summary>
    /// When the credential record was last updated.
    /// Stored in UTC.
    /// </summary>
-   public required DateTime UpdatedAtUtc { get; set; }
+   public DateTime UpdatedAtUtc { get; set; }
 }

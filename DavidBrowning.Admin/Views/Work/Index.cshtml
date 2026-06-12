@@ -1,11 +1,37 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
+@using DavidBrowning.Admin.ViewModels.Work;
 @model DavidBrowning.Admin.ViewModels.Work.IndexViewModel
-
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
+	ViewData["Title"] = "Work";
 }
+
+<div class="container py-4">
+	<header class="mb-4">
+		<h1>
+			Work
+		</h1>
+		<p class="text-secondary">
+			Manage the content on the Work page and upload a resume.
+		</p>
+	</header>
+	<div class="row g-4">
+		<div class="col-12 col-lg-4 d-flex">
+			<div id="@WorkAdminIds.ResumeUploadregion" class="w-100">
+				<partial name="ResumePreview" model="Model.Resume" />
+			</div>
+		</div>
+		<div class="col-12 col-lg-4 d-flex">
+			<div class="w-100">
+				<partial name="ExperiencePreview" model="Model.ExperiencePreview" />
+			</div>
+		</div>
+		<div class="col-12 col-lg-4 d-flex">
+			<div class="w-100">
+				<partial name="CredentialPreview" model="Model.CredentialPreview" />
+			</div>
+		</div>
+	</div>
+</div>

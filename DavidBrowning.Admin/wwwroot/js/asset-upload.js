@@ -80,6 +80,7 @@
       }
 
       setValue(root, "[data-original-file-name-preview]", file.name);
+      setValue(root, "[data-file-type]", file.type);
       setValue(root, "[data-file-size-preview]", file.size.toString());
       const contentTypeInput = root.querySelector("[name='ContentType']");
 

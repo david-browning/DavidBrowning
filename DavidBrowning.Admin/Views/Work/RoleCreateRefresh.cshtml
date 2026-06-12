@@ -1,0 +1,11 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditListViewModel
+@using DavidBrowning.Admin.ViewModels.Work
+
+<partial name="RoleCreate" model="Model.Create" />
+<div id="@WorkAdminIds.RoleListRegion" hx-swap-oob="innerHTML">
+	<partial name="_ReorderList" model="Model.Roles" />
+</div>
