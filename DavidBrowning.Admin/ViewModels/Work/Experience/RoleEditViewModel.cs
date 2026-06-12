@@ -51,13 +51,12 @@ public sealed class RoleEditViewModel
 
    public ExperienceRole ToRole()
    {
-      ArgumentNullException.ThrowIfNull(Id);
       ArgumentNullException.ThrowIfNull(ExperienceId);
       ArgumentNullException.ThrowIfNull(Title);
 
       return new()
       {
-         Id = Id.Value,
+         Id = Id ?? 0,
          ExperienceId = ExperienceId.Value,
          Title = Title,
          DateDisplayText = DateDisplayText,

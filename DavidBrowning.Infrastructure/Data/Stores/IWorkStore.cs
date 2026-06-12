@@ -46,6 +46,22 @@ public interface IWorkStore
       int experienceId,
       CancellationToken cancellationToken= default);
 
+   Task<ExperienceRole?> GetRoleAsync(
+      int roleId,
+      CancellationToken cancellationToken = default);
+
+   Task InsertRoleAsync(
+      ExperienceRole role,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateRoleAsync(
+      ExperienceRole role,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> DeleteRoleAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
    /// <summary>
    /// Gets active degrees, certifications, and other credentials.
    /// </summary>

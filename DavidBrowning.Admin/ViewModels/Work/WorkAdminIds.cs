@@ -23,4 +23,11 @@ public class WorkAdminIds
    public const string ExperienceEditOffcanvas = "experience-edit-offcanvas";
 
    public const string ExperienceCreateOverlay = "experience-create-overlay";
+
+
+   public const string RoleCreateRegion = "role-create-region";
+
+   public const string RoleListRegion = "role-list-region";
+
+   public const string RoleCreateOverlay = "role-create-overlay";
 }

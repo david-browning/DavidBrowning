@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DavidBrowning.Admin.Controllers;
@@ -32,32 +33,14 @@ public sealed class EditViewModel
    [ValidateNever]
    public required RoleEditListViewModel Roles { get; set; }
 
-   [SetsRequiredMembers]
    public EditViewModel()
    {
-      Roles = new RoleEditListViewModel()
-      {
-         Roles = new ReorderListViewModel()
-         { 
-            Items = new List<ReorderListItemViewModel>(),
-            Title = "Roles",
-            Description = "Add company roles",
-            ReoderParameters = new ReoderParameters()
-            {
-               ReorderAction = nameof(WorkController.ExperienceRoleReorder),
-               ReorderController = "Work",
-            },
-         },
-         Create = new RoleEditViewModel()
-         {
 
-         }
-      };
    }
 
    [SetsRequiredMembers]
    public EditViewModel(
-      Models.Work.Experience experience,
+      Models.Work.Experience experience, 
       ReorderListViewModel roleModel)
    {
       EditMode = EditModes.Edit;
@@ -67,11 +50,12 @@ public sealed class EditViewModel
       IsActive = experience.IsActive;
       Roles = new RoleEditListViewModel()
       {
-         Roles = roleModel,
          Create = new RoleEditViewModel()
          {
-            
+            ExperienceId = experience.Id,
          },
+
+         Roles = roleModel,
       };
    }
 
@@ -85,7 +69,6 @@ public sealed class EditViewModel
          CompanyName = CompanyName,
          LocationDisplayText = LocationDisplayText,
          IsActive = IsActive,
-         Roles = new List<ExperienceRole>(),
       };
    }
 }
