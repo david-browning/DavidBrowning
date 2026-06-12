@@ -24,27 +24,29 @@ public interface IWorkStore
 
    Task<bool> UpdateExperienceAsync(
       Experience experience,
-      CancellationToken cancellation = default);
+      CancellationToken cancellationToken = default);
 
    Task<bool> DeleteExperienceAsync(
-      int id, 
+      int id,
       CancellationToken cancellationToken = default);
 
    Task ReorderExperienceAsync(
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default);
-   
+
    Task ReorderExperienceRolesAsync(
+      int experienceId,
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default);
 
    Task ReorderRoleBullets(
+      int roleId,
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default);
 
    Task<IReadOnlyList<ExperienceRole>> GetExperienceRolesAsync(
       int experienceId,
-      CancellationToken cancellationToken= default);
+      CancellationToken cancellationToken = default);
 
    Task<ExperienceRole?> GetRoleAsync(
       int roleId,
@@ -75,12 +77,12 @@ public interface IWorkStore
       CancellationToken cancellationToken = default);
 
    Task InsertCredentialAsync(
-      Credential credential, 
+      Credential credential,
       CancellationToken cancellationToken = default);
 
    Task<bool> UpdateCredentialAsync(
       Credential credential,
-      CancellationToken cancellationToken= default);
+      CancellationToken cancellationToken = default);
 
    Task<bool> DeleteCredentialAsync(
       int id,

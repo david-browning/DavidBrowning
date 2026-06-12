@@ -19,8 +19,8 @@ public partial class WorkController
    public async Task<IActionResult> ExperienceIndex(
       CancellationToken cancellationToken)
    {
-      return View(
-         await GetExperienceIndexViewModelAsync(null, cancellationToken));
+      return View(await GetExperienceIndexViewModelAsync(
+         null, cancellationToken));
    }
 
    [HttpPost]
@@ -34,8 +34,9 @@ public partial class WorkController
          return PartialView(nameof(ExperienceEdit), model);
       }
 
-      var exp = model.ToExperience();
-      await _workStore.InsertExperienceAsync(exp, cancellationToken);
+      var experience = model.ToExperience();
+
+      await _workStore.InsertExperienceAsync(experience, cancellationToken);
       ModelState.Clear();
       return PartialView(
          "ExperienceCreateRefresh",
@@ -47,14 +48,12 @@ public partial class WorkController
       int id,
       CancellationToken cancellationToken)
    {
-      var exp = await _workStore.GetExperienceAsync(id, cancellationToken);
-      if (exp is null)
+      var model = await GetExperienceEditViewModelAsync(id, cancellationToken);
+      if (model is null)
       {
          return NotFound();
       }
 
-      var model = new EditViewModel(
-         exp, await GetRoleReorderListViewModelAsync(id, cancellationToken));
       return PartialView(nameof(ExperienceEdit), model);
    }
 
@@ -66,12 +65,15 @@ public partial class WorkController
    {
       if (!ModelState.IsValid)
       {
+         model.EditMode = EditModes.Edit;
+         model.Roles = await GetRoleListViewModelAsync(
+            model.Id, cancellationToken);
          return PartialView(nameof(ExperienceEdit), model);
       }
 
-      var exp = model.ToExperience();
+      var experience = model.ToExperience();
       bool updated = await _workStore.UpdateExperienceAsync(
-         exp, cancellationToken);
+         experience, cancellationToken);
       if (!updated)
       {
          return NotFound();
@@ -79,6 +81,7 @@ public partial class WorkController
 
       Response.TriggerAdminOffcanvasClose(
          ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas);
+
       return PartialView(
          "ExperienceListRefresh",
          await GetExperienceListViewModelAsync(
@@ -92,8 +95,8 @@ public partial class WorkController
       int id,
       CancellationToken cancellationToken)
    {
-      var exp = await _workStore.GetExperienceAsync(id, cancellationToken);
-      if (exp is null)
+      var experience = await _workStore.GetExperienceAsync(id, cancellationToken);
+      if (experience is null)
       {
          return NotFound();
       }
@@ -123,7 +126,7 @@ public partial class WorkController
          await _workStore.ReorderExperienceAsync(
             idsInDisplayOrder, cancellationToken);
       }
-      catch (ArgumentException)
+      catch (InvalidOperationException)
       {
          return BadRequest();
       }
@@ -131,26 +134,30 @@ public partial class WorkController
       return RedirectToAction(nameof(ExperienceIndex));
    }
 
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> ExperienceRoleReorder(
-      ReorderListRequestViewModel model,
+   private async Task<EditViewModel?> GetExperienceEditViewModelAsync(
+      int experienceId,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var experience = await _workStore.GetExperienceAsync(
+         experienceId, cancellationToken);
+      if (experience is null)
+      {
+         return null;
+      }
+
+      return new EditViewModel(experience,
+         await GetRoleReorderListViewModelAsync(
+            experienceId, cancellationToken));
    }
 
    private async Task<IndexViewModel> GetExperienceIndexViewModelAsync(
       EditViewModel? existingCreateModel,
       CancellationToken cancellationToken)
    {
-      var workExperience = await _workStore.GetExperienceAsync(
-         cancellationToken);
+      var workExperience = await _workStore.GetExperienceAsync(cancellationToken);
       existingCreateModel ??= new EditViewModel()
       {
-         Roles = await GetRoleListViewModelAsync(
-            existingCreateModel?.Id, cancellationToken),
+         Roles = await GetRoleListViewModelAsync(null, cancellationToken),
       };
 
       return new IndexViewModel()
@@ -162,29 +169,9 @@ public partial class WorkController
          {
             Id = ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas,
             Title = "Edit work experience",
+            // Use a wider off canvas for this view.
+            CssClass = "admin-offcanvas-wide",
          },
-      };
-   }
-
-   private async Task<ReorderListViewModel> GetRolesListModelAsync(
-      IReadOnlyList<ExperienceRole> roles,
-      CancellationToken cancellationToken)
-   {
-      return new ReorderListViewModel()
-      {
-         Title = "Roles",
-         Items = roles.Select(role => new ReorderListItemViewModel()
-         {
-            Id = role.Id,
-            DisplayName = role.Title,
-            SecondaryText = role.DateDisplayText,
-            SortOrder = role.SortOrder,
-            IsActive = role.IsActive,
-            DeleteAction = "Work",
-            DeleteController = "",
-            EditAction = "Work",
-            EditController = "",
-         }).ToList(),
       };
    }
 
@@ -192,18 +179,19 @@ public partial class WorkController
       IReadOnlyList<Experience> workExperience,
       CancellationToken cancellationToken)
    {
-      var items = workExperience.Select(e => new ReorderListItemViewModel()
-      {
-         Id = e.Id,
-         DisplayName = e.CompanyName,
-         SecondaryText = $"{e.Roles.Count} roles",
-         IsActive = e.IsActive,
-         SortOrder = e.SortOrder,
-         EditController = "Work",
-         EditAction = nameof(ExperienceEdit),
-         DeleteController = "Work",
-         DeleteAction = nameof(ExperienceDelete),
-      }).ToList();
+      var items = workExperience.Select(
+         experience => new ReorderListItemViewModel()
+         {
+            Id = experience.Id,
+            DisplayName = experience.CompanyName,
+            SecondaryText = $"{experience.Roles.Count} roles",
+            IsActive = experience.IsActive,
+            SortOrder = experience.SortOrder,
+            EditController = "Work",
+            EditAction = nameof(ExperienceEdit),
+            DeleteController = "Work",
+            DeleteAction = nameof(ExperienceDelete),
+         }).ToList();
 
       return new ListViewModel()
       {
@@ -227,7 +215,10 @@ public partial class WorkController
    {
       return new RoleEditListViewModel()
       {
-         Create = new RoleEditViewModel(),
+         Create = new RoleEditViewModel()
+         {
+            ExperienceId = experienceId,
+         },
          Roles = await GetRoleReorderListViewModelAsync(
             experienceId, cancellationToken),
       };
@@ -237,31 +228,42 @@ public partial class WorkController
       int? experienceId,
       CancellationToken cancellationToken)
    {
-      var roles = experienceId is not null ? 
+      var roles = experienceId is not null ?
          await _workStore.GetExperienceRolesAsync(
-            experienceId.Value, cancellationToken) : 
-         new List<ExperienceRole>();
+            experienceId.Value, cancellationToken) :
+            new List<ExperienceRole>();
+
       return new ReorderListViewModel()
       {
          Title = "Roles",
-         EditOffcanvasId = "",
+         Description = "Arrange the display order for this company.",
+         RenderCard = true,
+         Compact = true,
+         IconOnlyDelete = true,
+         EditOffcanvasId = ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas,
          ReoderParameters = new ReoderParameters()
          {
-            ReorderController = "",
-            ReorderAction = ""
+            ReorderController = "Work",
+            ReorderAction = nameof(RoleReorder),
          },
-         Items =  roles.Select(role => new ReorderListItemViewModel()
-         {
-            Id = role.Id,
-            DisplayName = role.Title,
-            SecondaryText = $"{role.Bullets.Count()} bullets",
-            SortOrder = role.SortOrder,
-            IsActive = role.IsActive,
-            DeleteController = "Work",
-            DeleteAction = nameof(RoleDelete),
-            EditController = "Work",
-            EditAction = nameof(RoleEdit),
-         }).ToList(),
+
+         Items = roles
+            .OrderBy(role => role.SortOrder)
+            .ThenBy(role => role.Title)
+            .Select(role =>
+               new ReorderListItemViewModel()
+               {
+                  Id = role.Id,
+                  DisplayName = role.Title,
+                  SecondaryText = $"{role.Bullets.Count} bullets",
+                  SortOrder = role.SortOrder,
+                  IsActive = role.IsActive,
+                  DeleteController = "Work",
+                  DeleteAction = nameof(RoleDelete),
+                  EditController = "Work",
+                  EditAction = nameof(RoleEdit),
+               })
+            .ToList(),
       };
    }
 }

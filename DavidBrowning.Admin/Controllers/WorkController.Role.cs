@@ -18,16 +18,27 @@ public partial class WorkController
       RoleEditViewModel model,
       CancellationToken cancellationToken)
    {
-      if(!ModelState.IsValid)
+      if (!ModelState.IsValid)
       {
-         return PartialView(nameof(RoleEdit), model);
+         return PartialView(nameof(RoleCreate), model);
+      }
+
+      int experienceId = model.ExperienceId!.Value;
+
+      var experience = await _workStore.GetExperienceAsync(
+         experienceId, cancellationToken);
+
+      if (experience is null)
+      {
+         return NotFound();
       }
 
       var role = model.ToRole();
       await _workStore.InsertRoleAsync(role, cancellationToken);
       ModelState.Clear();
-
-      throw new NotImplementedException();
+      return PartialView(
+         "RoleCreateRefresh",
+         await GetRoleListViewModelAsync(experienceId, cancellationToken));
    }
 
    [HttpGet]
@@ -41,8 +52,7 @@ public partial class WorkController
          return NotFound();
       }
 
-      var model = new RoleEditViewModel(role);
-      return PartialView(nameof(RoleEdit), model);
+      return PartialView(nameof(RoleEdit), new RoleEditViewModel(role));
    }
 
    [HttpPost]
@@ -51,19 +61,45 @@ public partial class WorkController
       RoleEditViewModel model,
       CancellationToken cancellationToken)
    {
-      if(!ModelState.IsValid)
+      if (!ModelState.IsValid)
       {
+         model.EditMode = EditModes.Edit;
          return PartialView(nameof(RoleEdit), model);
       }
 
-      var role = model.ToRole();
-      bool updated = await _workStore.UpdateRoleAsync(role, cancellationToken);
-      if(!updated)
+      if (model.Id is null || model.ExperienceId is null)
+      {
+         return BadRequest();
+      }
+
+      var storedRole = await _workStore.GetRoleAsync(
+         model.Id.Value, cancellationToken);
+      if (storedRole is null)
       {
          return NotFound();
       }
 
-      throw new NotImplementedException();
+      if (storedRole.ExperienceId != model.ExperienceId.Value)
+      {
+         return BadRequest();
+      }
+
+      var role = model.ToRole();
+      bool updated = await _workStore.UpdateRoleAsync(role, cancellationToken);
+      if (!updated)
+      {
+         return NotFound();
+      }
+
+      ModelState.Clear();
+      var experienceModel = await GetExperienceEditViewModelAsync(
+         storedRole.ExperienceId, cancellationToken);
+      if (experienceModel is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(ExperienceEdit), experienceModel);
    }
 
    [HttpPost]
@@ -73,41 +109,63 @@ public partial class WorkController
       CancellationToken cancellationToken)
    {
       var role = await _workStore.GetRoleAsync(id, cancellationToken);
-      if(role is null)
+      if (role is null)
       {
          return NotFound();
       }
 
-      await _workStore.DeleteRoleAsync(id, cancellationToken);
-      throw new NotImplementedException();
+      bool deleted = await _workStore.DeleteRoleAsync(id, cancellationToken);
+      if (!deleted)
+      {
+         return NotFound();
+      }
+
+      return PartialView(
+         "_ReorderList",
+         await GetRoleReorderListViewModelAsync(
+            role.ExperienceId, cancellationToken));
    }
 
    [HttpPost]
-   [ValidateAntiForgeryToken] 
+   [ValidateAntiForgeryToken]
    public async Task<IActionResult> RoleReorder(
       ReorderListRequestViewModel model,
       CancellationToken cancellationToken)
    {
-      if(!ModelState.IsValid)
+      if (!ModelState.IsValid)
       {
          return BadRequest();
       }
 
       var idsInDisplayOrder = model.Items
          .OrderBy(item => item.SortOrder)
-         .Select(item => item.Id)   
+         .Select(item => item.Id)
          .ToList();
-
-      try
-      {
-         await _workStore.ReorderExperienceRolesAsync(
-            idsInDisplayOrder, cancellationToken);
-      }
-      catch(ArgumentException)
+      if (idsInDisplayOrder.Count == 0)
       {
          return BadRequest();
       }
 
-      throw new NotImplementedException();
+      var firstRole = await _workStore.GetRoleAsync(
+         idsInDisplayOrder[0], cancellationToken);
+      if (firstRole is null)
+      {
+         return NotFound();
+      }
+
+      try
+      {
+         await _workStore.ReorderExperienceRolesAsync(
+            firstRole.ExperienceId, idsInDisplayOrder, cancellationToken);
+      }
+      catch (InvalidOperationException)
+      {
+         return BadRequest();
+      }
+
+      return PartialView(
+         "_ReorderList",
+         await GetRoleReorderListViewModelAsync(
+            firstRole.ExperienceId, cancellationToken));
    }
 }

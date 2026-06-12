@@ -101,3 +101,13 @@ body {
 .admin-edit-sidebar {
    --bs-offcanvas-width: min(42rem, 100vw);
 }
+
+.admin-offcanvas-wide {
+   --bs-offcanvas-width: 42rem;
+}
+
+@media (max-width: 575.98px) {
+   .admin-offcanvas-wide {
+      --bs-offcanvas-width: 100vw;
+   }
+}

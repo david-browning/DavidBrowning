@@ -15,7 +15,8 @@
 		<partial name="RoleCreate" model="Model.Create" />
 	</div>
 
-	<div id="@WorkAdminIds.RoleListRegion" class="mt-4">
+	<div id="@WorkAdminIds.RoleListRegion" class="mt-4"
+		 hx-boost="true" hx-target="#@WorkAdminIds.RoleListRegion" hx-swap="innerHTML">
 		<partial name="_ReorderList" model="Model.Roles" />
 	</div>
 </div>

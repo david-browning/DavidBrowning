@@ -1,0 +1,94 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditViewModel
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Work
+@{
+	string offcanvasBodySelector = AdminOffcanvasIds.BodySelector(
+		WorkAdminIds.ExperienceEditOffcanvas);
+	string offcanvasOverlaySelector = AdminOffcanvasIds.OverlaySelector(
+		WorkAdminIds.ExperienceEditOffcanvas);
+}
+
+<section class="card">
+	<div class="card-body">
+		<h2>Edit role</h2>
+		<p class="card-text text-secondary">
+			Update the position details, then return to the work-experience editor.
+		</p>
+
+		<form method="post" asp-controller="Work" asp-action="RoleEdit"
+			  hx-post="@Url.Action(nameof(WorkController.RoleEdit), "Work")"
+			  hx-target="@offcanvasBodySelector" hx-swap="innerHTML"
+			  hx-disabled-elt="find fieldset" hx-indicator="@offcanvasOverlaySelector">
+			<fieldset>
+				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+				</div>
+				<input asp-for="Id" type="hidden" />
+				<input asp-for="ExperienceId" type="hidden" />
+
+				<div class="row g-3">
+					<div class="col-12">
+						<label asp-for="Title" class="form-label">
+						</label>
+
+						<input asp-for="Title" class="form-control" autocomplete="off" />
+
+						<span asp-validation-for="Title" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12">
+						<label asp-for="DateDisplayText" class="form-label">
+						</label>
+
+						<input asp-for="DateDisplayText" class="form-control"
+							   autocomplete="off" placeholder="Example: 2019–2025" />
+
+						<span asp-validation-for="DateDisplayText" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12">
+						<label asp-for="Description" class="form-label">
+						</label>
+
+						<textarea asp-for="Description" class="form-control" rows="3">
+                  </textarea>
+
+						<span asp-validation-for="Description" class="text-danger">
+						</span>
+					</div>
+
+					<div class="col-12">
+						<div class="form-check">
+							<input asp-for="IsActive" class="form-check-input" type="checkbox" />
+							<label asp-for="IsActive" class="form-check-label">
+								Show on work page
+							</label>
+						</div>
+					</div>
+
+					<div class="col-12">
+						<div class="d-flex gap-2">
+							<button class="btn btn-primary" type="submit">
+								Save role
+							</button>
+
+							<a class="btn btn-outline-secondary" asp-controller="Work"
+							   asp-action="ExperienceIndex"
+							   hx-get="@Url.Action(nameof(WorkController.ExperienceEdit), "Work", new { id = Model.ExperienceId, })"
+							   hx-target="@offcanvasBodySelector" hx-swap="innerHTML"
+							   hx-indicator="@offcanvasOverlaySelector">
+								Cancel
+							</a>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</section>

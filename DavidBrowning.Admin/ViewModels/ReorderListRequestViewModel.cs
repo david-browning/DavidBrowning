@@ -42,18 +42,23 @@ public sealed class ReorderListItemViewModel
 
 public sealed class ReorderListViewModel
 {
-   public string? EditOffcanvasId { get; init; }
-
    public required string Title { get; set; }
 
    public string? Description { get; set; }
 
-   public string EmptyMessage { get; set; } =
-      "No items have been created yet.";
-
-   public ReoderParameters? ReoderParameters { get; set; } = null;
-
    public required IReadOnlyList<ReorderListItemViewModel> Items { get; set; }
+
+   public ReoderParameters? ReoderParameters { get; set; }
+
+   public string? EditOffcanvasId { get; set; }
+
+   public bool Compact { get; set; }
+
+   public bool IconOnlyDelete { get; set; }
+
+   public bool RenderCard { get; set; } = true;
+
+   public string EmptyMessage { get; set; } = "No items.";
 }
 
 public sealed class ReoderParameters

@@ -35,8 +35,8 @@ public sealed class SqlWorkStore : IWorkStore
    }
 
    public Task<Experience?> GetExperienceAsync(
-     int id,
-     CancellationToken cancellationToken = default)
+      int id,
+      CancellationToken cancellationToken = default)
    {
       return _dbContext.Experiences
          .AsNoTracking()
@@ -56,29 +56,43 @@ public sealed class SqlWorkStore : IWorkStore
    {
       ArgumentNullException.ThrowIfNull(experience);
       _dbContext.Experiences.Add(experience);
-      await _dbContext.SaveChangesAsync(cancellationToken);
+      await _dbContext.SaveChangesAsync(
+         cancellationToken);
    }
 
-   public Task<bool> UpdateExperienceAsync(
+   public async Task<bool> UpdateExperienceAsync(
       Experience experience,
-      CancellationToken cancellation = default)
+      CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(experience);
-      throw new NotImplementedException();
+      var stored = await _dbContext.Experiences
+         .SingleOrDefaultAsync(storedExperience =>
+            storedExperience.Id == experience.Id, cancellationToken);
+      if (stored is null)
+      {
+         return false;
+      }
+
+      stored.CompanyName = experience.CompanyName;
+      stored.LocationDisplayText = experience.LocationDisplayText;
+      stored.IsActive = experience.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    public async Task<bool> DeleteExperienceAsync(
       int id,
       CancellationToken cancellationToken = default)
    {
-      var exp = await _dbContext.Experiences
-         .SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
-      if (exp is null)
+      var experience = await _dbContext.Experiences
+         .SingleOrDefaultAsync(experience => experience.Id == id,
+         cancellationToken);
+      if (experience is null)
       {
          return false;
       }
 
-      _dbContext.Experiences.Remove(exp);
+      _dbContext.Experiences.Remove(experience);
       await _dbContext.SaveChangesAsync(cancellationToken);
       return true;
    }
@@ -98,11 +112,14 @@ public sealed class SqlWorkStore : IWorkStore
    }
 
    public async Task ReorderExperienceRolesAsync(
+      int experienceId,
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default)
    {
       int changeCount = await _dbContext.ApplySortOrderAsync<ExperienceRole>(
-         idsInDisplayOrder, cancellationToken);
+         idsInDisplayOrder,
+         role => role.ExperienceId == experienceId,
+         cancellationToken);
       if (changeCount == 0)
       {
          return;
@@ -112,11 +129,19 @@ public sealed class SqlWorkStore : IWorkStore
    }
 
    public async Task ReorderRoleBullets(
+      int roleId,
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default)
    {
-      int changeCount = await _dbContext.ApplySortOrderAsync<ExperienceRoleBullet>(
-         idsInDisplayOrder, cancellationToken);
+      int changeCount =
+         await _dbContext
+            .ApplySortOrderAsync<ExperienceRoleBullet>(
+               idsInDisplayOrder,
+               bullet =>
+                  bullet.ExperienceRoleId ==
+                  roleId,
+               cancellationToken);
+
       if (changeCount == 0)
       {
          return;
@@ -132,7 +157,11 @@ public sealed class SqlWorkStore : IWorkStore
       return await _dbContext.ExperienceRoles
          .AsNoTracking()
          .Where(role => role.ExperienceId == experienceId)
-         .ToListAsync();
+         .Include(role => role.Bullets
+            .OrderBy(bullet => bullet.SortOrder))
+         .OrderBy(role => role.SortOrder)
+         .ThenBy(role => role.Title)
+         .ToListAsync(cancellationToken);
    }
 
    public async Task<ExperienceRole?> GetRoleAsync(
@@ -141,14 +170,21 @@ public sealed class SqlWorkStore : IWorkStore
    {
       return await _dbContext.ExperienceRoles
          .AsNoTracking()
-         .SingleOrDefaultAsync(role => role.Id == roleId);
+         .Include(role => role.Bullets
+            .OrderBy(bullet => bullet.SortOrder))
+         .SingleOrDefaultAsync(role => role.Id == roleId, cancellationToken);
    }
 
    public async Task InsertRoleAsync(
-         ExperienceRole role,
-         CancellationToken cancellationToken = default)
+      ExperienceRole role,
+      CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(role);
+      int? lastSortOrder = await _dbContext.ExperienceRoles
+         .Where(existingRole => existingRole.ExperienceId == role.ExperienceId)
+         .Select(existingRole => (int?)existingRole.SortOrder)
+         .MaxAsync(cancellationToken);
+      role.SortOrder = (lastSortOrder ?? -1) + 1;
       _dbContext.ExperienceRoles.Add(role);
       await _dbContext.SaveChangesAsync(cancellationToken);
    }
@@ -158,8 +194,9 @@ public sealed class SqlWorkStore : IWorkStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(role);
+
       var stored = await _dbContext.ExperienceRoles.SingleOrDefaultAsync(
-         role => role.Id == role.Id, cancellationToken);
+         storedRole => storedRole.Id == role.Id, cancellationToken);
       if (stored is null)
       {
          return false;
@@ -169,7 +206,6 @@ public sealed class SqlWorkStore : IWorkStore
       stored.DateDisplayText = role.DateDisplayText;
       stored.Description = role.Description;
       stored.IsActive = role.IsActive;
-      stored.SortOrder = role.SortOrder;
       await _dbContext.SaveChangesAsync(cancellationToken);
       return true;
    }
@@ -178,14 +214,15 @@ public sealed class SqlWorkStore : IWorkStore
       int id,
       CancellationToken cancellationToken = default)
    {
-      var role = await _dbContext.ExperienceRoles.SingleOrDefaultAsync(role =>
-         role.Id == id);
-      if(role is null)
+      var role = await _dbContext.ExperienceRoles.SingleOrDefaultAsync(
+         role => role.Id == id, cancellationToken);
+
+      if (role is null)
       {
          return false;
       }
 
-      _dbContext.Remove(role);
+      _dbContext.ExperienceRoles.Remove(role);
       await _dbContext.SaveChangesAsync(cancellationToken);
       return true;
    }
@@ -224,9 +261,9 @@ public sealed class SqlWorkStore : IWorkStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(credential);
-      var stored = await _dbContext.Credentials .SingleOrDefaultAsync(
-         cred => cred.Id == credential.Id, cancellationToken);
-      if(stored is null)
+      var stored = await _dbContext.Credentials.SingleOrDefaultAsync(
+         sc => sc.Id == credential.Id, cancellationToken);
+      if (stored is null)
       {
          return false;
       }
@@ -239,8 +276,8 @@ public sealed class SqlWorkStore : IWorkStore
       stored.IsActive = credential.IsActive;
       stored.IssuingOrganization = credential.IssuingOrganization;
       stored.Name = credential.Name;
-
       await _dbContext.SaveChangesAsync(cancellationToken);
+
       return true;
    }
 
@@ -248,14 +285,14 @@ public sealed class SqlWorkStore : IWorkStore
       int id,
       CancellationToken cancellationToken = default)
    {
-      var cred = await _dbContext.Credentials
-         .SingleOrDefaultAsync(c => c.Id == id, cancellationToken);
-      if (cred is null)
+      var credential = await _dbContext.Credentials.SingleOrDefaultAsync(
+         credential => credential.Id == id, cancellationToken);
+      if (credential is null)
       {
          return false;
       }
 
-      _dbContext.Credentials.Remove(cred);
+      _dbContext.Credentials.Remove(credential);
       await _dbContext.SaveChangesAsync(cancellationToken);
       return true;
    }
