@@ -84,7 +84,7 @@ public partial class WorkController
 
       return PartialView(
          "ExperienceListRefresh",
-         await GetExperienceListViewModelAsync(
+         GetExperienceListViewModel(
             await _workStore.GetExperienceAsync(cancellationToken),
             cancellationToken));
    }
@@ -163,7 +163,7 @@ public partial class WorkController
       return new IndexViewModel()
       {
          Create = existingCreateModel,
-         List = await GetExperienceListViewModelAsync(
+         List = GetExperienceListViewModel(
             workExperience, cancellationToken),
          EditOffcanvas = new AdminOffcanvasViewModel()
          {
@@ -175,7 +175,7 @@ public partial class WorkController
       };
    }
 
-   private async Task<ListViewModel> GetExperienceListViewModelAsync(
+   private ListViewModel GetExperienceListViewModel(
       IReadOnlyList<Experience> workExperience,
       CancellationToken cancellationToken)
    {
