@@ -4,17 +4,10 @@
 (() => {
    "use strict";
 
-   const formSelector =
-      "[data-credential-edit-form]";
-
-   const monthSelector =
-      "[data-awarded-month]";
-
-   const yearSelector =
-      "[data-awarded-year]";
-
-   const displaySelector =
-      "[data-awarded-date-display]";
+   const formSelector = "[data-credential-edit-form]";
+   const monthSelector = "[data-awarded-month]";
+   const yearSelector = "[data-awarded-year]";
+   const displaySelector = "[data-awarded-date-display]";
 
    document.addEventListener(
       "DOMContentLoaded",
@@ -47,8 +40,7 @@
          }
 
          if (event.target.matches(displaySelector)) {
-            event.target.dataset.manuallyEdited =
-               "true";
+            event.target.dataset.manuallyEdited = "true";
          }
       });
 
@@ -81,52 +73,31 @@
          return;
       }
 
-      const monthInput =
-         form.querySelector(monthSelector);
-
-      const yearInput =
-         form.querySelector(yearSelector);
-
-      const displayInput =
-         form.querySelector(displaySelector);
-
+      const monthInput = form.querySelector(monthSelector);
+      const yearInput = form.querySelector(yearSelector);
+      const displayInput = form.querySelector(displaySelector);
       if (!(monthInput instanceof HTMLSelectElement) ||
          !(yearInput instanceof HTMLInputElement) ||
          !(displayInput instanceof HTMLInputElement)) {
          return;
       }
 
-      const currentText =
-         displayInput.value.trim();
-
-      const generatedText =
-         buildDisplayText(
-            monthInput,
-            yearInput);
-
-      displayInput.dataset.manuallyEdited =
-         currentText.length > 0 &&
-            currentText !== generatedText
-            ? "true"
-            : "false";
+      const currentText = displayInput.value.trim();
+      const generatedText = buildDisplayText(monthInput, yearInput);
+      displayInput.dataset.manuallyEdited = currentText.length > 0 &&
+         currentText !== generatedText ? "true" : "false";
    }
 
    function updateDisplayText(changedInput) {
-      const form =
-         changedInput.closest(formSelector);
+      const form = changedInput.closest(formSelector);
 
       if (!(form instanceof HTMLFormElement)) {
          return;
       }
 
-      const monthInput =
-         form.querySelector(monthSelector);
-
-      const yearInput =
-         form.querySelector(yearSelector);
-
-      const displayInput =
-         form.querySelector(displaySelector);
+      const monthInput = form.querySelector(monthSelector);
+      const yearInput = form.querySelector(yearSelector);
+      const displayInput = form.querySelector(displaySelector);
 
       if (!(monthInput instanceof HTMLSelectElement) ||
          !(yearInput instanceof HTMLInputElement) ||
@@ -138,27 +109,13 @@
          return;
       }
 
-      displayInput.value =
-         buildDisplayText(
-            monthInput,
-            yearInput);
+      displayInput.value = buildDisplayText(monthInput, yearInput);
    }
 
-   function buildDisplayText(
-      monthInput,
-      yearInput) {
-      const selectedMonth =
-         monthInput.options[
-         monthInput.selectedIndex];
-
-      const month =
-         selectedMonth?.value
-            ? selectedMonth.text
-            : "";
-
-      const year =
-         yearInput.value.trim();
-
+   function buildDisplayText(monthInput, yearInput) {
+      const selectedMonth = monthInput.options[monthInput.selectedIndex];
+      const month = selectedMonth?.value ? selectedMonth.text : "";
+      const year = yearInput.value.trim();
       return [month, year]
          .filter(value => value.length > 0)
          .join(" ");
