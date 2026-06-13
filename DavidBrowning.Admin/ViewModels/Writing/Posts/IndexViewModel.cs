@@ -11,7 +11,5 @@ public class IndexViewModel
 
    public required PostRevisionHistoryViewModel RevisionHistory { get; set; }
 
-   public int? CurrentRevisionId { get; set; }
-
    public PostRevisionContentViewModel? RevisionContent { get; set; }
 }

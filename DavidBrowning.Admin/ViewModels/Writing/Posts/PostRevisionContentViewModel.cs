@@ -5,28 +5,35 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DavidBrowning.Admin.ViewModels.Writing.Posts;
 
 public class PostRevisionContentViewModel
 {
+   [Range(1, int.MaxValue)]
    public required int PostId { get; set; }
 
-   public int? Id { get; set; }
-
-   public int? RevisionNumber { get; set; }
-
-   public  ContentFormat? ContentFormat { get; set; }
-
-   [StringLength(DataConstants.MaxNameLength)]
-   public string? CreatedBy { get; set; }
+   [Required]
+   public ContentFormat? ContentFormat { get; set; }
 
    public string? Content { get; set; }
 
    public EditModes EditMode { get; set; } = EditModes.Create;
 
+   [BindNever]
+   public int? Id { get; set; }
+
+   [BindNever]
+   public int? RevisionNumber { get; set; }
+
+   [BindNever]
+   public string? CreatedBy { get; set; }
+
+   [BindNever]
    public DateTime? CreatedAtUtc { get; set; }
 
+   [BindNever]
    public bool IsCurrentRevision { get; set; }
 
    public PostRevisionContentViewModel()
@@ -48,20 +55,5 @@ public class PostRevisionContentViewModel
       ContentFormat = revision.ContentFormat;
       Content = revision.Content;
       IsCurrentRevision = revision.Id == currentRevisionId;
-   }
-
-   public PostRevision ToRevision()
-   {
-      ArgumentNullException.ThrowIfNull(ContentFormat);
-      ArgumentNullException.ThrowIfNullOrEmpty(CreatedBy);
-
-      return new PostRevision()
-      {
-         Id = Id ?? 0,
-         PostId = PostId,
-         ContentFormat = ContentFormat.Value,
-         CreatedBy = CreatedBy,
-         Content = Content,
-      };
    }
 }
