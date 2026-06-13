@@ -3,6 +3,9 @@
    Source-available for viewing only. No license granted.
 *@
 @model IReadOnlyList<DavidBrowning.Admin.ViewModels.Writing.PostStyleEditViewModel>
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Writing
 
 @if (Model.Count == 0)
 {
@@ -28,8 +31,17 @@ else
 
 					<div class="d-flex gap-1 flex-shrink-0">
 						<a class="btn btn-sm btn-outline-primary"
-						   asp-controller="Writing" asp-action="StyleEdit"
-						   asp-route-id="@style.Id" aria-label="Edit @style.DisplayName">
+						   asp-controller="Writing"
+						   asp-action="StyleEdit"
+						   asp-route-id="@style.Id"
+						   hx-get="@Url.Action(nameof(WritingController.StyleEdit), "Writing", new { id = style.Id })"
+						   hx-target="@AdminOffcanvasIds.BodySelector(WritingAdminIds.StyleEditOffcanvas)"
+						   hx-swap="innerHTML"
+						   hx-indicator="@AdminOffcanvasIds.OverlaySelector(WritingAdminIds.StyleEditOffcanvas)"
+						   data-bs-toggle="offcanvas"
+						   data-bs-target="@AdminOffcanvasIds.Selector(WritingAdminIds.StyleEditOffcanvas)"
+						   aria-controls="@WritingAdminIds.StyleEditOffcanvas"
+						   aria-label="Edit @style.DisplayName">
 							<i class="fa-solid fa-pen" aria-hidden="true"></i>
 						</a>
 					</div>

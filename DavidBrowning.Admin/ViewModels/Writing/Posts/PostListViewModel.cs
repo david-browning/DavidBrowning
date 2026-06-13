@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models.Writing;
 
-namespace DavidBrowning.Admin.ViewModels.Writing;
+namespace DavidBrowning.Admin.ViewModels.Writing.Posts;
 
 public sealed class PostListViewModel
 {

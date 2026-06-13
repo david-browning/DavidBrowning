@@ -9,6 +9,7 @@ using DavidBrowning.Admin.Extensions;
 using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.About;
 using DavidBrowning.Infrastructure.Assets;
+using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,18 @@ public sealed class AboutController : Controller
       }
 
       var interest = model.ToInterest();
-      await _uncategorizedStore.InsertInterestAsync(interest, cancellationToken);
+
+      try
+      {
+         await _uncategorizedStore.InsertInterestAsync(interest, cancellationToken);
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another interest already uses this slug.");
+         return PartialView(nameof(InterestEdit), model);
+      }
+
       ModelState.Clear();
 
       if (Request.IsHtmxRequest())
@@ -112,11 +124,21 @@ public sealed class AboutController : Controller
       }
 
       var updatedInterest = model.ToInterest();
-      bool updated = await _uncategorizedStore.UpdateInterestAsync(
-         updatedInterest, cancellationToken);
-      if (!updated)
+
+      try
       {
-         return NotFound();
+         bool updated = await _uncategorizedStore.UpdateInterestAsync(
+            updatedInterest, cancellationToken);
+         if (!updated)
+         {
+            return NotFound();
+         }
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another interest already uses this slug.");
+         return PartialView(nameof(InterestEdit), model);
       }
 
       if (Request.IsHtmxRequest())
@@ -131,7 +153,6 @@ public sealed class AboutController : Controller
 
       TempData["SuccessMessage"] =
          $"Updated interest \"{updatedInterest.DisplayName}\".";
-
       return RedirectToAction(nameof(Index));
    }
 

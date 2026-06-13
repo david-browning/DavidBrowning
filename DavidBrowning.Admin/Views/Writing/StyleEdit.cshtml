@@ -21,12 +21,10 @@
 <div class="admin-form-region">
 	<form asp-controller="Writing" asp-action="@formAction" method="post"
 		  hx-post="@Url.Action(formAction, "Writing")"
-		  data-asset-edit-mode="@isEditMode.ToString().ToLowerInvariant()"
 		  hx-target="@htmxTarget"
 		  hx-swap="innerHTML"
 		  hx-disabled-elt="find fieldset"
-		  hx-indicator="overlaySelector"
-		  enctype="multipart/form-data" hx-encoding="multipart/form-data">
+		  hx-indicator="@overlaySelector">
 		<fieldset>
 			<div asp-validation-summary="ModelOnly"
 				 class="alert alert-danger" role="alert">
@@ -47,6 +45,12 @@
 				<label asp-for="Slug" class="form-label"></label>
 				<input asp-for="Slug" class="form-control" autocomplete="off" />
 				<span asp-validation-for="Slug" class="text-danger"></span>
+			</div>
+
+			<div class="mb-3">
+				<label asp-for="Description" class="form-label"></label>
+				<textarea asp-for="Description" class="form-control" rows="3"></textarea>
+				<span asp-validation-for="Description" class="text-danger"></span>
 			</div>
 
 			<div class="form-check mb-3">
@@ -82,7 +86,7 @@
 	{
 		<div id="@WritingAdminIds.StyleCreateOverlay"
 			 class="admin-form-overlay htmx-indicator"
-			 role="status" aria-live="polite" aria-label="Saving asset">
+			 role="status" aria-live="polite" aria-label="Saving style">
 			<partial name="_Waiting" />
 		</div>
 	}

@@ -6,20 +6,38 @@
 @using DavidBrowning.Admin.Controllers
 @using DavidBrowning.Admin.ViewModels
 @using DavidBrowning.Admin.ViewModels.Writing
+@{
+	bool isEditMode = Model.EditMode == EditModes.Edit;
 
-<form asp-controller="Writing" asp-action="TagEdit" method="post"
-	  hx-post="@Url.Action(nameof(WritingController.TagEdit), "Writing")"
-	  hx-target="@AdminOffcanvasIds.BodySelector(WritingAdminIds.TagEditOffcanvas)"
+	string formAction = isEditMode
+	   ? nameof(WritingController.TagEdit)
+	   : nameof(WritingController.TagCreate);
+
+	string htmxTarget = isEditMode
+	   ? AdminOffcanvasIds.BodySelector(WritingAdminIds.TagEditOffcanvas)
+	   : $"#{WritingAdminIds.TagCreateRegion}";
+
+	string overlaySelector = isEditMode
+	   ? AdminOffcanvasIds.OverlaySelector(WritingAdminIds.TagEditOffcanvas)
+	   : $"#{WritingAdminIds.TagCreateOverlay}";
+}
+
+<form asp-controller="Writing" asp-action="@formAction" method="post"
+	  hx-post="@Url.Action(formAction, "Writing")"
+	  hx-target="@htmxTarget"
 	  hx-swap="innerHTML"
 	  hx-disabled-elt="find fieldset"
-	  hx-indicator="@AdminOffcanvasIds.OverlaySelector(WritingAdminIds.TagEditOffcanvas)">
+	  hx-indicator="@overlaySelector">
 	<fieldset>
 		<div asp-validation-summary="ModelOnly"
 			 class="alert alert-danger"
 			 role="alert">
 		</div>
 
-		<input asp-for="Id" type="hidden" />
+		@if (isEditMode)
+		{
+			<input asp-for="Id" type="hidden" />
+		}
 
 		<div class="mb-3">
 			<label asp-for="DisplayName" class="form-label"></label>
@@ -38,11 +56,20 @@
 				Save tag
 			</button>
 
-			<button class="btn btn-outline-secondary"
-					type="button"
-					data-bs-dismiss="offcanvas">
-				Close
-			</button>
+			@if (isEditMode)
+			{
+				<button class="btn btn-outline-secondary"
+						type="button" data-bs-dismiss="offcanvas">
+					Cancel
+				</button>
+			}
+			else
+			{
+				<a class="btn btn-outline-secondary"
+				   asp-controller="Writing" asp-action="Index">
+					Reset
+				</a>
+			}
 		</div>
 	</fieldset>
 </form>

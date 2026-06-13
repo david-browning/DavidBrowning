@@ -1,8 +1,9 @@
-﻿@*
+﻿@using DavidBrowning.Admin.ViewModels.Writing.Posts
+@*
    Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
-@model DavidBrowning.Admin.ViewModels.Writing.PostListViewModel
+@model PostListViewModel
 
 <section class="card">
    <div class="card-body">
@@ -16,7 +17,7 @@
          </div>
 
          <a class="btn btn-primary text-nowrap"
-            asp-controller="Writing" asp-action="PostCreate">
+            asp-controller="Writing" asp-action="PostIndex">
             <i class="fa-solid fa-plus me-1" aria-hidden="true"></i>
             Create post
          </a>

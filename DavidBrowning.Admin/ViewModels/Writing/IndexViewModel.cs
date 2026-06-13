@@ -1,6 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using DavidBrowning.Admin.ViewModels.Writing.Posts;
+
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
 public sealed class IndexViewModel

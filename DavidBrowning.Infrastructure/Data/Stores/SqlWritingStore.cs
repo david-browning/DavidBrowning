@@ -60,16 +60,15 @@ public class SqlWritingStore : IWritingStore
    public async Task<IReadOnlyList<Post>> GetAllPostsAsync(
       CancellationToken cancellationToken = default)
    {
-      var posts = _dbContext.Posts
+      return await _dbContext.Posts
          .AsNoTracking()
          .Include(post => post.PostStyle)
-         .Include(post => post.CurrentRevision)
+         .Include(post => post.Revisions)
          .Include(post => post.Tags)
-            .ThenInclude(postTag => postTag.WritingTag)
          .OrderByDescending(post => post.PublishedDateUtc)
          .ThenByDescending(post => post.CreatedDateUtc)
-         .ThenByDescending(post => post.Id);
-      return await posts.ToListAsync(cancellationToken);
+         .ThenByDescending(post => post.Id)
+         .ToListAsync(cancellationToken);
    }
 
    public async Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
@@ -96,6 +95,7 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       return await _dbContext.WritingTags
+         .AsNoTracking()
          .OrderBy(tag => tag.DisplayName)
          .ToListAsync(cancellationToken);
    }
@@ -114,6 +114,12 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(tag);
+      if (await _dbContext.SlugExistsAsync<WritingTag>(
+         tag.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
       _dbContext.WritingTags.Add(tag);
       await _dbContext.SaveChangesAsync(cancellationToken);
    }
@@ -123,6 +129,12 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(tag);
+      if (await _dbContext.SlugExistsAsync<WritingTag>(
+         tag.Slug, excludedId: tag.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
       var stored = await _dbContext.WritingTags
          .SingleOrDefaultAsync(t => t.Id == tag.Id, cancellationToken);
       if(stored is null)
@@ -171,7 +183,13 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(style);
-      var existing = _dbContext.PostStyles.Add(style);
+      if (await _dbContext.SlugExistsAsync<PostStyle>(
+         style.Slug,cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(style.Slug);
+      }
+
+      _dbContext.PostStyles.Add(style);
       await _dbContext.SaveChangesAsync(cancellationToken);
    }
 
@@ -180,6 +198,12 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(style);
+      if (await _dbContext.SlugExistsAsync<PostStyle>(
+         style.Slug, excludedId: style.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(style.Slug);
+      }
+
       var stored = await _dbContext.PostStyles
          .SingleOrDefaultAsync(s => s.Id == style.Id, cancellationToken);
       if (stored is null)
@@ -214,7 +238,6 @@ public class SqlWritingStore : IWritingStore
       return _dbContext.Posts
          .AsNoTracking()
          .Include(post => post.PostStyle)
-         .Include(post => post.CurrentRevision)
          .Include(post => post.Tags)
             .ThenInclude(postTag => postTag.WritingTag)
          .Include(post => post.CurrentRevision)

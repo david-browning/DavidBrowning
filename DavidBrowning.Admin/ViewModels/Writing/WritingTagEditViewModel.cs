@@ -19,6 +19,7 @@ public sealed class WritingTagEditViewModel
    public string? DisplayName { get; set; }
 
    [Required]
+   [StringLength(DataConstants.MaxSlugLength)]
    [RegularExpression(DataConstants.SlugRegex,
       ErrorMessage = DataConstants.SlugRegexError)]
    public string? Slug { get; set; }

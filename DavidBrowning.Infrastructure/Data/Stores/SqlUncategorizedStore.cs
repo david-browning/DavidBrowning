@@ -1,6 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using Azure;
 using DavidBrowning.Models;
+using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -42,6 +44,12 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       CancellationToken cancellationToken)
    {
       ArgumentNullException.ThrowIfNull(interest);
+      if (await _context.SlugExistsAsync<Interest>(
+         interest.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(interest.Slug);
+      }
+
       _context.Interests.Add(interest);
       await _context.SaveChangesAsync(cancellationToken);
       _logger.LogInformation(
@@ -54,6 +62,12 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       CancellationToken cancellationToken)
    {
       ArgumentNullException.ThrowIfNull(interest);
+      if (await _context.SlugExistsAsync<Interest>(
+         interest.Slug, excludedId: interest.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(interest.Slug);
+      }
+
       Interest? storedInterest = await _context.Interests
          .SingleOrDefaultAsync(
             existingInterest => existingInterest.Id == interest.Id,

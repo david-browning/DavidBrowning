@@ -5,14 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.Extensions;
 using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing;
+using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
-public class WritingController : Controller
+public partial class WritingController : Controller
 {
    public WritingController(IWritingStore writingStore)
    {
@@ -23,38 +25,6 @@ public class WritingController : Controller
       CancellationToken cancellationToken)
    {
       return View(await GetIndexModelAsync(null, null, cancellationToken));
-   }
-
-   [HttpGet]
-   public Task<IActionResult> PostCreate(CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostCreate(
-      PostEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> PostEdit(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostEdit(
-      PostEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
    }
 
    [HttpPost]
@@ -68,8 +38,18 @@ public class WritingController : Controller
          return PartialView(nameof(StyleEdit), model);
       }
 
-      await _writingStore.InsertPostStyleAsync(
-         model.ToPostStyle(), cancellationToken);
+      try
+      {
+         await _writingStore.InsertPostStyleAsync(
+            model.ToPostStyle(), cancellationToken);
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post style already uses this slug.");
+         return PartialView(nameof(StyleEdit), model);
+      }
+
       ModelState.Clear();
       return PartialView("StyleCreateRefresh",
          await GetStylePanelViewModelAsync(null, cancellationToken));
@@ -100,13 +80,24 @@ public class WritingController : Controller
          return PartialView(nameof(StyleEdit), model);
       }
 
-      var updated = await _writingStore.UpdatePostStyleAsync(
-         model.ToPostStyle(), cancellationToken);
-      if (!updated)
+      try
       {
-         return NotFound();
+         var updated = await _writingStore.UpdatePostStyleAsync(
+            model.ToPostStyle(), cancellationToken);
+
+         if (!updated)
+         {
+            return NotFound();
+         }
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post style already uses this slug.");
+         return PartialView(nameof(StyleEdit), model);
       }
 
+      Response.TriggerAdminOffcanvasClose(WritingAdminIds.StyleEditOffcanvas);
       return PartialView("StyleListRefresh",
          await GetStyleListAsync(cancellationToken));
    }
@@ -122,7 +113,17 @@ public class WritingController : Controller
          return PartialView(nameof(TagEdit), model);
       }
 
-      await _writingStore.InsertTagAsync(model.ToTag(), cancellationToken);
+      try
+      {
+         await _writingStore.InsertTagAsync(model.ToTag(), cancellationToken);
+      }
+      catch(DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post tag already uses this slug.");
+         return PartialView(nameof(TagEdit), model);
+      }
+
       ModelState.Clear();
       return PartialView("TagCreateRefresh",
          await GetTagPanelViewModelAsync(null, cancellationToken));
@@ -153,13 +154,24 @@ public class WritingController : Controller
          return PartialView(nameof(TagEdit), model);
       }
 
-      var updated = await _writingStore.UpdateTagAsync(
-         model.ToTag(), cancellationToken);
-      if (!updated)
+      try
       {
-         return NotFound();
+         var updated = await _writingStore.UpdateTagAsync(
+            model.ToTag(), cancellationToken);
+
+         if (!updated)
+         {
+            return NotFound();
+         }
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post tag already uses this slug.");
+         return PartialView(nameof(TagEdit), model);
       }
 
+      Response.TriggerAdminOffcanvasClose(WritingAdminIds.TagEditOffcanvas);
       return PartialView("TagListRefresh",
          await GetTagListViewModelAsync(cancellationToken));
    }
@@ -170,7 +182,6 @@ public class WritingController : Controller
       CancellationToken cancellationToken)
    {
       var posts = await _writingStore.GetAllPostsAsync(cancellationToken);
-      var postStyles = await _writingStore.GetPostStylesAsync(cancellationToken);
       return new IndexViewModel()
       {
          Styles = await GetStylePanelViewModelAsync(
