@@ -1,0 +1,10 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Writing.PostListViewModel
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<div id="@WritingAdminIds.PostListRegion" hx-swap-oob="innerHTML">
+	<partial name="PostList" model="Model" />
+</div>

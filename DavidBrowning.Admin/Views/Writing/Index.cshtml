@@ -3,26 +3,32 @@
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Writing.IndexViewModel
+@using DavidBrowning.Admin.ViewModels.Writing
 
 @{
-   ViewData["Title"] = "Writing";
+	ViewData["Title"] = "Writing";
 }
 
 <div class="container py-4">
-   <header class="mb-4">
-      <h1>Writing</h1>
-      <p class="text-secondary mb-0">
-         Manage writing metadata and edit published or draft posts.
-      </p>
-   </header>
+	<header class="mb-4">
+		<h1>Writing</h1>
+		<p class="text-secondary mb-0">
+			Manage writing metadata and edit published or draft posts.
+		</p>
+	</header>
 
-   <div class="row g-4 align-items-start">
-      <div class="col-12 col-xl-4">
-         <partial name="Metadata" model="Model" />
-      </div>
+	<div class="row g-4 align-items-start">
+		<div class="col-12 col-xl-4">
+			<partial name="Metadata" model="Model" />
+		</div>
 
-      <div class="col-12 col-xl-8">
-         <partial name="PostList" model="Model.Posts" />
-      </div>
-   </div>
+		<div class="col-12 col-xl-8">
+			<div id="@WritingAdminIds.PostListRegion">
+				<partial name="PostList" model="Model.Posts" />
+			</div>
+		</div>
+	</div>
 </div>
+
+<partial name="_AdminOffcanvas" model="Model.TagEditOffcanvas" />
+<partial name="_AdminOffcanvas" model="Model.StyleEditOffcanvas" />

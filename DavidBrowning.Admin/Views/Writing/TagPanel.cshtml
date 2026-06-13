@@ -1,0 +1,25 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Writing.WritingTagPanelViewModel
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<section class="card">
+	<div class="card-body">
+		<h2 class="card-title">Writing tags</h2>
+		<p class="card-text text-secondary">
+			Create reusable labels for grouping related posts.
+		</p>
+
+		<div id="@WritingAdminIds.TagCreateRegion">
+			<partial name="TagCreate" model="Model.Create" />
+		</div>
+	</div>
+
+	<div class="card-footer bg-transparent">
+		<div id="@WritingAdminIds.TagListRegion">
+			<partial name="TagList" model="Model.Items" />
+		</div>
+	</div>
+</section>

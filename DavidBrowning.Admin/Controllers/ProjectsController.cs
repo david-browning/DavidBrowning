@@ -260,15 +260,6 @@ public class ProjectsController : Controller
       throw new NotImplementedException();
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
    public Task<IActionResult> TypeList(
       CancellationToken cancellationToken)
    {

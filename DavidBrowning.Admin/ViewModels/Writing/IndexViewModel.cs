@@ -10,4 +10,8 @@ public sealed class IndexViewModel
    public required PostStylePanelViewModel Styles { get; set; }
 
    public required PostListViewModel Posts { get; set; }
+
+   public required AdminOffcanvasViewModel TagEditOffcanvas { get; set; }
+
+   public required AdminOffcanvasViewModel StyleEditOffcanvas { get; set; }
 }

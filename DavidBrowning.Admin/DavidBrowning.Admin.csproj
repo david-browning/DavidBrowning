@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="ContentAssets\Documents\" />
-    <Folder Include="Views\Writing\" />
   </ItemGroup>
 
   <ItemGroup>

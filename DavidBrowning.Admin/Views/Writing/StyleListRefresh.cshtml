@@ -1,0 +1,9 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model IReadOnlyList<DavidBrowning.Admin.ViewModels.Writing.PostStyleEditViewModel>
+@using DavidBrowning.Admin.ViewModels.Writing
+<div id="@WritingAdminIds.StyleListRegion" hx-swap-oob="innerHTML">
+	<partial name="StyleList" model="Model" />
+</div>

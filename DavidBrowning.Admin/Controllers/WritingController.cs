@@ -1,9 +1,11 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing;
 using DavidBrowning.Infrastructure.Data.Stores;
 using Microsoft.AspNetCore.Mvc;
@@ -57,37 +59,109 @@ public class WritingController : Controller
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> StyleCreate(
+   public async Task<IActionResult> StyleCreate(
       PostStyleEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(StyleEdit), model);
+      }
+
+      await _writingStore.InsertPostStyleAsync(
+         model.ToPostStyle(), cancellationToken);
+      ModelState.Clear();
+      return PartialView("StyleCreateRefresh",
+         await GetStylePanelViewModelAsync(null, cancellationToken));
    }
 
    [HttpGet]
-   public Task<IActionResult> StyleEdit(
+   public async Task<IActionResult> StyleEdit(
       int id,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var style = await _writingStore.GetPostStyleAsync(id, cancellationToken);
+      if (style is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(StyleEdit), new PostStyleEditViewModel(style));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> StyleEdit(
+   public async Task<IActionResult> StyleEdit(
       PostStyleEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(StyleEdit), model);
+      }
+
+      var updated = await _writingStore.UpdatePostStyleAsync(
+         model.ToPostStyle(), cancellationToken);
+      if (!updated)
+      {
+         return NotFound();
+      }
+
+      return PartialView("StyleListRefresh",
+         await GetStyleListAsync(cancellationToken));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> StyleDelete(
+   public async Task<IActionResult> TagCreate(
+      WritingTagEditViewModel model,
+      CancellationToken cancellationToken)
+   {
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(TagEdit), model);
+      }
+
+      await _writingStore.InsertTagAsync(model.ToTag(), cancellationToken);
+      ModelState.Clear();
+      return PartialView("TagCreateRefresh",
+         await GetTagPanelViewModelAsync(null, cancellationToken));
+   }
+
+   [HttpGet]
+   public async Task<IActionResult> TagEdit(
       int id,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var tag = await _writingStore.GetTagAsync(id, cancellationToken);
+      if (tag is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(TagEdit), new WritingTagEditViewModel(tag));
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> TagEdit(
+      WritingTagEditViewModel model,
+      CancellationToken cancellationToken)
+   {
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(TagEdit), model);
+      }
+
+      var updated = await _writingStore.UpdateTagAsync(
+         model.ToTag(), cancellationToken);
+      if (!updated)
+      {
+         return NotFound();
+      }
+
+      return PartialView("TagListRefresh",
+         await GetTagListViewModelAsync(cancellationToken));
    }
 
    private async Task<IndexViewModel> GetIndexModelAsync(
@@ -97,25 +171,63 @@ public class WritingController : Controller
    {
       var posts = await _writingStore.GetAllPostsAsync(cancellationToken);
       var postStyles = await _writingStore.GetPostStylesAsync(cancellationToken);
-      var tags = await _writingStore.GetTagsAsync(cancellationToken);
       return new IndexViewModel()
       {
-         Styles = new PostStylePanelViewModel()
-         {
-            Create = existingPostStyleModel ?? new PostStyleEditViewModel(),
-            Items = postStyles.Select(
-               style => new PostStyleEditViewModel(style)).ToList(),
-         },
-         Tags = new WritingTagPanelViewModel()
-         {
-            Create = existingTagModel ?? new WritingTagEditViewModel(),
-            Items = tags.Select(tag => new WritingTagEditViewModel(tag)).ToList(),
-         },
+         Styles = await GetStylePanelViewModelAsync(
+            existingPostStyleModel, cancellationToken),
+         Tags = await GetTagPanelViewModelAsync(
+            existingTagModel, cancellationToken),
          Posts = new PostListViewModel()
          {
             Items = posts.Select(post => new PostListItemViewModel(post)).ToList(),
-         }
+         },
+         TagEditOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = WritingAdminIds.TagEditOffcanvas,
+            Title = "Edit writing tag",
+         },
+         StyleEditOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = WritingAdminIds.StyleEditOffcanvas,
+            Title = "Edit post style",
+         },
       };
+   }
+
+   private async Task<WritingTagPanelViewModel> GetTagPanelViewModelAsync(
+      WritingTagEditViewModel? existingTagModel,
+      CancellationToken cancellationToken)
+   {
+      return new WritingTagPanelViewModel()
+      {
+         Create = existingTagModel ?? new WritingTagEditViewModel(),
+         Items = await GetTagListViewModelAsync(cancellationToken),
+      };
+   }
+
+   private async Task<IReadOnlyList<WritingTagEditViewModel>> GetTagListViewModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var tags = await _writingStore.GetTagsAsync(cancellationToken);
+      return tags.Select(tag => new WritingTagEditViewModel(tag)).ToList();
+   }
+
+   private async Task<PostStylePanelViewModel> GetStylePanelViewModelAsync(
+      PostStyleEditViewModel? existingModel,
+      CancellationToken cancellationToken)
+   {
+      return new PostStylePanelViewModel()
+      {
+         Create = existingModel ?? new PostStyleEditViewModel(),
+         Items = await GetStyleListAsync(cancellationToken),
+      };
+   }
+
+   private async Task<IReadOnlyList<PostStyleEditViewModel>> GetStyleListAsync(
+      CancellationToken cancellationToken)
+   {
+      var styles = await _writingStore.GetPostStylesAsync(cancellationToken);
+      return styles.Select(style => new PostStyleEditViewModel(style)).ToList();
    }
 
    private readonly IWritingStore _writingStore;

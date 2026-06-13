@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using DavidBrowning.Models.Writing;
 using DavidBrowning.Models;
+using System;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
@@ -14,6 +15,7 @@ public sealed class WritingTagEditViewModel
 
    [Required]
    [StringLength(DataConstants.MaxLabelLength)]
+   [Display(Name = "Display Name")]
    public string? DisplayName { get; set; }
 
    [Required]
@@ -32,5 +34,18 @@ public sealed class WritingTagEditViewModel
       Id = tag.Id;
       DisplayName = tag.DisplayName;
       Slug = tag.Slug;
+   }
+
+   public WritingTag ToTag()
+   {
+      ArgumentNullException.ThrowIfNullOrWhiteSpace(DisplayName);
+      ArgumentNullException.ThrowIfNullOrWhiteSpace(Slug);
+
+      return new WritingTag()
+      {
+         Id = Id ?? 0,
+         DisplayName = DisplayName,
+         Slug = Slug,
+      };
    }
 }

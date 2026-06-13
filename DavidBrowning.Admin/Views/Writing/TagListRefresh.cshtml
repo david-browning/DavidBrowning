@@ -1,0 +1,10 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model IReadOnlyList<DavidBrowning.Admin.ViewModels.Writing.WritingTagEditViewModel>
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<div id="@WritingAdminIds.TagListRegion" hx-swap-oob="innerHTML">
+	<partial name="TagList" model="Model" />
+</div>

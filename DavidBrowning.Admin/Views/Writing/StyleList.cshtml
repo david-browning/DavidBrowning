@@ -2,96 +2,39 @@
    Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
-@model DavidBrowning.Admin.ViewModels.Writing.PostStylePanelViewModel
+@model IReadOnlyList<DavidBrowning.Admin.ViewModels.Writing.PostStyleEditViewModel>
 
-<section class="card">
-	<div class="card-body">
-		<h2 class="h4 card-title">Post styles</h2>
-		<p class="card-text text-secondary">
-			Define how different kinds of writing should be presented.
-		</p>
-
-		<form asp-controller="Writing" asp-action="StyleCreate" method="post">
-			<div class="mb-3">
-				<label asp-for="Create.DisplayName" class="form-label">
-					Display name
-				</label>
-				<input asp-for="Create.DisplayName" class="form-control"
-					   autocomplete="off" />
-				<span asp-validation-for="Create.DisplayName"
-					  class="text-danger"></span>
-			</div>
-
-			<div class="mb-3">
-				<label asp-for="Create.Slug" class="form-label"></label>
-				<input asp-for="Create.Slug" class="form-control" autocomplete="off" />
-				<span asp-validation-for="Create.Slug"
-					  class="text-danger"></span>
-			</div>
-
-			<div class="mb-3">
-				<label asp-for="Create.Description" class="form-label"></label>
-				<textarea asp-for="Create.Description" class="form-control" rows="2">
-				</textarea>
-				<span asp-validation-for="Create.Description" class="text-danger"></span>
-			</div>
-
-			<div class="form-check mb-3">
-				<input asp-for="Create.IsActive" class="form-check-input" type="checkbox" />
-				<label asp-for="Create.IsActive" class="form-check-label">
-					Available for posts
-				</label>
-			</div>
-
-			<button class="btn btn-primary" type="submit">
-				<i class="fa-solid fa-plus me-1" aria-hidden="true"></i>
-				Add style
-			</button>
-		</form>
-	</div>
-
-	<div class="card-footer bg-transparent">
-		@if (Model.Items.Count == 0)
+@if (Model.Count == 0)
+{
+	<p class="text-secondary mb-0">No post styles have been created.</p>
+}
+else
+{
+	<ul class="list-group list-group-flush">
+		@foreach (var style in Model.OrderBy(style => style.SortOrder).ThenBy(style => style.DisplayName))
 		{
-			<p class="text-secondary mb-0">No post styles have been created.</p>
-		}
-		else
-		{
-			<ul class="list-group list-group-flush">
-				@foreach (var style in Model.Items.OrderBy(style => style.SortOrder).ThenBy(style => style.DisplayName))
-				{
-					<li class="list-group-item px-0">
-						<div class="d-flex justify-content-between align-items-center gap-2">
-							<div class="overflow-hidden">
-								<div class="d-flex flex-wrap align-items-center gap-2">
-									<span class="fw-semibold">@style.DisplayName</span>
-									@if (!style.IsActive)
-									{
-										<span class="badge text-bg-secondary">Hidden</span>
-									}
-								</div>
-								<div class="small text-secondary text-truncate">@style.Slug</div>
-							</div>
-
-							<div class="d-flex gap-1 flex-shrink-0">
-								<a class="btn btn-sm btn-outline-primary"
-								   asp-controller="Writing" asp-action="StyleEdit"
-								   asp-route-id="@style.Id" aria-label="Edit @style.DisplayName">
-									<i class="fa-solid fa-pen" aria-hidden="true"></i>
-								</a>
-
-								<form asp-controller="Writing" asp-action="StyleDelete"
-									  asp-route-id="@style.Id" method="post">
-									<button class="btn btn-sm btn-outline-danger"
-											type="submit" aria-label="Delete @style.DisplayName">
-										<i class="fa-solid fa-trash" aria-hidden="true"></i>
-									</button>
-								</form>
-							</div>
+			<li class="list-group-item px-0">
+				<div class="d-flex justify-content-between align-items-center gap-2">
+					<div class="overflow-hidden">
+						<div class="d-flex flex-wrap align-items-center gap-2">
+							<span class="fw-semibold">@style.DisplayName</span>
+							@if (!style.IsActive)
+							{
+								<span class="badge text-bg-secondary">Hidden</span>
+							}
 						</div>
-					</li>
-				}
-			</ul>
+						<div class="small text-secondary text-truncate">@style.Slug</div>
+					</div>
+
+					<div class="d-flex gap-1 flex-shrink-0">
+						<a class="btn btn-sm btn-outline-primary"
+						   asp-controller="Writing" asp-action="StyleEdit"
+						   asp-route-id="@style.Id" aria-label="Edit @style.DisplayName">
+							<i class="fa-solid fa-pen" aria-hidden="true"></i>
+						</a>
+					</div>
+				</div>
+			</li>
 		}
-	</div>
-</section>
+	</ul>
+}
