@@ -23,4 +23,11 @@ public static class WritingAdminIds
 
 
    public const string PostListRegion = "writing-post-list-region";
+
+
+   public const string PostCreateMetadataRegion = "post-create-metadata-region";
+
+   public const string PostRevisionHistoryRegion = "post-revisions-region";
+
+   public const string PostRevisionContentRegion = "post-revision-content-region";
 }

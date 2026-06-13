@@ -44,7 +44,7 @@ public sealed class PostRevision : IDateCreatedTrackedEntity
    [StringLength(DataConstants.MaxNameLength)]
    public required string CreatedBy { get; set; }
 
-   public required DateTime CreatedAtUtc { get; set; }
+   public DateTime CreatedAtUtc { get; set; }
 
    /// <summary>
    /// A revision may or may not have text.

@@ -85,10 +85,21 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentException.ThrowIfNullOrWhiteSpace(slug);
-
-      var post = await CreatePublishedPostDetailQuery()
+      return await CreatePublishedPostDetailQuery()
          .SingleOrDefaultAsync(post => post.Slug == slug, cancellationToken);
-      return post;
+   }
+
+   public async Task<Post?> GetPostAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.Posts
+         .AsNoTracking()
+         .Include(post => post.PostStyle)
+         .Include(post => post.Revisions.OrderBy(rev => rev.RevisionNumber))
+         .Include(post => post.Tags)
+            .ThenInclude(tag => tag.WritingTag)
+         .SingleOrDefaultAsync(post => post.Id == id, cancellationToken);
    }
 
    public async Task<IReadOnlyList<WritingTag>> GetTagsAsync(

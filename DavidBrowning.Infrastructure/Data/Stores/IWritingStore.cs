@@ -24,6 +24,10 @@ public interface IWritingStore
       string slug,
       CancellationToken cancellationToken = default);
 
+   Task<Post?> GetPostAsync(
+      int id,
+      CancellationToken cancellationToken= default);
+
    /// <summary>
    /// Gets all post tags.
    /// </summary>
