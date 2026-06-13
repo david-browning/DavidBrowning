@@ -105,20 +105,105 @@ public class SqlWritingStore : IWritingStore
          .SingleOrDefaultAsync(post => post.Id == id, cancellationToken);
    }
 
-   public Task<int> InsertPostAsync(
+   public async Task<int> InsertPostAsync(
       Post post,
       IReadOnlyList<int> writingTagIds,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(post);
+      ArgumentNullException.ThrowIfNull(writingTagIds);
+
+      if (await _dbContext.Posts.AnyAsync(
+         p => p.Id != post.Id && p.Slug == post.Slug,
+         cancellationToken))
+      {
+         throw new DuplicateSlugException(post.Slug);
+      }
+
+      bool styleExists = await _dbContext.PostStyles
+         .AnyAsync(style => style.Id == post.PostStyleId, cancellationToken);
+      if (!styleExists)
+      {
+         throw new InvalidOperationException(
+            "The selected post style does not exist.");
+      }
+
+      var distinctTagIds = writingTagIds.Distinct().ToHashSet();
+      int validTagCount = await _dbContext.WritingTags
+         .CountAsync(tag => distinctTagIds.Contains(tag.Id), cancellationToken);
+      if (validTagCount != distinctTagIds.Count)
+      {
+         throw new InvalidOperationException(
+            "One or more selected writing tags do not exist.");
+      }
+
+      var utcNow = DateTime.UtcNow;
+
+      post.Id = 0;
+      post.CreatedDateUtc = utcNow;
+      post.LastUpdatedDateUtc = utcNow;
+      post.CurrentRevisionId = null;
+      post.CurrentRevision = null;
+      post.PostStyle = null;
+
+      foreach (int tagId in distinctTagIds)
+      {
+         post.Tags.Add(new PostTag()
+         {
+            WritingTagId = tagId,
+         });
+      }
+
+      _dbContext.Posts.Add(post);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return post.Id;
    }
 
-   public Task<bool> UpdatePostAsync(
+   public async Task<bool> UpdatePostAsync(
       Post post,
       IReadOnlyList<int> writingTagIds,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(post);
+      ArgumentNullException.ThrowIfNull(writingTagIds);
+      var existing = await _dbContext.Posts
+         .Include(p => p.Tags)
+         .SingleOrDefaultAsync(p => p.Id == post.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      if (await _dbContext.Posts.AnyAsync(
+         p => p.Id != post.Id && p.Slug == post.Slug,
+         cancellationToken))
+      {
+         throw new DuplicateSlugException(post.Slug);
+      }
+
+      var distinctTagIds = writingTagIds.Distinct().ToHashSet();
+
+      int validTagCount = await _dbContext.WritingTags
+         .CountAsync(tag => distinctTagIds.Contains(tag.Id), cancellationToken);
+      if (validTagCount != distinctTagIds.Count)
+      {
+         throw new InvalidOperationException(
+            "One or more selected writing tags do not exist.");
+      }
+
+      existing.IsFeatured = post.IsFeatured;
+      existing.PostStyleId = post.PostStyleId;
+      existing.Slug = post.Slug;
+      existing.Status = post.Status;
+      existing.Subtitle = post.Subtitle;
+      existing.Summary = post.Summary;
+      existing.Title = post.Title;
+      existing.PublishedDateUtc = post.PublishedDateUtc;
+      existing.LastUpdatedDateUtc = DateTime.UtcNow;
+
+      UpdatePostTags(existing, distinctTagIds);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    public async Task<PostRevision?> GetPostRevisionAsync(
@@ -345,6 +430,36 @@ public class SqlWritingStore : IWritingStore
          .OrderByDescending(post => post.PublishedDateUtc)
          .ThenByDescending(post => post.CreatedDateUtc)
          .ThenByDescending(post => post.Id);
+   }
+
+   private static void UpdatePostTags(
+      Post existing,
+      IReadOnlySet<int> selectedTagIds)
+   {
+      var existingTagIds = existing.Tags
+         .Select(tag => tag.WritingTagId)
+         .ToHashSet();
+
+      var tagsToRemove = existing.Tags
+         .Where(tag => !selectedTagIds.Contains(tag.WritingTagId))
+         .ToList();
+
+      foreach (var tag in tagsToRemove)
+      {
+         existing.Tags.Remove(tag);
+      }
+
+      var tagIdsToAdd = selectedTagIds
+         .Where(tagId => !existingTagIds.Contains(tagId));
+
+      foreach (int tagId in tagIdsToAdd)
+      {
+         existing.Tags.Add(new PostTag()
+         {
+            PostId = existing.Id,
+            WritingTagId = tagId,
+         });
+      }
    }
 
    private readonly ILogger<SqlWritingStore> _logger;
