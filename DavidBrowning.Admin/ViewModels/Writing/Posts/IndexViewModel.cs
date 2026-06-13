@@ -9,7 +9,7 @@ public class IndexViewModel
 {
    public required PostMetadataViewModel Metadata { get; set; }
 
-   public required IReadOnlyList<PostRevision> RevisionHistory { get; set; }
+   public required PostRevisionHistoryViewModel RevisionHistory { get; set; }
 
    public int? CurrentRevisionId { get; set; }
 

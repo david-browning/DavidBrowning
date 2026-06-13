@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Admin.ViewModels.Writing.Posts;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,8 @@ public partial class WritingController
    public async Task<IActionResult> PostIndex(
       CancellationToken cancellationToken)
    {
-      return View(GetPostIndexViewModel(null, null, cancellationToken));
+      return View(await GetPostIndexViewModelAsync(
+         null, null, cancellationToken));
    }
 
    [HttpGet]
@@ -29,11 +31,57 @@ public partial class WritingController
          return NotFound();
       }
 
-      return View(GetPostIndexViewModel(
+      return View(await GetPostIndexViewModelAsync(
          post, post.CurrentRevisionId, cancellationToken));
    }
 
-   private IndexViewModel GetPostIndexViewModel(
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public Task<IActionResult> PostCreate(
+      PostMetadataViewModel model,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public Task<IActionResult> PostEdit(
+      PostMetadataViewModel model,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpGet]
+   public Task<IActionResult> PostRevisionEdit(
+      int postId,
+      int? revisionId,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public Task<IActionResult> PostRevisionCreate(
+      PostRevisionContentViewModel model,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public Task<IActionResult> SetCurrentRevision(
+      int postId,
+      int revisionId,
+      CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   private async Task<IndexViewModel> GetPostIndexViewModelAsync(
       Post? post,
       int? selectedRevisionId,
       CancellationToken cancellationToken)
@@ -44,9 +92,15 @@ public partial class WritingController
          {
             Metadata = new PostMetadataViewModel()
             {
-               
+               PostStyleOptions = await GetPostStyleOptionsAsync(
+                  cancellationToken),
+               WritingTagOptions = await GetPostWritingTagOptionsAsync(
+                  cancellationToken),
             },
-            RevisionHistory = new List<PostRevision>(),
+            RevisionHistory = new PostRevisionHistoryViewModel()
+            {
+               PostId = 0,
+            }
          };
 
       }
@@ -54,13 +108,14 @@ public partial class WritingController
       return new IndexViewModel()
       {
          CurrentRevisionId = post.CurrentRevisionId,
-         Metadata = GetPostMetadata(post, cancellationToken),
-         RevisionHistory = post.Revisions.ToList(),
+         Metadata = await GetPostMetadataAsync(post, cancellationToken),
+         RevisionHistory = await GetRevisionHistoryViewModelAsync(
+            post, cancellationToken),
          RevisionContent = GetRevisionContentViewModel(post, selectedRevisionId),
       };
    }
 
-   private PostMetadataViewModel GetPostMetadata(
+   private async Task<PostMetadataViewModel> GetPostMetadataAsync(
       Post? post,
       CancellationToken cancellationToken)
    {
@@ -77,22 +132,50 @@ public partial class WritingController
          PublishedDateUtc = post?.PublishedDateUtc ?? null,
          EditMode = post is null ?
             ViewModels.EditModes.Create : ViewModels.EditModes.Edit,
+         PostStyleOptions = await GetPostStyleOptionsAsync(cancellationToken),
+         WritingTagOptions = await GetPostWritingTagOptionsAsync(cancellationToken),
+         WritingTagIds = post is null ?
+            new List<int>() :
+            post.Tags.Select(tag => tag.WritingTagId).ToList(),
       };
    }
 
    private PostRevisionContentViewModel GetRevisionContentViewModel(
       Post post,
-      int? id)
+      int? revisionId)
    {
-      var rev = post.Revisions.FirstOrDefault(revision => revision.Id == id);
-      return new PostRevisionContentViewModel()
+      if (revisionId is null)
+      {
+         return new PostRevisionContentViewModel()
+         {
+            PostId = post.Id,
+            ContentFormat = ContentFormat.Markdown,
+         };
+      }
+
+      var revision = post.Revisions.SingleOrDefault(
+         revision => revision.Id == revisionId.Value);
+
+      if (revision is null)
+      {
+         throw new InvalidOperationException(
+            "The selected revision does not belong to this post.");
+      }
+
+      return new PostRevisionContentViewModel(revision, post.CurrentRevisionId);
+   }
+
+   private async Task<PostRevisionHistoryViewModel> GetRevisionHistoryViewModelAsync(
+      Post post,
+      CancellationToken cancellationToken)
+   {
+      return new PostRevisionHistoryViewModel()
       {
          PostId = post.Id,
-         Id = id,
-         Content = rev?.Content,
-         ContentFormat = rev?.ContentFormat,
-         CreatedBy = rev?.CreatedBy,
-         RevisionNumber = rev?.RevisionNumber
+         CurrentRevisionId = post.CurrentRevisionId,
+         SelectedRevisionId = post.CurrentRevisionId,
+         Items = post.Revisions.Select(
+            rev => new PostRevisionListItemViewModel(rev)).ToList()
       };
    }
 
@@ -104,5 +187,29 @@ public partial class WritingController
       {
          Items = posts.Select(post => new PostListItemViewModel(post)).ToList(),
       };
+   }
+
+   private async Task<IReadOnlyList<PostStyleOptionViewModel>> GetPostStyleOptionsAsync(
+      CancellationToken cancellationToken)
+   {
+      var styles = await _writingStore.GetPostStylesAsync(cancellationToken);
+      return styles.Select(style => new PostStyleOptionViewModel()
+      {
+         DisplayName = style.DisplayName,
+         Id = style.Id,
+         IsActive = style.IsActive,
+      }).ToList();
+   }
+
+   private async Task<IReadOnlyList<WritingTagOptionViewModel>> GetPostWritingTagOptionsAsync(
+      CancellationToken cancellationToken)
+   {
+      var tags = await _writingStore.GetTagsAsync(cancellationToken);
+      return tags.Select(tag => new WritingTagOptionViewModel()
+      {
+         DisplayName = tag.DisplayName,
+         Id = tag.Id,
+         Slug = tag.Slug,
+      }).ToList();
    }
 }

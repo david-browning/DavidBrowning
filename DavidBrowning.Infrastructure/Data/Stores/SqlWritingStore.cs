@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -95,11 +96,55 @@ public class SqlWritingStore : IWritingStore
    {
       return await _dbContext.Posts
          .AsNoTracking()
+         .AsSplitQuery()
          .Include(post => post.PostStyle)
-         .Include(post => post.Revisions.OrderBy(rev => rev.RevisionNumber))
+         .Include(post => post.Revisions.OrderByDescending(
+            revision => revision.RevisionNumber))
          .Include(post => post.Tags)
             .ThenInclude(tag => tag.WritingTag)
          .SingleOrDefaultAsync(post => post.Id == id, cancellationToken);
+   }
+
+   public Task<int> InsertPostAsync(
+      Post post,
+      IReadOnlyList<int> writingTagIds,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdatePostAsync(
+      Post post,
+      IReadOnlyList<int> writingTagIds,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<PostRevision?> GetPostRevisionAsync(
+      int postId,
+      int revisionId,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<PostRevision> InsertPostRevisionAsync(
+      int postId,
+      ContentFormat contentFormat,
+      string? content,
+      string createdBy,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> SetCurrentRevisionAsync(
+      int postId,
+      int revisionId,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
    }
 
    public async Task<IReadOnlyList<WritingTag>> GetTagsAsync(

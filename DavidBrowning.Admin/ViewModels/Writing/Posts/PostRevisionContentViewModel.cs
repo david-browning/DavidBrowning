@@ -23,25 +23,35 @@ public class PostRevisionContentViewModel
 
    public string? Content { get; set; }
 
+   public EditModes EditMode { get; set; } = EditModes.Create;
+
+   public DateTime? CreatedAtUtc { get; set; }
+
+   public bool IsCurrentRevision { get; set; }
+
    public PostRevisionContentViewModel()
    {
 
    }
 
    [SetsRequiredMembers]
-   public PostRevisionContentViewModel(PostRevision revision)
+   public PostRevisionContentViewModel(
+      PostRevision revision,
+      int? currentRevisionId)
    {
+      EditMode = EditModes.Edit;
       PostId = revision.PostId;
       Id = revision.Id;
       RevisionNumber = revision.RevisionNumber;
       CreatedBy = revision.CreatedBy;
+      CreatedAtUtc = revision.CreatedAtUtc;
       ContentFormat = revision.ContentFormat;
       Content = revision.Content;
+      IsCurrentRevision = revision.Id == currentRevisionId;
    }
 
    public PostRevision ToRevision()
    {
-      ArgumentNullException.ThrowIfNull(RevisionNumber);
       ArgumentNullException.ThrowIfNull(ContentFormat);
       ArgumentNullException.ThrowIfNullOrEmpty(CreatedBy);
 
@@ -49,7 +59,6 @@ public class PostRevisionContentViewModel
       {
          Id = Id ?? 0,
          PostId = PostId,
-         RevisionNumber = RevisionNumber.Value,
          ContentFormat = ContentFormat.Value,
          CreatedBy = CreatedBy,
          Content = Content,

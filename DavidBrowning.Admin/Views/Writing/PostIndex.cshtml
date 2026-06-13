@@ -17,7 +17,7 @@
 	</header>
 	<div class="row g-4 align-items-start">
 		<div class="col-12 col-xl-4">
-			<div id="@WritingAdminIds.PostCreateMetadataRegion">
+			<div id="@WritingAdminIds.PostMetadataRegion">
 				<partial name="PostMetadataEdit" model="Model.Metadata"/>
 			</div>
 		</div>
@@ -26,7 +26,7 @@
 			<div id="@WritingAdminIds.PostRevisionHistoryRegion">
 				<partial name="PostRevisionHistory" model="Model.RevisionHistory"/>
 			</div>
-			<div class="@WritingAdminIds.PostRevisionContentRegion">
+			<div id="@WritingAdminIds.PostRevisionContentRegion">
 				<partial name="PostRevisionEdit" model="Model.RevisionContent"/>
 			</div>
 		</div>

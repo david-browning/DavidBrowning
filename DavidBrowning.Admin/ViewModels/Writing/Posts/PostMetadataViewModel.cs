@@ -1,17 +1,20 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DavidBrowning.Admin.ViewModels.Writing.Posts;
 
 public class PostMetadataViewModel
 {
    public EditModes EditMode { get; set; } = EditModes.Create;
-   
+
    public int? Id { get; set; }
 
    [Required]
@@ -50,13 +53,23 @@ public class PostMetadataViewModel
 
    public DateTime? PublishedDateUtc { get; set; }
 
+   public List<int> WritingTagIds { get; set; } = new List<int>();
+
+   [BindNever]
+   public required IReadOnlyList<PostStyleOptionViewModel> PostStyleOptions { get; set; }
+
+   [BindNever]
+   public required IReadOnlyList<WritingTagOptionViewModel> WritingTagOptions { get; set; }
+
    public PostMetadataViewModel()
    {
 
    }
 
    [SetsRequiredMembers]
-   public PostMetadataViewModel(Post post)
+   public PostMetadataViewModel(Post post,
+      IReadOnlyList<PostStyleOptionViewModel> styles,
+      IReadOnlyList<WritingTagOptionViewModel> tags)
    {
       EditMode = EditModes.Edit;
       Id = post.Id;
@@ -68,5 +81,8 @@ public class PostMetadataViewModel
       Status = post.Status;
       PublishedDateUtc = post.PublishedDateUtc;
       IsFeatured = post.IsFeatured;
+      PostStyleOptions = styles;
+      WritingTagOptions = tags;
+      WritingTagIds = post.Tags.Select(tag => tag.WritingTagId).ToList();
    }
 }
