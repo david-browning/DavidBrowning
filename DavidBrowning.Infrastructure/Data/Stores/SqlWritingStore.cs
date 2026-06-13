@@ -121,30 +121,72 @@ public class SqlWritingStore : IWritingStore
       throw new NotImplementedException();
    }
 
-   public Task<PostRevision?> GetPostRevisionAsync(
+   public async Task<PostRevision?> GetPostRevisionAsync(
       int postId,
       int revisionId,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      return await _dbContext.PostRevisions
+         .AsNoTracking()
+         .SingleOrDefaultAsync(rev =>
+            rev.PostId == postId && rev.Id == revisionId, cancellationToken);
    }
 
-   public Task<PostRevision> InsertPostRevisionAsync(
+   public async Task<PostRevision?> InsertPostRevisionAsync(
       int postId,
       ContentFormat contentFormat,
       string? content,
       string createdBy,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      var post = await _dbContext.Posts
+         .Include(post => post.Revisions)
+         .SingleOrDefaultAsync(post => post.Id == postId, cancellationToken);
+      if (post is null)
+      {
+         return null;
+      }
+
+      int nextRevisionNumber = post.Revisions
+         .Select(revision => revision.RevisionNumber)
+         .DefaultIfEmpty(0)
+         .Max() + 1;
+
+      var revision = new PostRevision()
+      {
+         PostId = post.Id,
+         RevisionNumber = nextRevisionNumber,
+         ContentFormat = contentFormat,
+         Content = content,
+         CreatedBy = createdBy,
+      };
+
+      _dbContext.PostRevisions.Add(revision);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      if (post.CurrentRevisionId is null)
+      {
+         post.CurrentRevisionId = revision.Id;
+         await _dbContext.SaveChangesAsync(cancellationToken);
+      }
+
+      return revision;
    }
 
-   public Task<bool> SetCurrentRevisionAsync(
+   public async Task<bool> SetCurrentRevisionAsync(
       int postId,
       int revisionId,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      var post = await _dbContext.Posts
+         .SingleOrDefaultAsync(post => post.Id == postId);
+      if (post is null)
+      {
+         return false;
+      }
+
+      post.CurrentRevisionId = revisionId;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    public async Task<IReadOnlyList<WritingTag>> GetTagsAsync(

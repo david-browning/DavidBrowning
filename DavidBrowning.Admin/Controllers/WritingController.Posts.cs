@@ -86,10 +86,7 @@ public partial class WritingController
 
       string createdBy = "David Browning";
       await _writingStore.InsertPostRevisionAsync(
-         model.PostId,
-         model.ContentFormat!.Value,
-         model.Content,
-         createdBy,
+         model.PostId, model.ContentFormat!.Value, model.Content, createdBy,
          cancellationToken);
 
 

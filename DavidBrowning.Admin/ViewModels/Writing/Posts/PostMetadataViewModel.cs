@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DavidBrowning.Infrastructure.Validators;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -53,6 +54,8 @@ public class PostMetadataViewModel
 
    public DateTime? PublishedDateUtc { get; set; }
 
+   [CollectionCount(1, MaximumCount = 10,
+      ErrorMessage = "Select between 1 and 10 writing tags.")]
    public List<int> WritingTagIds { get; set; } = new List<int>();
 
    [BindNever]
@@ -83,7 +86,10 @@ public class PostMetadataViewModel
       IsFeatured = post.IsFeatured;
       PostStyleOptions = styles;
       WritingTagOptions = tags;
-      WritingTagIds = post.Tags.Select(tag => tag.WritingTagId).ToList();
+      WritingTagIds = post.Tags
+         .Select(tag => tag.WritingTagId)
+         .Order()
+         .ToList();
    }
 
    public Post ToPost()

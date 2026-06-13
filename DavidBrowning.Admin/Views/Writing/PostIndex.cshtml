@@ -12,40 +12,33 @@
 	<header class="mb-4">
 		<h1>Posts</h1>
 		<p class="text-secondary mb-0">
-			Create and edit posts.
+			Create and edit posts
 		</p>
 	</header>
 	<div class="row g-4 align-items-start">
 		<div class="col-12 col-xl-4">
-			<div class="col-12 col-xl-8">
-				@if (Model.Metadata.Id is null)
-				{
-					<div class="alert alert-secondary" role="status">
-						Save the post metadata before adding revisions.
-					</div>
-				}
-				else
-				{
-					<div id="@WritingAdminIds.PostRevisionHistoryRegion">
-						<partial name="PostRevisionHistory"
-								 model="Model.RevisionHistory" />
-					</div>
-
-					<div id="@WritingAdminIds.PostRevisionContentRegion">
-						<partial name="PostRevisionEdit"
-								 model="Model.RevisionContent" />
-					</div>
-				}
+			<div id="@WritingAdminIds.PostMetadataRegion">
+				<partial name="PostMetadataEdit" model="Model.Metadata" />
 			</div>
 		</div>
 
 		<div class="col-12 col-xl-8">
-			<div id="@WritingAdminIds.PostRevisionHistoryRegion">
-				<partial name="PostRevisionHistory" model="Model.RevisionHistory"/>
-			</div>
-			<div id="@WritingAdminIds.PostRevisionContentRegion">
-				<partial name="PostRevisionEdit" model="Model.RevisionContent"/>
-			</div>
+			@if (Model.Metadata.Id is null)
+			{
+				<div class="alert alert-secondary" role="status">
+					Save the post metadata before adding revisions.
+				</div>
+			}
+			else
+			{
+				<div id="@WritingAdminIds.PostRevisionHistoryRegion">
+					<partial name="PostRevisionHistory" model="Model.RevisionHistory" />
+				</div>
+				<div id="@WritingAdminIds.PostRevisionContentRegion">
+					<partial name="PostRevisionEdit" model="Model.RevisionContent" />
+				</div>
+			}
 		</div>
 	</div>
 </div>
+<script src="~/js/post-edit.js" asp-append-version="true"></script>

@@ -44,7 +44,7 @@ public interface IWritingStore
       int revisionId,
       CancellationToken cancellationToken = default);
 
-   Task<PostRevision> InsertPostRevisionAsync(
+   Task<PostRevision?> InsertPostRevisionAsync(
       int postId,
       ContentFormat contentFormat,
       string? content,
