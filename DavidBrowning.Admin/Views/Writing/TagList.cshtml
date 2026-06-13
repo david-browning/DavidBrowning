@@ -2,4 +2,47 @@
    Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
-@model DavidBrowning.Admin.ViewModels.Writing.WritingTagListViewModel
+@model IReadOnlyList<DavidBrowning.Admin.ViewModels.Writing.WritingTagEditViewModel>
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Writing
+
+@if (Model.Count == 0)
+{
+	<p class="text-secondary mb-0">
+		No writing tags have been created.
+	</p>
+}
+else
+{
+	<ul class="list-group list-group-flush">
+		@foreach (var tag in Model.OrderBy(tag => tag.DisplayName))
+		{
+			<li class="list-group-item px-0">
+				<div class="d-flex justify-content-between align-items-center gap-2">
+					<div class="overflow-hidden">
+						<div class="fw-semibold text-truncate">@tag.DisplayName</div>
+						<div class="small text-secondary text-truncate">@tag.Slug</div>
+					</div>
+
+					<div class="d-flex gap-1 flex-shrink-0">
+						<a class="btn btn-sm btn-outline-primary"
+						   asp-controller="Writing"
+						   asp-action="TagEdit"
+						   asp-route-id="@tag.Id"
+						   hx-get="@Url.Action(nameof(WritingController.TagEdit), "Writing", new { id = tag.Id })"
+						   hx-target="@AdminOffcanvasIds.BodySelector(WritingAdminIds.TagEditOffcanvas)"
+						   hx-swap="innerHTML"
+						   hx-indicator="@AdminOffcanvasIds.OverlaySelector(WritingAdminIds.TagEditOffcanvas)"
+						   data-bs-toggle="offcanvas"
+						   data-bs-target="@AdminOffcanvasIds.Selector(WritingAdminIds.TagEditOffcanvas)"
+						   aria-controls="@WritingAdminIds.TagEditOffcanvas"
+						   aria-label="Edit @tag.DisplayName">
+							<i class="fa-solid fa-pen" aria-hidden="true"></i>
+						</a>
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
+}

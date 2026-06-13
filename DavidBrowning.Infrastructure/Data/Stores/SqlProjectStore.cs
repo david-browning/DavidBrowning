@@ -267,8 +267,7 @@ public sealed class SqlProjectStore : IProjectStore
       CancellationToken cancellationToken)
    {
       var publicId = await _visibilityLookup.GetIdBySlugAsync(
-         "public",
-         cancellationToken);
+         "public", cancellationToken);
 
       if (publicId == null)
       {

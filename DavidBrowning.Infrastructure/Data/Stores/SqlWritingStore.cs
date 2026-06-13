@@ -57,6 +57,20 @@ public class SqlWritingStore : IWritingStore
       };
    }
 
+   public async Task<IReadOnlyList<Post>> GetAllPostsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.Posts
+         .AsNoTracking()
+         .Include(post => post.PostStyle)
+         .Include(post => post.Revisions)
+         .Include(post => post.Tags)
+         .OrderByDescending(post => post.PublishedDateUtc)
+         .ThenByDescending(post => post.CreatedDateUtc)
+         .ThenByDescending(post => post.Id)
+         .ToListAsync(cancellationToken);
+   }
+
    public async Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
       CancellationToken cancellationToken = default)
    {
@@ -81,8 +95,57 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       return await _dbContext.WritingTags
+         .AsNoTracking()
          .OrderBy(tag => tag.DisplayName)
          .ToListAsync(cancellationToken);
+   }
+
+   public Task<WritingTag?> GetTagAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return _dbContext.WritingTags
+         .AsNoTracking()
+         .SingleOrDefaultAsync(tag => tag.Id == id, cancellationToken);
+   }
+
+   public async Task InsertTagAsync(
+      WritingTag tag,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(tag);
+      if (await _dbContext.SlugExistsAsync<WritingTag>(
+         tag.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
+      _dbContext.WritingTags.Add(tag);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task<bool> UpdateTagAsync(
+      WritingTag tag,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(tag);
+      if (await _dbContext.SlugExistsAsync<WritingTag>(
+         tag.Slug, excludedId: tag.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
+      var stored = await _dbContext.WritingTags
+         .SingleOrDefaultAsync(t => t.Id == tag.Id, cancellationToken);
+      if(stored is null)
+      {
+         return false;
+      }
+
+      stored.Slug = tag.Slug;
+      stored.DisplayName = tag.DisplayName;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    public async Task<IReadOnlyList<Post>> GetPublishedPostsByTagSlugAsync(
@@ -95,6 +158,65 @@ public class SqlWritingStore : IWritingStore
          .Where(post => post.Tags.Any(postTag => postTag.WritingTag!.Slug == tagSlug))
          .ToListAsync(cancellationToken);
       return posts;
+   }
+
+   public async Task<IReadOnlyList<PostStyle>> GetPostStylesAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.PostStyles
+         .AsNoTracking()
+         .OrderBy(style => style.SortOrder)
+         .ToListAsync(cancellationToken);
+   }
+
+   public Task<PostStyle?> GetPostStyleAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return _dbContext.PostStyles
+         .AsNoTracking()
+         .SingleOrDefaultAsync(style => style.Id == id, cancellationToken);
+   }
+
+   public async Task InsertPostStyleAsync(
+      PostStyle style,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(style);
+      if (await _dbContext.SlugExistsAsync<PostStyle>(
+         style.Slug,cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(style.Slug);
+      }
+
+      _dbContext.PostStyles.Add(style);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task<bool> UpdatePostStyleAsync(
+      PostStyle style,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(style);
+      if (await _dbContext.SlugExistsAsync<PostStyle>(
+         style.Slug, excludedId: style.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(style.Slug);
+      }
+
+      var stored = await _dbContext.PostStyles
+         .SingleOrDefaultAsync(s => s.Id == style.Id, cancellationToken);
+      if (stored is null)
+      {
+         return false;
+      }
+
+      stored.IsActive = style.IsActive;
+      stored.Slug = style.Slug;
+      stored.Description = style.Description;
+      stored.DisplayName = style.DisplayName;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    private IQueryable<Post> CreatePublishedPostSummaryQuery()
@@ -116,7 +238,6 @@ public class SqlWritingStore : IWritingStore
       return _dbContext.Posts
          .AsNoTracking()
          .Include(post => post.PostStyle)
-         .Include(post => post.CurrentRevision)
          .Include(post => post.Tags)
             .ThenInclude(postTag => postTag.WritingTag)
          .Include(post => post.CurrentRevision)

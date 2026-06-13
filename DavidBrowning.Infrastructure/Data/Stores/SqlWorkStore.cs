@@ -56,8 +56,7 @@ public sealed class SqlWorkStore : IWorkStore
    {
       ArgumentNullException.ThrowIfNull(experience);
       _dbContext.Experiences.Add(experience);
-      await _dbContext.SaveChangesAsync(
-         cancellationToken);
+      await _dbContext.SaveChangesAsync(cancellationToken);
    }
 
    public async Task<bool> UpdateExperienceAsync(

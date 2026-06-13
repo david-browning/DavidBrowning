@@ -14,6 +14,9 @@ public interface IWritingStore
       int pageSize,
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<Post>> GetAllPostsAsync(
+      CancellationToken cancellationToken = default);
+
    Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
       CancellationToken cancellationToken = default);
 
@@ -29,7 +32,34 @@ public interface IWritingStore
    Task<IReadOnlyList<WritingTag>> GetTagsAsync(
       CancellationToken cancellationToken = default);
 
+   Task<WritingTag?> GetTagAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task InsertTagAsync(
+      WritingTag tag,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateTagAsync(
+      WritingTag tag,
+      CancellationToken cancellationToken= default);
+
    Task<IReadOnlyList<Post>> GetPublishedPostsByTagSlugAsync(
       string tagSlug,
+      CancellationToken cancellationToken = default);
+
+   Task<IReadOnlyList<PostStyle>> GetPostStylesAsync(
+      CancellationToken cancellationToken = default);
+
+   Task<PostStyle?> GetPostStyleAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task InsertPostStyleAsync(
+      PostStyle style,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdatePostStyleAsync(
+      PostStyle style,
       CancellationToken cancellationToken = default);
 }

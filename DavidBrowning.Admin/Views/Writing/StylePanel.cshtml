@@ -1,0 +1,25 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Writing.PostStylePanelViewModel
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<section class="card">
+	<div class="card-body">
+		<h2 class="card-title">Post styles</h2>
+		<p class="card-text text-secondary">
+			Create post styles which affect formatting.
+		</p>
+
+		<div id="@WritingAdminIds.StyleCreateRegion">
+			<partial name="StyleEdit" model="Model.Create" />
+		</div>
+	</div>
+
+	<div class="card-footer bg-transparent">
+		<div id="@WritingAdminIds.StyleListRegion">
+			<partial name="StyleList" model="Model.Items" />
+		</div>
+	</div>
+</section>

@@ -1,7 +1,52 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
-@model DavidBrowning.Admin.ViewModels.Writing.PostStyleListViewModel
-@{
+@model IReadOnlyList<DavidBrowning.Admin.ViewModels.Writing.PostStyleEditViewModel>
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Writing
+
+@if (Model.Count == 0)
+{
+	<p class="text-secondary mb-0">No post styles have been created.</p>
+}
+else
+{
+	<ul class="list-group list-group-flush">
+		@foreach (var style in Model.OrderBy(style => style.SortOrder).ThenBy(style => style.DisplayName))
+		{
+			<li class="list-group-item px-0">
+				<div class="d-flex justify-content-between align-items-center gap-2">
+					<div class="overflow-hidden">
+						<div class="d-flex flex-wrap align-items-center gap-2">
+							<span class="fw-semibold">@style.DisplayName</span>
+							@if (!style.IsActive)
+							{
+								<span class="badge text-bg-secondary">Hidden</span>
+							}
+						</div>
+						<div class="small text-secondary text-truncate">@style.Slug</div>
+					</div>
+
+					<div class="d-flex gap-1 flex-shrink-0">
+						<a class="btn btn-sm btn-outline-primary"
+						   asp-controller="Writing"
+						   asp-action="StyleEdit"
+						   asp-route-id="@style.Id"
+						   hx-get="@Url.Action(nameof(WritingController.StyleEdit), "Writing", new { id = style.Id })"
+						   hx-target="@AdminOffcanvasIds.BodySelector(WritingAdminIds.StyleEditOffcanvas)"
+						   hx-swap="innerHTML"
+						   hx-indicator="@AdminOffcanvasIds.OverlaySelector(WritingAdminIds.StyleEditOffcanvas)"
+						   data-bs-toggle="offcanvas"
+						   data-bs-target="@AdminOffcanvasIds.Selector(WritingAdminIds.StyleEditOffcanvas)"
+						   aria-controls="@WritingAdminIds.StyleEditOffcanvas"
+						   aria-label="Edit @style.DisplayName">
+							<i class="fa-solid fa-pen" aria-hidden="true"></i>
+						</a>
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
 }

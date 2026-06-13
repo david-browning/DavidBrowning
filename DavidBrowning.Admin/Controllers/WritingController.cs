@@ -1,190 +1,245 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using DavidBrowning.Admin.Extensions;
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing;
-
+using DavidBrowning.Infrastructure.Data;
+using DavidBrowning.Infrastructure.Data.Stores;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
-public class WritingController : Controller
+public partial class WritingController : Controller
 {
-   public Task<IActionResult> Index(
-      CancellationToken cancellationToken)
+   public WritingController(IWritingStore writingStore)
    {
-      throw new NotImplementedException();
+      _writingStore = writingStore;
    }
 
-   public Task<IActionResult> PostList(
+   public async Task<IActionResult> Index(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult PostCreate()
-   {
-      throw new NotImplementedException();
+      return View(await GetIndexModelAsync(null, null, cancellationToken));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostCreate(
-      PostEditViewModel model,
+   public async Task<IActionResult> StyleCreate(
+      PostStyleEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(StyleEdit), model);
+      }
+
+      try
+      {
+         await _writingStore.InsertPostStyleAsync(
+            model.ToPostStyle(), cancellationToken);
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post style already uses this slug.");
+         return PartialView(nameof(StyleEdit), model);
+      }
+
+      ModelState.Clear();
+      return PartialView("StyleCreateRefresh",
+         await GetStylePanelViewModelAsync(null, cancellationToken));
    }
 
    [HttpGet]
-   public Task<IActionResult> PostEdit(
+   public async Task<IActionResult> StyleEdit(
       int id,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var style = await _writingStore.GetPostStyleAsync(id, cancellationToken);
+      if (style is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(StyleEdit), new PostStyleEditViewModel(style));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostEdit(
-      int id,
-      PostEditViewModel model,
+   public async Task<IActionResult> StyleEdit(
+      PostStyleEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
-   }
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(StyleEdit), model);
+      }
 
-   [HttpGet]
-   public Task<IActionResult> PostDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
+      try
+      {
+         var updated = await _writingStore.UpdatePostStyleAsync(
+            model.ToPostStyle(), cancellationToken);
 
-   [HttpPost]
-   [ActionName(nameof(PostDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostDeleteConfirmed(
-      PostDeleteViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
+         if (!updated)
+         {
+            return NotFound();
+         }
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post style already uses this slug.");
+         return PartialView(nameof(StyleEdit), model);
+      }
 
-   public Task<IActionResult> RevisionList(
-      int postId,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult RevisionCreate(
-      int postId)
-   {
-      throw new NotImplementedException();
+      Response.TriggerAdminOffcanvasClose(WritingAdminIds.StyleEditOffcanvas);
+      return PartialView("StyleListRefresh",
+         await GetStyleListAsync(cancellationToken));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> RevisionCreate(
-      PostRevisionEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> RevisionEdit(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> RevisionEdit(
-      int id,
-      PostRevisionEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public Task<IActionResult> RevisionDelete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ActionName(nameof(RevisionDelete))]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> RevisionDeleteConfirmed(
-      PostRevisionDeleteModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> TagList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
-   public IActionResult TagCreate()
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagCreate(
+   public async Task<IActionResult> TagCreate(
       WritingTagEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(TagEdit), model);
+      }
+
+      try
+      {
+         await _writingStore.InsertTagAsync(model.ToTag(), cancellationToken);
+      }
+      catch(DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post tag already uses this slug.");
+         return PartialView(nameof(TagEdit), model);
+      }
+
+      ModelState.Clear();
+      return PartialView("TagCreateRefresh",
+         await GetTagPanelViewModelAsync(null, cancellationToken));
    }
 
    [HttpGet]
-   public Task<IActionResult> TagEdit(
+   public async Task<IActionResult> TagEdit(
       int id,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var tag = await _writingStore.GetTagAsync(id, cancellationToken);
+      if (tag is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(TagEdit), new WritingTagEditViewModel(tag));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagEdit(
-      int id,
+   public async Task<IActionResult> TagEdit(
       WritingTagEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(TagEdit), model);
+      }
+
+      try
+      {
+         var updated = await _writingStore.UpdateTagAsync(
+            model.ToTag(), cancellationToken);
+
+         if (!updated)
+         {
+            return NotFound();
+         }
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post tag already uses this slug.");
+         return PartialView(nameof(TagEdit), model);
+      }
+
+      Response.TriggerAdminOffcanvasClose(WritingAdminIds.TagEditOffcanvas);
+      return PartialView("TagListRefresh",
+         await GetTagListViewModelAsync(cancellationToken));
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagDelete(
-      int id,
+   private async Task<IndexViewModel> GetIndexModelAsync(
+      PostStyleEditViewModel? existingPostStyleModel,
+      WritingTagEditViewModel? existingTagModel,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var posts = await _writingStore.GetAllPostsAsync(cancellationToken);
+      return new IndexViewModel()
+      {
+         Styles = await GetStylePanelViewModelAsync(
+            existingPostStyleModel, cancellationToken),
+         Tags = await GetTagPanelViewModelAsync(
+            existingTagModel, cancellationToken),
+         Posts = new PostListViewModel()
+         {
+            Items = posts.Select(post => new PostListItemViewModel(post)).ToList(),
+         },
+         TagEditOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = WritingAdminIds.TagEditOffcanvas,
+            Title = "Edit writing tag",
+         },
+         StyleEditOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = WritingAdminIds.StyleEditOffcanvas,
+            Title = "Edit post style",
+         },
+      };
    }
 
-   public Task<IActionResult> StyleList(
+   private async Task<WritingTagPanelViewModel> GetTagPanelViewModelAsync(
+      WritingTagEditViewModel? existingTagModel,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return new WritingTagPanelViewModel()
+      {
+         Create = existingTagModel ?? new WritingTagEditViewModel(),
+         Items = await GetTagListViewModelAsync(cancellationToken),
+      };
    }
+
+   private async Task<IReadOnlyList<WritingTagEditViewModel>> GetTagListViewModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var tags = await _writingStore.GetTagsAsync(cancellationToken);
+      return tags.Select(tag => new WritingTagEditViewModel(tag)).ToList();
+   }
+
+   private async Task<PostStylePanelViewModel> GetStylePanelViewModelAsync(
+      PostStyleEditViewModel? existingModel,
+      CancellationToken cancellationToken)
+   {
+      return new PostStylePanelViewModel()
+      {
+         Create = existingModel ?? new PostStyleEditViewModel(),
+         Items = await GetStyleListAsync(cancellationToken),
+      };
+   }
+
+   private async Task<IReadOnlyList<PostStyleEditViewModel>> GetStyleListAsync(
+      CancellationToken cancellationToken)
+   {
+      var styles = await _writingStore.GetPostStylesAsync(cancellationToken);
+      return styles.Select(style => new PostStyleEditViewModel(style)).ToList();
+   }
+
+   private readonly IWritingStore _writingStore;
 }

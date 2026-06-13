@@ -1,11 +1,75 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Writing.WritingTagEditViewModel
-
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Writing
 @{
+	bool isEditMode = Model.EditMode == EditModes.Edit;
+
+	string formAction = isEditMode
+	   ? nameof(WritingController.TagEdit)
+	   : nameof(WritingController.TagCreate);
+
+	string htmxTarget = isEditMode
+	   ? AdminOffcanvasIds.BodySelector(WritingAdminIds.TagEditOffcanvas)
+	   : $"#{WritingAdminIds.TagCreateRegion}";
+
+	string overlaySelector = isEditMode
+	   ? AdminOffcanvasIds.OverlaySelector(WritingAdminIds.TagEditOffcanvas)
+	   : $"#{WritingAdminIds.TagCreateOverlay}";
 }
+
+<form asp-controller="Writing" asp-action="@formAction" method="post"
+	  hx-post="@Url.Action(formAction, "Writing")"
+	  hx-target="@htmxTarget"
+	  hx-swap="innerHTML"
+	  hx-disabled-elt="find fieldset"
+	  hx-indicator="@overlaySelector">
+	<fieldset>
+		<div asp-validation-summary="ModelOnly"
+			 class="alert alert-danger"
+			 role="alert">
+		</div>
+
+		@if (isEditMode)
+		{
+			<input asp-for="Id" type="hidden" />
+		}
+
+		<div class="mb-3">
+			<label asp-for="DisplayName" class="form-label"></label>
+			<input asp-for="DisplayName" class="form-control" autocomplete="off" />
+			<span asp-validation-for="DisplayName" class="text-danger"></span>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="Slug" class="form-label"></label>
+			<input asp-for="Slug" class="form-control" autocomplete="off" />
+			<span asp-validation-for="Slug" class="text-danger"></span>
+		</div>
+
+		<div class="d-flex gap-2">
+			<button class="btn btn-primary" type="submit">
+				Save tag
+			</button>
+
+			@if (isEditMode)
+			{
+				<button class="btn btn-outline-secondary"
+						type="button" data-bs-dismiss="offcanvas">
+					Cancel
+				</button>
+			}
+			else
+			{
+				<a class="btn btn-outline-secondary"
+				   asp-controller="Writing" asp-action="Index">
+					Reset
+				</a>
+			}
+		</div>
+	</fieldset>
+</form>
