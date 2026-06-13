@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing.Posts;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
@@ -23,14 +24,6 @@ public partial class WritingController
    }
 
    [HttpGet]
-   public Task<IActionResult> PostMetadataEdit(
-      PostMetadataViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpGet]
    public async Task<IActionResult> PostEdit(
       int id,
       CancellationToken cancellationToken)
@@ -41,7 +34,7 @@ public partial class WritingController
          return NotFound();
       }
 
-      return View(await GetPostIndexViewModelAsync(
+      return View(nameof(PostIndex), await GetPostIndexViewModelAsync(
          post, post.CurrentRevisionId, cancellationToken));
    }
 
@@ -54,11 +47,12 @@ public partial class WritingController
       if (!ModelState.IsValid)
       {
          await PopulatePostMetadataOptionsAsync(model, cancellationToken);
-         return PartialView(nameof(PostMetadataEdit), model);
+         return PartialView("PostMetadataEdit", model);
       }
 
-
-      throw new NotImplementedException();
+      int postId = await _writingStore.InsertPostAsync(
+         model.ToPost(), model.WritingTagIds, cancellationToken);
+      return RedirectToAction(nameof(PostEdit), new { id = postId, });
    }
 
    [HttpPost]
@@ -85,6 +79,11 @@ public partial class WritingController
       PostRevisionContentViewModel model,
       CancellationToken cancellationToken)
    {
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(PostRevisionEdit), model);
+      }
+
       string createdBy = "David Browning";
       await _writingStore.InsertPostRevisionAsync(
          model.PostId,
@@ -191,17 +190,10 @@ public partial class WritingController
          PostId = post.Id,
          CurrentRevisionId = post.CurrentRevisionId,
          SelectedRevisionId = resolvedSelectedRevisionId,
-         Items = post.Revisions.Select(revision =>
-            new PostRevisionListItemViewModel()
-            {
-               Id = revision.Id,
-               RevisionNumber = revision.RevisionNumber,
-               ContentFormat = revision.ContentFormat,
-               CreatedBy = revision.CreatedBy,
-               CreatedAtUtc = revision.CreatedAtUtc,
-               IsCurrentRevision = revision.Id == post.CurrentRevisionId,
-               IsSelectedRevision = revision.Id == resolvedSelectedRevisionId,
-            }).ToList(),
+         Items = post.Revisions
+         .Select(revision => new PostRevisionListItemViewModel(
+            revision, post.CurrentRevisionId, resolvedSelectedRevisionId))
+         .ToList(),
       };
    }
 

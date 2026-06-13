@@ -45,12 +45,17 @@ public sealed class PostRevisionListItemViewModel
    }
 
    [SetsRequiredMembers]
-   public PostRevisionListItemViewModel(PostRevision revision)
+   public PostRevisionListItemViewModel(
+      PostRevision revision,
+      int? currentRevisionId,
+      int? selectedRevisionId)
    {
       Id = revision.Id;
       RevisionNumber = revision.RevisionNumber;
       ContentFormat = revision.ContentFormat;
       CreatedBy = revision.CreatedBy;
       CreatedAtUtc = revision.CreatedAtUtc;
+      IsCurrentRevision = revision.Id == currentRevisionId;
+      IsSelectedRevision = revision.Id == selectedRevisionId;
    }
 }

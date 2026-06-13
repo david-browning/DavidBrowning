@@ -85,4 +85,29 @@ public class PostMetadataViewModel
       WritingTagOptions = tags;
       WritingTagIds = post.Tags.Select(tag => tag.WritingTagId).ToList();
    }
+
+   public Post ToPost()
+   {
+      ArgumentException.ThrowIfNullOrWhiteSpace(Slug);
+      ArgumentException.ThrowIfNullOrWhiteSpace(Title);
+      ArgumentNullException.ThrowIfNull(PostStyleId);
+      ArgumentNullException.ThrowIfNull(Status);
+
+      return new Post()
+      {
+         Id = Id ?? 0,
+         Slug = Slug,
+         Title = Title,
+         Subtitle = Subtitle,
+         Summary = Summary,
+         PostStyleId = PostStyleId.Value,
+         Status = Status.Value,
+         IsFeatured = IsFeatured,
+         PublishedDateUtc = PublishedDateUtc,
+
+         // The store assigns authoritative timestamps.
+         CreatedDateUtc = default,
+         LastUpdatedDateUtc = default,
+      };
+   }
 }

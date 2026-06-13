@@ -63,6 +63,7 @@ public class SqlWritingStore : IWritingStore
    {
       return await _dbContext.Posts
          .AsNoTracking()
+         .AsSplitQuery()
          .Include(post => post.PostStyle)
          .Include(post => post.Revisions)
          .Include(post => post.Tags)
@@ -75,10 +76,9 @@ public class SqlWritingStore : IWritingStore
    public async Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
       CancellationToken cancellationToken = default)
    {
-      var posts = await CreatePublishedPostSummaryQuery()
+      return await CreatePublishedPostSummaryQuery()
          .Where(post => post.IsFeatured)
          .ToListAsync(cancellationToken);
-      return posts;
    }
 
    public async Task<Post?> GetPublishedPostBySlugAsync(
@@ -193,7 +193,7 @@ public class SqlWritingStore : IWritingStore
 
       var stored = await _dbContext.WritingTags
          .SingleOrDefaultAsync(t => t.Id == tag.Id, cancellationToken);
-      if(stored is null)
+      if (stored is null)
       {
          return false;
       }
@@ -240,7 +240,7 @@ public class SqlWritingStore : IWritingStore
    {
       ArgumentNullException.ThrowIfNull(style);
       if (await _dbContext.SlugExistsAsync<PostStyle>(
-         style.Slug,cancellationToken: cancellationToken))
+         style.Slug, cancellationToken: cancellationToken))
       {
          throw new DuplicateSlugException(style.Slug);
       }
