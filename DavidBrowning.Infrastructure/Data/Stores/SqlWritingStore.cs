@@ -269,6 +269,15 @@ public class SqlWritingStore : IWritingStore
          return false;
       }
 
+      var revisionBelongsToPost = await _dbContext.PostRevisions
+         .AnyAsync(revision => 
+            revision.Id == revisionId && revision.PostId == postId,
+            cancellationToken);
+      if (!revisionBelongsToPost)
+      {
+         return false;
+      }
+
       post.CurrentRevisionId = revisionId;
       await _dbContext.SaveChangesAsync(cancellationToken);
       return true;

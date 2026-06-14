@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing.Posts;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
@@ -34,7 +33,7 @@ public partial class WritingController
          return NotFound();
       }
 
-      return View(nameof(PostIndex), await GetPostIndexViewModelAsync(
+      return PartialView(nameof(PostIndex), await GetPostIndexViewModelAsync(
          post, post.CurrentRevisionId, cancellationToken));
    }
 
@@ -65,12 +64,38 @@ public partial class WritingController
    }
 
    [HttpGet]
-   public Task<IActionResult> PostRevisionEdit(
+   public async Task<IActionResult> PostRevisionEdit(
       int postId,
       int? revisionId,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (revisionId is null)
+      {
+         return PartialView(nameof(PostRevisionEdit),
+            new PostRevisionContentViewModel()
+            {
+               PostId = postId,
+               ContentFormat = ContentFormat.Markdown,
+            });
+      }
+
+      var revision = await _writingStore.GetPostRevisionAsync(
+         postId, revisionId.Value, cancellationToken);
+
+      if (revision is null)
+      {
+         return NotFound();
+      }
+
+      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+
+      if (post is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(PostRevisionEdit),
+         new PostRevisionContentViewModel(revision, post.CurrentRevisionId));
    }
 
    [HttpPost]
@@ -85,12 +110,26 @@ public partial class WritingController
       }
 
       string createdBy = "David Browning";
-      await _writingStore.InsertPostRevisionAsync(
-         model.PostId, model.ContentFormat!.Value, model.Content, createdBy,
-         cancellationToken);
 
+      var revision = await _writingStore.InsertPostRevisionAsync(
+         model.PostId, model.ContentFormat!.Value, model.Content,
+         createdBy, cancellationToken);
 
-      throw new NotImplementedException();
+      if (revision is null)
+      {
+         return NotFound();
+      }
+
+      var post = await _writingStore.GetPostAsync(
+         model.PostId, cancellationToken);
+      if (post is null)
+      {
+         return NotFound();
+      }
+
+      var viewModel = await GetPostIndexViewModelAsync(
+         post, revision.Id, cancellationToken);
+      return PartialView("PostRevisionCreateRefresh", viewModel);
    }
 
    [HttpPost]
@@ -99,6 +138,14 @@ public partial class WritingController
       int postId,
       int revisionId,
       CancellationToken cancellationToken)
+   {
+      throw new NotImplementedException();
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public IActionResult PostRevisionPreview(
+      PostRevisionContentViewModel model)
    {
       throw new NotImplementedException();
    }

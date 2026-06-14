@@ -9,6 +9,7 @@ using DavidBrowning.Infrastructure.Validators;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.Writing.Posts;
 
@@ -58,9 +59,11 @@ public class PostMetadataViewModel
       ErrorMessage = "Select between 1 and 10 writing tags.")]
    public List<int> WritingTagIds { get; set; } = new List<int>();
 
+   [ValidateNever]
    [BindNever]
    public required IReadOnlyList<PostStyleOptionViewModel> PostStyleOptions { get; set; }
 
+   [ValidateNever]
    [BindNever]
    public required IReadOnlyList<WritingTagOptionViewModel> WritingTagOptions { get; set; }
 

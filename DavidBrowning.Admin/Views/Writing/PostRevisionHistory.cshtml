@@ -3,14 +3,110 @@
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Writing.Posts.PostRevisionHistoryViewModel
-<section class="card">
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<section class="card mb-4">
 	<div class="card-body">
-		<h2>
-			Post revision history
-		</h2>
-		<p>Manage revisions for this post</p>
-		<div>
-			<button>New Revision</button>
+		<div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3 mb-4">
+			<div>
+				<h2 class="h4 card-title mb-1">
+					Post revision history
+				</h2>
+				<p class="card-text text-secondary mb-0">
+					Load a previous revision or create a new content snapshot.
+				</p>
+			</div>
+
+			<button class="btn btn-primary text-nowrap"
+					type="button"
+					hx-get="@Url.Action("PostRevisionEdit", "Writing",
+						 new { postId = Model.PostId })"
+					hx-target="#@WritingAdminIds.PostRevisionContentRegion"
+					hx-swap="innerHTML"
+					hx-indicator="#@WritingAdminIds.PostRevisionContentOverlay">
+				<i class="fa-solid fa-plus me-1" aria-hidden="true"></i>
+				New revision
+			</button>
 		</div>
+
+		@if (Model.Items.Count == 0)
+		{
+			<div class="alert alert-secondary mb-0" role="status">
+				No revisions have been created for this post.
+				Create the first revision below.
+			</div>
+		}
+		else
+		{
+			<div class="list-group">
+				@foreach (var revision in Model.Items)
+				{
+					string itemClass = revision.IsSelectedRevision ? "list-group-item-primary" : string.Empty;
+
+					<div class="list-group-item @itemClass">
+						<div class="d-flex flex-column flex-lg-row
+		                              justify-content-between gap-3">
+							<div>
+								<div class="d-flex flex-wrap align-items-center gap-2">
+									<h3 class="h6 mb-0">
+										Revision @revision.RevisionNumber
+									</h3>
+
+									@if (revision.IsCurrentRevision)
+									{
+										<span class="badge text-bg-success">
+											Current
+										</span>
+									}
+
+									@if (revision.IsSelectedRevision)
+									{
+										<span class="badge text-bg-primary">
+											Selected
+										</span>
+									}
+								</div>
+
+								<div class="small text-secondary mt-1">
+									@revision.ContentFormat ·
+									@revision.CreatedBy ·
+									@revision.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")
+								</div>
+							</div>
+
+							<div class="d-flex flex-wrap gap-2 align-items-start">
+								<button class="btn btn-sm btn-outline-primary" type="button"
+										hx-get="@Url.Action("PostRevisionEdit", "Writing",
+										   		new
+										   		{
+											   		postId = Model.PostId,
+											   		revisionId = revision.Id,
+										   		})"
+								hx-target="#@WritingAdminIds.PostRevisionContentRegion"
+								hx-swap="innerHTML"
+								hx-indicator="#@WritingAdminIds.PostRevisionContentOverlay">
+							Load
+						</button>
+
+						@if (!revision.IsCurrentRevision)
+								{
+									<form method="post"
+										  hx-post="@Url.Action("SetCurrentRevision", "Writing")"
+										  hx-target="#@WritingAdminIds.PostRevisionHistoryRegion"
+										  hx-swap="innerHTML">
+										@Html.AntiForgeryToken()
+										<input type="hidden"											   name="postId"											   value="@Model.PostId" />
+										<input type="hidden"											   name="revisionId"											   value="@revision.Id" />
+										<button class="btn btn-sm btn-outline-secondary"												type="submit">
+											Make current
+										</button>
+									</form>
+								}
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		}
 	</div>
 </section>
