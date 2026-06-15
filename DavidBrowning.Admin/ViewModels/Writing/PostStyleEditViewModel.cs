@@ -1,6 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
@@ -15,6 +16,7 @@ public sealed class PostStyleEditViewModel
    public int? Id { get; set; }
 
    [Required]
+   [DisplayName("Display Name")]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? DisplayName { get; set; }
 

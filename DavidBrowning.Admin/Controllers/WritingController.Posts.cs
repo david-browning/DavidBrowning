@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Admin.ViewModels.Writing.Posts;
+using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ public partial class WritingController
          return NotFound();
       }
 
-      return PartialView(nameof(PostIndex), await GetPostIndexViewModelAsync(
+      return View(nameof(PostIndex), await GetPostIndexViewModelAsync(
          post, post.CurrentRevisionId, cancellationToken));
    }
 
@@ -43,6 +44,8 @@ public partial class WritingController
       PostMetadataViewModel model,
       CancellationToken cancellationToken)
    {
+      model.EditMode = ViewModels.EditModes.Create;
+
       if (!ModelState.IsValid)
       {
          await PopulatePostMetadataOptionsAsync(model, cancellationToken);
@@ -51,16 +54,38 @@ public partial class WritingController
 
       int postId = await _writingStore.InsertPostAsync(
          model.ToPost(), model.WritingTagIds, cancellationToken);
-      return RedirectToAction(nameof(PostEdit), new { id = postId, });
+      return RedirectToPostEdit(postId);
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostEdit(
+   public async Task<IActionResult> PostEdit(
       PostMetadataViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         await PopulatePostMetadataOptionsAsync(model, cancellationToken);
+         return PartialView("PostMetadataEdit", model);
+      }
+
+      try
+      {
+         var result = await _writingStore.UpdatePostAsync(
+            model.ToPost(), model.WritingTagIds, cancellationToken);
+         if(!result)
+         {
+            return BadRequest();
+         }
+      }
+      catch(DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post already uses this slug.");
+         return PartialView("PostMetadataEdit", model);
+      }
+
+      return PartialView("PostMetadataEdit", model);
    }
 
    [HttpGet]
@@ -134,12 +159,25 @@ public partial class WritingController
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> SetCurrentRevision(
+   public async Task<IActionResult> SetCurrentRevision(
       int postId,
       int revisionId,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+      if(post is null)
+      {
+         return NotFound();
+      }
+
+      var updated = await _writingStore.SetCurrentRevisionAsync(
+         postId, revisionId, cancellationToken);
+      if(!updated)
+      {
+         return BadRequest();
+      }
+
+      return RedirectToPostEdit(postId);
    }
 
    [HttpPost]
@@ -288,5 +326,30 @@ public partial class WritingController
          model.PostStyleId, cancellationToken);
       model.WritingTagOptions = await GetPostWritingTagOptionsAsync(
          cancellationToken);
+   }
+
+   private IActionResult RedirectToPostEdit(int postId)
+   {
+      var url = Url.Action(nameof(PostEdit), new
+      {
+         id = postId,
+      });
+
+      if (string.IsNullOrWhiteSpace(url))
+      {
+         throw new InvalidOperationException(
+            "Could not build the post edit URL.");
+      }
+
+      if (Request.Headers.ContainsKey("HX-Request"))
+      {
+         Response.Headers["HX-Redirect"] = url;
+         return Ok();
+      }
+
+      return RedirectToAction(nameof(PostEdit), new
+      {
+         id = postId,
+      });
    }
 }
