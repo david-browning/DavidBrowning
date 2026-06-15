@@ -404,6 +404,138 @@ public sealed class SqlProjectStore : IProjectStore
          .SingleOrDefaultAsync(x => x.Id == id, token);
    }
 
+   public async Task InsertProjectStatusAsync(
+      ProjectStatus status,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(status);
+      if (await _dbContext.SlugExistsAsync<ProjectStatus>(
+         status.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(status.Slug);
+      }
+
+      _dbContext.ProjectStatuses.Add(status);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task InsertProjectVisibilityAsync(
+      ProjectVisibility visibility,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(visibility);
+      if (await _dbContext.SlugExistsAsync<ProjectVisibility>(
+         visibility.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(visibility.Slug);
+      }
+
+      _dbContext.ProjectVisibilities.Add(visibility);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task InsertProjectOriginAsync(
+      ProjectOrigin origin,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(origin);
+      if (await _dbContext.SlugExistsAsync<ProjectOrigin>(
+         origin.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(origin.Slug);
+      }
+
+      _dbContext.ProjectOrigins.Add(origin);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task InsertProjectTypeAsync(
+      ProjectType type,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(type);
+      if(await _dbContext.SlugExistsAsync<ProjectType>(
+         type.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(type.Slug);
+      }
+
+      _dbContext.ProjectTypes.Add(type);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task InsertProjectTagAsync(
+      ProjectTag tag,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(tag);
+      if(await _dbContext.SlugExistsAsync<ProjectTag>(
+         tag.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
+      _dbContext.ProjectTags.Add(tag);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task InsertProjectStackTagAsync(
+      ProjectStackTag tag,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(tag);
+      if(await _dbContext.SlugExistsAsync<ProjectStackTag>(
+         tag.Slug, cancellationToken: cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
+      _dbContext.ProjectStackTags.Add(tag);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public Task<bool> UpdateProjectStatusAsync(
+      ProjectStatus status,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectOriginAsync(
+      ProjectOrigin origin,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectTypeAsync(
+      ProjectType type,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectVisibilityAsync(
+      ProjectVisibility visibility,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectTagAsync(
+      ProjectTag tag,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectStackTagAsync(
+      ProjectStackTag tag,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
    private async Task<IQueryable<Project>> BuildPublishedProjectQueryAsync(
       CancellationToken cancellationToken)
    {

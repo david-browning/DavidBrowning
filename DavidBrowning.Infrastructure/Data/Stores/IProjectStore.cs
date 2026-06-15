@@ -183,6 +183,54 @@ public interface IProjectStore
    Task<ProjectStackTag?> GetProjectStackTagAsync(
       int id, 
       CancellationToken token = default);
+
+   Task InsertProjectStatusAsync(
+      ProjectStatus status,
+      CancellationToken cancellationToken = default);
+
+   Task InsertProjectVisibilityAsync(
+      ProjectVisibility visibility,
+      CancellationToken cancellationToken = default);
+
+   Task InsertProjectOriginAsync(
+      ProjectOrigin origin,
+      CancellationToken cancellationToken = default);
+
+   Task InsertProjectTypeAsync(
+      ProjectType type,
+      CancellationToken cancellationToken = default);
+
+   Task InsertProjectTagAsync(
+      ProjectTag tag,
+      CancellationToken cancellationToken = default);
+
+   Task InsertProjectStackTagAsync(
+      ProjectStackTag tag,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectStatusAsync(
+      ProjectStatus status,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectOriginAsync(
+      ProjectOrigin origin,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectTypeAsync(
+      ProjectType type,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectVisibilityAsync(
+      ProjectVisibility visibility,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectTagAsync(
+      ProjectTag tag,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectStackTagAsync(
+      ProjectStackTag tag,
+      CancellationToken cancellationToken = default);
 }
 
 public sealed class ProjectContentData

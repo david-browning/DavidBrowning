@@ -17,7 +17,7 @@ public partial class ProjectsController
    [HttpGet]
    public IActionResult StatusCreate()
    {
-      return CreateLookupView(StatusLookup);
+      return CreateLookupView(_statusLookup);
    }
 
    [HttpGet]
@@ -26,11 +26,8 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupViewAsync(
-         id,
-         StatusLookup,
-         _projectStore.GetProjectStatusAsync,
-         ToLookupData,
-         cancellationToken);
+         id, _statusLookup, _projectStore.GetProjectStatusAsync,
+         ToLookupData, cancellationToken);
    }
 
    [HttpPost]
@@ -40,12 +37,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return CreateLookupAsync(
-         model,
-         StatusLookup,
-         ToProjectStatus,
+         model, _statusLookup, ToProjectStatus,
          _projectStore.InsertProjectStatusAsync,
-         GetStatusPanelAsync,
-         cancellationToken);
+         GetStatusPanelAsync, cancellationToken);
    }
 
    [HttpPost]
@@ -55,18 +49,15 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupAsync(
-         model,
-         StatusLookup,
-         ToProjectStatus,
+         model, _statusLookup, ToProjectStatus,
          _projectStore.UpdateProjectStatusAsync,
-         GetStatusPanelAsync,
-         cancellationToken);
+         GetStatusPanelAsync, cancellationToken);
    }
 
    [HttpGet]
    public IActionResult OriginCreate()
    {
-      return CreateLookupView(OriginLookup);
+      return CreateLookupView(_originLookup);
    }
 
    [HttpGet]
@@ -75,11 +66,8 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupViewAsync(
-         id,
-         OriginLookup,
-         _projectStore.GetProjectOriginAsync,
-         ToLookupData,
-         cancellationToken);
+         id, _originLookup, _projectStore.GetProjectOriginAsync,
+         ToLookupData, cancellationToken);
    }
 
    [HttpPost]
@@ -89,12 +77,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return CreateLookupAsync(
-         model,
-         OriginLookup,
-         ToProjectOrigin,
+         model, _originLookup, ToProjectOrigin,
          _projectStore.InsertProjectOriginAsync,
-         GetOriginPanelAsync,
-         cancellationToken);
+         GetOriginPanelAsync, cancellationToken);
    }
 
    [HttpPost]
@@ -104,18 +89,15 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupAsync(
-         model,
-         OriginLookup,
-         ToProjectOrigin,
+         model, _originLookup, ToProjectOrigin,
          _projectStore.UpdateProjectOriginAsync,
-         GetOriginPanelAsync,
-         cancellationToken);
+         GetOriginPanelAsync, cancellationToken);
    }
 
    [HttpGet]
    public IActionResult TypeCreate()
    {
-      return CreateLookupView(TypeLookup);
+      return CreateLookupView(_typeLookup);
    }
 
    [HttpGet]
@@ -124,11 +106,8 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupViewAsync(
-         id,
-         TypeLookup,
-         _projectStore.GetProjectTypeAsync,
-         ToLookupData,
-         cancellationToken);
+         id, _typeLookup, _projectStore.GetProjectTypeAsync,
+         ToLookupData, cancellationToken);
    }
 
    [HttpPost]
@@ -138,12 +117,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return CreateLookupAsync(
-         model,
-         TypeLookup,
-         ToProjectType,
+         model, _typeLookup, ToProjectType,
          _projectStore.InsertProjectTypeAsync,
-         GetTypePanelAsync,
-         cancellationToken);
+         GetTypePanelAsync, cancellationToken);
    }
 
    [HttpPost]
@@ -153,18 +129,15 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupAsync(
-         model,
-         TypeLookup,
-         ToProjectType,
+         model, _typeLookup, ToProjectType,
          _projectStore.UpdateProjectTypeAsync,
-         GetTypePanelAsync,
-         cancellationToken);
+         GetTypePanelAsync, cancellationToken);
    }
 
    [HttpGet]
    public IActionResult VisibilityCreate()
    {
-      return CreateLookupView(VisibilityLookup);
+      return CreateLookupView(_visibilityLookup);
    }
 
    [HttpGet]
@@ -173,11 +146,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupViewAsync(
-         id,
-         VisibilityLookup,
+         id, _visibilityLookup,
          _projectStore.GetProjectVisibilityAsync,
-         ToLookupData,
-         cancellationToken);
+         ToLookupData, cancellationToken);
    }
 
    [HttpPost]
@@ -187,12 +158,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return CreateLookupAsync(
-         model,
-         VisibilityLookup,
-         ToProjectVisibility,
+         model, _visibilityLookup, ToProjectVisibility,
          _projectStore.InsertProjectVisibilityAsync,
-         GetVisibilityPanelAsync,
-         cancellationToken);
+         GetVisibilityPanelAsync, cancellationToken);
    }
 
    [HttpPost]
@@ -202,18 +170,15 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupAsync(
-         model,
-         VisibilityLookup,
-         ToProjectVisibility,
+         model, _visibilityLookup, ToProjectVisibility,
          _projectStore.UpdateProjectVisibilityAsync,
-         GetVisibilityPanelAsync,
-         cancellationToken);
+         GetVisibilityPanelAsync, cancellationToken);
    }
 
    [HttpGet]
    public IActionResult TagCreate()
    {
-      return CreateLookupView(TagLookup);
+      return CreateLookupView(_tagLookup);
    }
 
    [HttpGet]
@@ -222,11 +187,8 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupViewAsync(
-         id,
-         TagLookup,
-         _projectStore.GetProjectTagAsync,
-         ToLookupData,
-         cancellationToken);
+         id, _tagLookup, _projectStore.GetProjectTagAsync,
+         ToLookupData, cancellationToken);
    }
 
    [HttpPost]
@@ -236,12 +198,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return CreateLookupAsync(
-         model,
-         TagLookup,
-         ToProjectTag,
+         model, _tagLookup, ToProjectTag,
          _projectStore.InsertProjectTagAsync,
-         GetTagPanelAsync,
-         cancellationToken);
+         GetTagPanelAsync, cancellationToken);
    }
 
    [HttpPost]
@@ -251,18 +210,15 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupAsync(
-         model,
-         TagLookup,
-         ToProjectTag,
+         model, _tagLookup, ToProjectTag,
          _projectStore.UpdateProjectTagAsync,
-         GetTagPanelAsync,
-         cancellationToken);
+         GetTagPanelAsync, cancellationToken);
    }
 
    [HttpGet]
    public IActionResult StackCreate()
    {
-      return CreateLookupView(StackLookup);
+      return CreateLookupView(_stackLookup);
    }
 
    [HttpGet]
@@ -271,11 +227,8 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupViewAsync(
-         id,
-         StackLookup,
-         _projectStore.GetProjectStackTagAsync,
-         ToLookupData,
-         cancellationToken);
+         id, _stackLookup, _projectStore.GetProjectStackTagAsync,
+         ToLookupData, cancellationToken);
    }
 
    [HttpPost]
@@ -285,12 +238,9 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return CreateLookupAsync(
-         model,
-         StackLookup,
-         ToProjectStackTag,
+         model, _stackLookup, ToProjectStackTag,
          _projectStore.InsertProjectStackTagAsync,
-         GetStackTagPanelAsync,
-         cancellationToken);
+         GetStackTagPanelAsync, cancellationToken);
    }
 
    [HttpPost]
@@ -300,20 +250,16 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       return EditLookupAsync(
-         model,
-         StackLookup,
-         ToProjectStackTag,
+         model, _stackLookup, ToProjectStackTag,
          _projectStore.UpdateProjectStackTagAsync,
-         GetStackTagPanelAsync,
-         cancellationToken);
+         GetStackTagPanelAsync, cancellationToken);
    }
 
    private IActionResult CreateLookupView(
       ProjectLookupDefinition definition)
    {
       return PartialView(
-         ProjectLookupEditView,
-         CreateLookupModel(definition));
+         _projectLookupEditView, CreateLookupModel(definition));
    }
 
    private async Task<IActionResult> EditLookupViewAsync<TLookup>(
@@ -324,14 +270,13 @@ public partial class ProjectsController
       CancellationToken cancellationToken)
    {
       var lookup = await getLookupAsync(id, cancellationToken);
-
       if (lookup is null)
       {
          return NotFound();
       }
 
       return PartialView(
-         ProjectLookupEditView,
+         _projectLookupEditView,
          CreateLookupModel(definition, mapLookup(lookup)));
    }
 
@@ -347,7 +292,7 @@ public partial class ProjectsController
 
       if (!ModelState.IsValid)
       {
-         return PartialView(ProjectLookupEditView, model);
+         return PartialView(_projectLookupEditView, model);
       }
 
       try
@@ -357,17 +302,16 @@ public partial class ProjectsController
       catch (DuplicateSlugException)
       {
          ModelState.AddModelError(
-            nameof(model.Slug),
-            "Another lookup item already uses this slug.");
+            nameof(model.Slug), "Another lookup item already uses this slug.");
 
-         return PartialView(ProjectLookupEditView, model);
+         return PartialView(_projectLookupEditView, model);
       }
 
       Response.TriggerAdminOffcanvasClose(
          ProjectAdminIds.ProjectLookupEditorOffcanvas);
 
       return PartialView(
-         ProjectLookupPanelBodyRefreshView,
+         _projectLookupPanelBodyRefreshView,
          await getPanelAsync(cancellationToken));
    }
 
@@ -388,15 +332,12 @@ public partial class ProjectsController
 
       if (!ModelState.IsValid)
       {
-         return PartialView(ProjectLookupEditView, model);
+         return PartialView(_projectLookupEditView, model);
       }
 
       try
       {
-         bool updated = await updateAsync(
-            createLookup(model),
-            cancellationToken);
-
+         bool updated = await updateAsync(createLookup(model), cancellationToken);
          if (!updated)
          {
             return NotFound();
@@ -408,14 +349,14 @@ public partial class ProjectsController
             nameof(model.Slug),
             "Another lookup item already uses this slug.");
 
-         return PartialView(ProjectLookupEditView, model);
+         return PartialView(_projectLookupEditView, model);
       }
 
       Response.TriggerAdminOffcanvasClose(
          ProjectAdminIds.ProjectLookupEditorOffcanvas);
 
       return PartialView(
-         ProjectLookupPanelBodyRefreshView,
+         _projectLookupPanelBodyRefreshView,
          await getPanelAsync(cancellationToken));
    }
 
@@ -452,79 +393,53 @@ public partial class ProjectsController
       ProjectLookupDefinition definition,
       bool isEditMode)
    {
-      model.Title = isEditMode
-         ? definition.EditTitle
-         : definition.CreateTitle;
+      model.Title = isEditMode ?
+         definition.EditTitle : definition.CreateTitle;
 
-      model.FormAction = isEditMode
-         ? definition.EditAction
-         : definition.CreateAction;
+      model.FormAction = isEditMode ?
+         definition.EditAction : definition.CreateAction;
    }
 
    private static ProjectLookupData ToLookupData(ProjectStatus status)
    {
       return new ProjectLookupData(
-         status.Id,
-         status.Slug,
-         status.DisplayName,
-         status.Description,
-         status.SortOrder,
-         status.IsActive);
+         status.Id, status.Slug, status.DisplayName,
+         status.Description, status.SortOrder, status.IsActive);
    }
 
    private static ProjectLookupData ToLookupData(ProjectOrigin origin)
    {
       return new ProjectLookupData(
-         origin.Id,
-         origin.Slug,
-         origin.DisplayName,
-         origin.Description,
-         origin.SortOrder,
-         origin.IsActive);
+         origin.Id, origin.Slug, origin.DisplayName,
+         origin.Description, origin.SortOrder, origin.IsActive);
    }
 
    private static ProjectLookupData ToLookupData(ProjectType type)
    {
       return new ProjectLookupData(
-         type.Id,
-         type.Slug,
-         type.DisplayName,
-         type.Description,
-         type.SortOrder,
-         type.IsActive);
+         type.Id, type.Slug, type.DisplayName,
+         type.Description, type.SortOrder, type.IsActive);
    }
 
    private static ProjectLookupData ToLookupData(ProjectVisibility visibility)
    {
       return new ProjectLookupData(
-         visibility.Id,
-         visibility.Slug,
-         visibility.DisplayName,
-         visibility.Description,
-         visibility.SortOrder,
-         visibility.IsActive);
+         visibility.Id, visibility.Slug, visibility.DisplayName,
+         visibility.Description, visibility.SortOrder, visibility.IsActive);
    }
 
    private static ProjectLookupData ToLookupData(ProjectTag tag)
    {
       return new ProjectLookupData(
-         tag.Id,
-         tag.Slug,
-         tag.DisplayName,
-         tag.Description,
-         tag.SortOrder,
-         tag.IsActive);
+         tag.Id, tag.Slug, tag.DisplayName,
+         tag.Description, tag.SortOrder, tag.IsActive);
    }
 
    private static ProjectLookupData ToLookupData(ProjectStackTag tag)
    {
       return new ProjectLookupData(
-         tag.Id,
-         tag.Slug,
-         tag.DisplayName,
-         tag.Description,
-         tag.SortOrder,
-         tag.IsActive);
+         tag.Id, tag.Slug, tag.DisplayName,
+         tag.Description, tag.SortOrder, tag.IsActive);
    }
 
    private static ProjectStatus ToProjectStatus(
@@ -633,8 +548,7 @@ public partial class ProjectsController
       string CreateTitle,
       string EditTitle,
       string CreateAction,
-      string EditAction,
-      string RefreshRegionId);
+      string EditAction);
 
    private sealed record ProjectLookupData(
       int Id,
@@ -644,56 +558,32 @@ public partial class ProjectsController
       int SortOrder,
       bool IsActive);
 
-   private static readonly ProjectLookupDefinition StatusLookup =
-      new(
-         "New project status",
-         "Edit project status",
-         nameof(StatusCreate),
-         nameof(StatusEdit),
-         ProjectAdminIds.ProjectStatusPanelRegion);
+   private static readonly ProjectLookupDefinition _statusLookup =
+      new("New project status", "Edit project status",
+         nameof(StatusCreate), nameof(StatusEdit));
 
-   private static readonly ProjectLookupDefinition OriginLookup =
-      new(
-         "New project origin",
-         "Edit project origin",
-         nameof(OriginCreate),
-         nameof(OriginEdit),
-         ProjectAdminIds.ProjectOriginPanelRegion);
+   private static readonly ProjectLookupDefinition _originLookup =
+      new("New project origin", "Edit project origin",
+         nameof(OriginCreate), nameof(OriginEdit));
 
-   private static readonly ProjectLookupDefinition TypeLookup =
-      new(
-         "New project type",
-         "Edit project type",
-         nameof(TypeCreate),
-         nameof(TypeEdit),
-         ProjectAdminIds.ProjectTypePanelRegion);
+   private static readonly ProjectLookupDefinition _typeLookup =
+      new("New project type", "Edit project type",
+         nameof(TypeCreate), nameof(TypeEdit));
 
-   private static readonly ProjectLookupDefinition VisibilityLookup =
-      new(
-         "New project visibility",
-         "Edit project visibility",
-         nameof(VisibilityCreate),
-         nameof(VisibilityEdit),
-         ProjectAdminIds.ProjectVisibilityPanelRegion);
+   private static readonly ProjectLookupDefinition _visibilityLookup =
+      new("New project visibility", "Edit project visibility",
+         nameof(VisibilityCreate), nameof(VisibilityEdit));
 
-   private static readonly ProjectLookupDefinition TagLookup =
-      new(
-         "New project tag",
-         "Edit project tag",
-         nameof(TagCreate),
-         nameof(TagEdit),
-         ProjectAdminIds.ProjectTagPanelRegion);
+   private static readonly ProjectLookupDefinition _tagLookup =
+      new("New project tag", "Edit project tag",
+         nameof(TagCreate), nameof(TagEdit));
 
-   private static readonly ProjectLookupDefinition StackLookup =
-      new(
-         "New technology stack",
-         "Edit technology stack",
-         nameof(StackCreate),
-         nameof(StackEdit),
-         ProjectAdminIds.ProjectStackTagPanelRegion);
+   private static readonly ProjectLookupDefinition _stackLookup =
+      new("New technology stack", "Edit technology stack",
+         nameof(StackCreate), nameof(StackEdit));
 
-   private const string ProjectLookupEditView = "ProjectLookupEdit";
+   private const string _projectLookupEditView = "ProjectLookupEdit";
 
-   private const string ProjectLookupPanelBodyRefreshView =
+   private const string _projectLookupPanelBodyRefreshView =
       "ProjectLookupPanelBodyRefresh";
 }
