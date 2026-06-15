@@ -126,4 +126,49 @@ public interface IProjectStore
    /// <returns></returns>
    Task<IReadOnlyList<ProjectVisibility>> GetProjectVisibilitiesAsync(
       CancellationToken cancellationToken = default);
+
+   Task<Project?> GetProjectAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task<int> InsertProjectAsync(
+      Project project, 
+      IList<int> projectTags,
+      IList<int> stackIds,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectAsync(
+      Project project,
+      IList<int> projectTags,
+      IList<int> stackIds,
+      CancellationToken cancellationToken = default);
+
+   Task<ProjectContentData?> GetProjectContentAsync(
+      int projectId,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateProjectContentAsync(
+      int projectId,
+      string? content,
+      IReadOnlyList<ProjectAssetLink> assetLinks,
+      CancellationToken cancellationToken = default);
+
+   Task<IReadOnlyList<Project>> GetProjectsAsync(
+      CancellationToken cancellationToken = default);
+
+   Task<int> GetRequiredProjectAssetRoleIdAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+}
+
+public sealed class ProjectContentData
+{
+   public int? ContentAssetId { get; init; }
+
+   public string? ContentAssetKey { get; init; }
+
+   public string? Content { get; init; }
+
+   public IReadOnlyList<ProjectAssetLink> AssetLinks { get; init; } =
+      Array.Empty<ProjectAssetLink>();
 }

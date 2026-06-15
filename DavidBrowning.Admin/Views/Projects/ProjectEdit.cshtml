@@ -1,0 +1,58 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectEditPageViewModel
+@using DavidBrowning.Admin.ViewModels.Projects
+
+@{
+	ViewData["Title"] = Model.Metadata.Name ?? "Project";
+}
+
+<div class="container py-4">
+	<header class="mb-4">
+		<h1>@(Model.Metadata.Name ?? "Project")</h1>
+		<p class="text-secondary mb-0">
+			Edit project metadata and details content.
+		</p>
+	</header>
+
+	<div class="d-grid gap-4">
+		<div id="@ProjectAdminIds.ProjectMetadataRegion">
+			<partial name="ProjectMetadataEdit" model="Model.Metadata" />
+		</div>
+
+		@if (Model.Metadata.Id is null)
+		{
+			<div class="alert alert-secondary" role="status">
+				Save project metadata before editing project content.
+			</div>
+		}
+		else
+		{
+			<div class="row g-4 align-items-stretch">
+				<div class="col-12 col-xl-6">
+					<div class="d-grid gap-4">
+						<div id="@ProjectAdminIds.ProjectContentRegion">
+							<partial name="ProjectContentEdit" model="Model.Content" />
+						</div>
+
+						<partial name="_AssetChooser" model="Model.AssetChooser" />
+					</div>
+				</div>
+
+				<div class="col-12 col-xl-6 d-flex">
+					<div id="@ProjectAdminIds.ProjectPreviewRegion"
+						 class="w-100">
+						<partial name="ProjectPreview" model="Model.ContentPreview" />
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+@section Scripts {
+	<script src="~/js/post-edit.js" asp-append-version="true"></script>
+	<script src="~/js/asset-picker.js" asp-append-version="true"></script>
+}

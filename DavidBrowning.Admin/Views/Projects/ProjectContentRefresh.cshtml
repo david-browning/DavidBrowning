@@ -1,0 +1,12 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectEditPageViewModel
+@using DavidBrowning.Admin.ViewModels.Projects
+
+<partial name="ProjectContentEdit" model="Model.Content" />
+
+<div id="@ProjectAdminIds.ProjectPreviewBodyRegion" hx-swap-oob="innerHTML">
+	<partial name="ProjectPreviewBody" model="Model.ContentPreview" />
+</div>

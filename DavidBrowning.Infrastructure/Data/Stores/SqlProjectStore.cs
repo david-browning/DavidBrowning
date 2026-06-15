@@ -263,6 +263,98 @@ public sealed class SqlProjectStore : IProjectStore
          .ToListAsync(cancellationToken);
    }
 
+   public async Task<Project?> GetProjectAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.Projects
+         .AsNoTracking()
+         .AsSplitQuery()
+         .Where(project => project.Id == id)
+         .Include(project => project.ProjectStatus)
+         .Include(project => project.ProjectVisibility)
+         .Include(project => project.ProjectOrigin)
+         .Include(project => project.ProjectType)
+         .Include(project => project.AssetLinks.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.SiteAsset)
+         .Include(project => project.AssetLinks)
+            .ThenInclude(link => link.ProjectAssetRole)
+         .Include(project => project.TagLinks)
+            .ThenInclude(link => link.ProjectTag)
+         .Include(project => project.StackTagLinks)
+            .ThenInclude(link => link.ProjectStackTag)
+         .Include(project => project.Links.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.ProjectLinkType)
+         .Include(project => project.RelatedPosts.OrderBy(post => post.SortOrder))
+            .ThenInclude(project => project.Post)
+               .ThenInclude(post => post!.Tags)
+                  .ThenInclude(tag => tag.WritingTag)
+         .Include(project => project.RelatedPosts)
+            .ThenInclude(project => project.Post)
+               .ThenInclude(post => post!.PostStyle)
+         .SingleOrDefaultAsync(cancellationToken);
+   }
+
+   public Task<int> InsertProjectAsync(
+      Project project,
+      IList<int> projectTags,
+      IList<int> stackIds,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectAsync(
+      Project project,
+      IList<int> projectTags,
+      IList<int> stackIds,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<ProjectContentData?> GetProjectContentAsync(
+      int projectId,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public Task<bool> UpdateProjectContentAsync(
+      int projectId,
+      string? content,
+      IReadOnlyList<ProjectAssetLink> assetLinks,
+      CancellationToken cancellationToken = default)
+   {
+      throw new NotImplementedException();
+   }
+
+   public async Task<IReadOnlyList<Project>> GetProjectsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.Projects
+         .AsNoTracking()
+         .Include(project => project.Links.OrderBy(link => link.SortOrder))
+         .Include(project => project.AssetLinks.OrderBy(asset => asset.SortOrder))
+         .Include(project => project.ProjectStatus)
+         .Include(project => project.ProjectVisibility)
+         .Include(project => project.ProjectOrigin)
+         .Include(project => project.ProjectType)
+         .Include(project => project.TagLinks)
+            .ThenInclude(link => link.ProjectTag)
+         .Include(project => project.StackTagLinks)
+            .ThenInclude(link => link.ProjectStackTag)
+         .OrderBy(project => project.SortOrder)
+         .ToListAsync(cancellationToken);
+   }
+
+   public Task<int> GetRequiredProjectAssetRoleIdAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   { 
+      throw new NotImplementedException();
+   }
+
    private async Task<IQueryable<Project>> BuildPublishedProjectQueryAsync(
       CancellationToken cancellationToken)
    {

@@ -1,280 +1,636 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Projects;
-
+using DavidBrowning.Infrastructure;
+using DavidBrowning.Infrastructure.Data;
+using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Rendering;
+using DavidBrowning.Models.Projects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
-public class ProjectsController : Controller
+public partial class ProjectsController : Controller
 {
-   public Task<IActionResult> Index(
-      CancellationToken cancellationToken)
+   public ProjectsController(
+      ISlugService slugService,
+      IProjectStore projectStore,
+      IUncategorizedStore uncategorizedStore,
+      IMarkdownDocumentRenderer markdownRenderer)
    {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> List(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
+      _slugService = slugService;
+      _projectStore = projectStore;
+      _uncategorizedStore = uncategorizedStore;
+      _markdownRenderer = markdownRenderer;
    }
 
    [HttpGet]
-   public IActionResult Create()
+   public async Task<IActionResult> Index(
+      CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return View(await GetIndexViewModelAsync(cancellationToken));
+   }
+
+   [HttpGet]
+   public async Task<IActionResult> ProjectEdit(
+      int id,
+      CancellationToken cancellationToken)
+   {
+      var project = await _projectStore.GetProjectAsync(id, cancellationToken);
+      if (project is null)
+      {
+         return NotFound();
+      }
+
+      return View("ProjectEdit", await GetEditPageViewModelAsync(
+         project, cancellationToken));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> Create(
-      ProjectEditViewModel model,
+   public async Task<IActionResult> ProjectCreate(
+      ProjectMetadataViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
-   }
+      model.EditMode = EditModes.Create;
+      await PopulateProjectMetadataOptionsAsync(model, cancellationToken);
 
-   [HttpGet]
-   public Task<IActionResult> Edit(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView("ProjectMetadataEdit", model);
+      }
+
+      try
+      {
+         int projectId = await _projectStore.InsertProjectAsync(
+            model.ToProject(), model.ProjectTagIds,
+            model.ProjectStackTagIds, cancellationToken);
+
+         return RedirectToProjectEdit(projectId);
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(
+            nameof(model.Slug), "Another project already uses this slug.");
+
+         return PartialView("ProjectMetadataEdit", model);
+      }
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> Edit(
-      int id,
-      ProjectEditViewModel model,
+   public async Task<IActionResult> ProjectEdit(
+      ProjectMetadataViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
-   }
+      model.EditMode = EditModes.Edit;
+      await PopulateProjectMetadataOptionsAsync(model, cancellationToken);
 
-   [HttpGet]
-   public Task<IActionResult> Delete(
-      int id,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView("ProjectMetadataEdit", model);
+      }
+
+      try
+      {
+         bool updated = await _projectStore.UpdateProjectAsync(
+            model.ToProject(), model.ProjectTagIds,
+            model.ProjectStackTagIds, cancellationToken);
+
+         if (!updated)
+         {
+            return NotFound();
+         }
+      }
+      catch (DuplicateSlugException)
+      {
+         ModelState.AddModelError(
+            nameof(model.Slug),
+            "Another project already uses this slug.");
+
+         return PartialView("ProjectMetadataEdit", model);
+      }
+
+      return PartialView("ProjectMetadataEdit", model);
    }
 
    [HttpPost]
-   [ActionName(nameof(Delete))]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> DeleteConfirmed(
-      ProjectDeleteViewModel model,
+   public async Task<IActionResult> ProjectContentSave(
+      ProjectContentEditViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (!ModelState.IsValid)
+      {
+         return PartialView("ProjectContentEdit", model);
+      }
+
+      var assetLinks = await BuildProjectAssetLinksAsync(
+         model.AssetLinks, cancellationToken);
+
+      bool updated = await _projectStore.UpdateProjectContentAsync(
+         model.ProjectId, model.Content, assetLinks, cancellationToken);
+
+      if (!updated)
+      {
+         return NotFound();
+      }
+
+      var project = await _projectStore.GetProjectAsync(
+         model.ProjectId, cancellationToken);
+
+      if (project is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(
+         "ProjectContentRefresh",
+         await GetEditPageViewModelAsync(project, cancellationToken));
    }
 
-   public Task<IActionResult> LinkList(
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> ProjectContentPreview(
+      ProjectContentEditViewModel model,
+      CancellationToken cancellationToken)
+   {
+      try
+      {
+         var references = await BuildLinkedAssetReferencesAsync(
+            model.AssetLinks, cancellationToken);
+
+         var rendered = await _markdownRenderer.RenderAsync(
+            $"project-preview:{model.ProjectId}",
+            model.Content ?? string.Empty,
+            references, cancellationToken);
+
+         return PartialView("ProjectPreviewBody", rendered);
+      }
+      catch (InvalidOperationException ex)
+      {
+         return PartialView("ProjectPreviewError", ex.Message);
+      }
+   }
+
+   private async Task<ProjectAdminIndexViewModel> GetIndexViewModelAsync(
+      CancellationToken cancellationToken)
+   {
+      return new ProjectAdminIndexViewModel()
+      {
+         Statuses = await GetStatusPanelAsync(cancellationToken),
+         Origins = await GetOriginPanelAsync(cancellationToken),
+         Types = await GetTypePanelAsync(cancellationToken),
+         Visibilities = await GetVisibilityPanelAsync(cancellationToken),
+         Tags = await GetTagPanelAsync(cancellationToken),
+         StackTags = await GetStackTagPanelAsync(cancellationToken),
+         Projects = await GetProjectListViewModelAsync(cancellationToken),
+      };
+   }
+
+   private async Task<ProjectEditPageViewModel> GetEditPageViewModelAsync(
+      Project project,
+      CancellationToken cancellationToken)
+   {
+      var metadataOptions = await GetMetadataOptionsAsync(cancellationToken);
+      var content = await GetProjectContentViewModelAsync(
+         project.Id, cancellationToken);
+
+      return new ProjectEditPageViewModel()
+      {
+         Metadata = new ProjectMetadataViewModel(project, metadataOptions),
+         Content = content,
+         AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
+         ContentPreview = null,
+      };
+   }
+
+   private async Task<ProjectContentEditViewModel> GetProjectContentViewModelAsync(
       int projectId,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var content = await _projectStore.GetProjectContentAsync(
+         projectId,
+         cancellationToken);
+
+      if (content is null)
+      {
+         return new ProjectContentEditViewModel()
+         {
+            ProjectId = projectId,
+            Content = null,
+         };
+      }
+
+      return new ProjectContentEditViewModel()
+      {
+         ProjectId = projectId,
+         ContentAssetId = content.ContentAssetId,
+         ContentAssetKey = content.ContentAssetKey,
+         Content = content.Content,
+         AssetLinks = content.AssetLinks
+            .Where(link => !string.IsNullOrWhiteSpace(link.ReferenceKey))
+            .Select(link => new AssetLinkInputViewModel()
+            {
+               SiteAssetId = link.SiteAssetId,
+               ReferenceKey = link.ReferenceKey!,
+               Caption = link.Caption,
+               AltTextOverride = link.AltTextOverride,
+            })
+            .ToList(),
+      };
    }
 
-   [HttpGet]
-   public IActionResult LinkCreate(
-      int projectId)
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> LinkCreate(
-      ProjectLinkEditViewModel model,
+   private async Task<ProjectMetadataOptionsViewModel> GetMetadataOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      return new ProjectMetadataOptionsViewModel()
+      {
+         Statuses = await GetStatusOptionsAsync(cancellationToken),
+         Types = await GetTypeOptionsAsync(cancellationToken),
+         Origins = await GetOriginOptionsAsync(cancellationToken),
+         Visibilities = await GetVisibilityOptionsAsync(cancellationToken),
+         Tags = await GetTagOptionsAsync(cancellationToken),
+         StackTags = await GetStackTagOptionsAsync(cancellationToken),
+      };
    }
 
-   [HttpGet]
-   public Task<IActionResult> LinkEdit(
-      int id,
+   private async Task PopulateProjectMetadataOptionsAsync(
+      ProjectMetadataViewModel model,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      model.SetOptions(await GetMetadataOptionsAsync(cancellationToken));
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> LinkEdit(
-      int id,
-      ProjectLinkEditViewModel model,
+   private async Task<AssetChooserViewModel> GetAssetChooserViewModelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var assets = await _uncategorizedStore.GetSiteAssetsAsync(
+         cancellationToken);
+
+      var usedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+      var items = new List<AssetChooserItemViewModel>();
+
+      foreach (var asset in assets.OrderBy(asset => asset.AssetKey))
+      {
+         string baseKey = Path.GetFileNameWithoutExtension(asset.AssetKey);
+         string referenceKey = _slugService.CreateSlug(baseKey);
+         string uniqueReferenceKey = GetUniqueReferenceKey(referenceKey, usedKeys);
+
+         items.Add(new AssetChooserItemViewModel()
+         {
+            Id = asset.Id,
+            AssetKey = asset.AssetKey,
+            ContentType = asset.ContentType,
+            ReferenceKey = uniqueReferenceKey,
+         });
+      }
+
+      return new AssetChooserViewModel()
+      {
+         Assets = items,
+      };
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> LinkDelete(
-      int id,
+   private static string GetUniqueReferenceKey(
+      string referenceKey,
+      ISet<string> usedKeys)
+   {
+      if (usedKeys.Add(referenceKey))
+      {
+         return referenceKey;
+      }
+
+      for (int i = 2; ; i++)
+      {
+         string candidate = $"{referenceKey}-{i}";
+
+         if (usedKeys.Add(candidate))
+         {
+            return candidate;
+         }
+      }
+   }
+
+   private async Task<IReadOnlyList<ProjectAssetLink>> BuildProjectAssetLinksAsync(
+      IReadOnlyList<AssetLinkInputViewModel> inputLinks,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      int defaultAssetRoleId =
+         await _projectStore.GetRequiredProjectAssetRoleIdAsync(
+            "inline-content", cancellationToken);
+
+      var links = new List<ProjectAssetLink>();
+
+      foreach (var inputLink in inputLinks
+         .GroupBy(link => link.ReferenceKey, StringComparer.OrdinalIgnoreCase)
+         .Select(group => group.First()))
+      {
+         links.Add(new ProjectAssetLink()
+         {
+            SiteAssetId = inputLink.SiteAssetId,
+            ProjectAssetRoleId = defaultAssetRoleId,
+            ReferenceKey = inputLink.ReferenceKey,
+            Caption = inputLink.Caption,
+            AltTextOverride = inputLink.AltTextOverride,
+         });
+      }
+
+      return links;
    }
 
-   public Task<IActionResult> OriginList(
+   private async Task<IReadOnlyList<LinkedAssetReference>> BuildLinkedAssetReferencesAsync(
+      IReadOnlyList<AssetLinkInputViewModel> inputLinks,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var references = new List<LinkedAssetReference>();
+
+      foreach (var inputLink in inputLinks
+         .GroupBy(link => link.ReferenceKey, StringComparer.OrdinalIgnoreCase)
+         .Select(group => group.First()))
+      {
+         var asset = await _uncategorizedStore.GetAssetAsync(
+            inputLink.SiteAssetId,
+            cancellationToken);
+
+         if (asset is null)
+         {
+            throw new InvalidOperationException(
+               $"The linked asset '{inputLink.ReferenceKey}' no longer exists.");
+         }
+
+         references.Add(new LinkedAssetReference()
+         {
+            ReferenceKey = inputLink.ReferenceKey,
+            AssetKey = asset.AssetKey,
+            AltText = inputLink.AltTextOverride ?? asset.AltText,
+            Caption = inputLink.Caption,
+         });
+      }
+
+      return references;
    }
 
-   [HttpGet]
-   public IActionResult OriginCreate()
+   private IActionResult RedirectToProjectEdit(int projectId)
    {
-      throw new NotImplementedException();
+      var url = Url.Action(nameof(ProjectEdit), new
+      {
+         id = projectId,
+      });
+
+      if (string.IsNullOrWhiteSpace(url))
+      {
+         throw new InvalidOperationException(
+            "Could not build the project edit URL.");
+      }
+
+      if (Request.Headers.ContainsKey("HX-Request"))
+      {
+         Response.Headers["HX-Redirect"] = url;
+         return Ok();
+      }
+
+      return RedirectToAction(nameof(ProjectEdit), new
+      {
+         id = projectId,
+      });
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> OriginCreate(
-      ProjectOriginEditViewModel model,
+   private async Task<ProjectLookupPanelViewModel> GetStatusPanelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var items = await _projectStore.GetProjectStatusesAsync(cancellationToken);
+      return new ProjectLookupPanelViewModel()
+      {
+         Title = "Project Statuses",
+         Description = "Create and edit project statuses",
+         CreateAction = nameof(StatusCreate),
+         EditAction = nameof(StatusEdit),
+         RegionId = ProjectAdminIds.ProjectStatusPanelRegion,
+         Items = items.Select(i => new ProjectLookupItemViewModel()
+         {
+            Id = i.Id,
+            DisplayName = i.DisplayName,
+            Slug = i.Slug,
+            Description = i.Description,
+            IsActive = i.IsActive,
+            SortOrder = i.SortOrder,
+         }).ToList()
+      };
    }
 
-   [HttpGet]
-   public Task<IActionResult> OriginEdit(
-      int id,
+   private async Task<ProjectLookupPanelViewModel> GetOriginPanelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var items = await _projectStore.GetProjectOriginsAsync(cancellationToken);
+      return new ProjectLookupPanelViewModel()
+      {
+         Title = "Project Origins",
+         Description = "Create and edit project origins.",
+         CreateAction = nameof(OriginCreate),
+         EditAction = nameof(OriginEdit),
+         RegionId = ProjectAdminIds.ProjectOriginPanelRegion,
+         Items = items.Select(i => new ProjectLookupItemViewModel()
+         {
+            Id = i.Id,
+            DisplayName = i.DisplayName,
+            Slug = i.Slug,
+            Description = i.Description,
+            IsActive = i.IsActive,
+            SortOrder = i.SortOrder,
+         }).ToList()
+      };
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> OriginEdit(
-      int id,
-      ProjectOriginEditViewModel model,
+   private async Task<ProjectLookupPanelViewModel> GetTypePanelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var items = await _projectStore.GetProjectTypesAsync(cancellationToken);
+      return new ProjectLookupPanelViewModel()
+      {
+         Title = "Project Types",
+         Description = "Create and edit project types.",
+         CreateAction = nameof(TypeCreate),
+         EditAction = nameof(TypeEdit),
+         RegionId = ProjectAdminIds.ProjectTypePanelRegion,
+         Items = items.Select(i => new ProjectLookupItemViewModel()
+         {
+            Id = i.Id,
+            DisplayName = i.DisplayName,
+            Slug = i.Slug,
+            Description = i.Description,
+            IsActive = i.IsActive,
+            SortOrder = i.SortOrder,
+         }).ToList()
+      };
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> OriginDelete(
-      int id,
+   private async Task<ProjectLookupPanelViewModel> GetVisibilityPanelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var items = await _projectStore.GetProjectVisibilitiesAsync(
+         cancellationToken);
+      return new ProjectLookupPanelViewModel()
+      {
+         Title = "Project Visibilities",
+         Description = "Define how projects show up on the main site.",
+         CreateAction = nameof(VisibilityCreate),
+         EditAction = nameof(VisibilityEdit),
+         RegionId = ProjectAdminIds.ProjectVisibilityPanelRegion,
+         Items = items.Select(i => new ProjectLookupItemViewModel()
+         {
+            Id = i.Id,
+            DisplayName = i.DisplayName,
+            Slug = i.Slug,
+            Description = i.Description,
+            IsActive = i.IsActive,
+            SortOrder = i.SortOrder,
+         }).ToList()
+      };
    }
 
-   public Task<IActionResult> StackList(
+   private async Task<ProjectLookupPanelViewModel> GetTagPanelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var items = await _projectStore.GetProjectTagsAsync(cancellationToken);
+      return new ProjectLookupPanelViewModel()
+      {
+         Title = "Project Tags",
+         Description = "Create and edit project tags.",
+         CreateAction = nameof(TagCreate),
+         EditAction = nameof(TagEdit),
+         RegionId = ProjectAdminIds.ProjectTagPanelRegion,
+         Items = items.Select(i => new ProjectLookupItemViewModel()
+         {
+            Id = i.Id,
+            DisplayName = i.DisplayName,
+            Slug = i.Slug,
+            Description = i.Description,
+            IsActive = i.IsActive,
+            SortOrder = i.SortOrder,
+         }).ToList()
+      };
    }
 
-   [HttpGet]
-   public IActionResult StackCreate()
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> StackCreate(
-      ProjectStackEditViewModel model,
+   private async Task<ProjectLookupPanelViewModel> GetStackTagPanelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var items = await _projectStore.GetProjectStackTagsAsync(
+         cancellationToken);
+      return new ProjectLookupPanelViewModel()
+      {
+         Title = "Technology Stacks",
+         Description = "Create and edit technology tags.",
+         CreateAction = nameof(StackCreate),
+         EditAction = nameof(StackEdit),
+         RegionId = ProjectAdminIds.ProjectStackTagPanelRegion,
+         Items = items.Select(i => new ProjectLookupItemViewModel()
+         {
+            Id = i.Id,
+            DisplayName = i.DisplayName,
+            Slug = i.Slug,
+            Description = i.Description,
+            IsActive = i.IsActive,
+            SortOrder = i.SortOrder,
+         }).ToList()
+      };
    }
 
-   [HttpGet]
-   public Task<IActionResult> StackEdit(
-      int id,
+   private async Task<ProjectListViewModel> GetProjectListViewModelAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var projects = await _projectStore.GetProjectsAsync(cancellationToken);
+      return new ProjectListViewModel()
+      {
+         Items = projects.Select(p => new ProjectListItemViewModel(p)).ToList(),
+      };
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> StackEdit(
-      int id,
-      ProjectStackEditViewModel model,
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetStatusOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var projectStatuses = await _projectStore.GetProjectStatusesAsync(
+         cancellationToken);
+      return projectStatuses.Select(s => new LookupOptionViewModel()
+      {
+         Id = s.Id,
+         DisplayName = s.DisplayName,
+         IsActive = s.IsActive,
+      }).ToList();
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> StackDelete(
-      int id,
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetTypeOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var projectTypes = await _projectStore.GetProjectTypesAsync(
+         cancellationToken);
+      return projectTypes.Select(t => new LookupOptionViewModel()
+      {
+         Id = t.Id,
+         DisplayName = t.DisplayName,
+         IsActive = t.IsActive,
+      }).ToList();
    }
 
-   public Task<IActionResult> TagList(
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetOriginOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var origins = await _projectStore.GetProjectOriginsAsync(cancellationToken);
+      return origins.Select(origin => new LookupOptionViewModel()
+      {
+         DisplayName = origin.DisplayName,
+         IsActive = origin.IsActive,
+         Id = origin.Id,
+      }).ToList();
    }
 
-   [HttpGet]
-   public IActionResult TagCreate()
-   {
-      throw new NotImplementedException();
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagCreate(
-      ProjectTagEditViewModel model,
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetVisibilityOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var visibilities = await _projectStore.GetProjectVisibilitiesAsync(
+         cancellationToken);
+      return visibilities.Select(v => new LookupOptionViewModel()
+      {
+         Id = v.Id,
+         DisplayName = v.DisplayName,
+         IsActive = v.IsActive,
+      }).ToList();
    }
 
-   [HttpGet]
-   public Task<IActionResult> TagEdit(
-      int id,
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetStackTagOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var stacks = await _projectStore.GetProjectStackTagsAsync(cancellationToken);
+      return stacks.Select(stack => new LookupOptionViewModel()
+      {
+         Id = stack.Id,
+         DisplayName = stack.DisplayName,
+         IsActive = stack.IsActive,
+      }).ToList();
    }
 
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> TagEdit(
-      int id,
-      ProjectTagEditViewModel model,
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetTagOptionsAsync(
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var tags = await _projectStore.GetProjectTagsAsync(cancellationToken);
+      return tags.Select(tag => new LookupOptionViewModel()
+      {
+         DisplayName = tag.DisplayName,
+         IsActive = tag.IsActive,
+         Id = tag.Id,
+      }).ToList();
    }
 
-   public Task<IActionResult> TypeList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> StatusList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
-
-   public Task<IActionResult> VisibilityList(
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
-   }
+   private readonly ISlugService _slugService;
+   private readonly IProjectStore _projectStore;
+   private readonly IUncategorizedStore _uncategorizedStore;
+   private readonly IMarkdownDocumentRenderer _markdownRenderer;
 }

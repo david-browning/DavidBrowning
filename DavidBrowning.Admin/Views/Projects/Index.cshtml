@@ -1,11 +1,52 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
-@model DavidBrowning.Admin.ViewModels.Projects.IndexViewModel
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectAdminIndexViewModel
 
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
+	ViewData["Title"] = "Projects";
 }
+
+<div class="container py-4">
+	<header class="mb-4">
+		<h1>Projects</h1>
+		<p class="text-secondary mb-0">
+			Manage project metadata, lookup values, and portfolio entries.
+		</p>
+	</header>
+
+	<div class="d-grid gap-4">
+		<section>
+			<div class="row g-4">
+				<div class="col-12 col-xl-4">
+					<partial name="ProjectLookupPanel" model="Model.Statuses" />
+				</div>
+
+				<div class="col-12 col-xl-4">
+					<partial name="ProjectLookupPanel" model="Model.Origins" />
+				</div>
+
+				<div class="col-12 col-xl-4">
+					<partial name="ProjectLookupPanel" model="Model.Types" />
+				</div>
+
+				<div class="col-12 col-xl-4">
+					<partial name="ProjectLookupPanel" model="Model.Visibilities" />
+				</div>
+
+				<div class="col-12 col-xl-4">
+					<partial name="ProjectLookupPanel" model="Model.Tags" />
+				</div>
+
+				<div class="col-12 col-xl-4">
+					<partial name="ProjectLookupPanel" model="Model.StackTags" />
+				</div>
+			</div>
+		</section>
+
+		<div id="project-list-region">
+			<partial name="ProjectList" model="Model.Projects" />
+		</div>
+	</div>
+</div>
