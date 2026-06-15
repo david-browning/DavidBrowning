@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.Text.RegularExpressions;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Infrastructure.Data.Stores;
 
-public class SqlWritingStore : IWritingStore
+public partial class SqlWritingStore : IWritingStore
 {
    public SqlWritingStore(
       ILogger<SqlWritingStore> logger,
@@ -221,6 +222,7 @@ public class SqlWritingStore : IWritingStore
       int postId,
       ContentFormat contentFormat,
       string? content,
+      IReadOnlyList<PostRevisionAssetLink> assetLinks,
       string createdBy,
       CancellationToken cancellationToken = default)
    {
@@ -237,6 +239,38 @@ public class SqlWritingStore : IWritingStore
          .DefaultIfEmpty(0)
          .Max() + 1;
 
+      var referencedKeys = GetAssetReferenceKeys(content);
+
+      var distinctLinks = assetLinks
+         .Where(link => referencedKeys.Contains(link.ReferenceKey))
+         .GroupBy(link => link.ReferenceKey, StringComparer.OrdinalIgnoreCase)
+         .Select(group => group.Single())
+         .ToList();
+
+      var linkedKeys = distinctLinks
+         .Select(link => link.ReferenceKey)
+         .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+      if (!referencedKeys.SetEquals(linkedKeys))
+      {
+         throw new InvalidOperationException(
+            "One or more asset references are missing linked asset metadata.");
+      }
+
+      var siteAssetIds = distinctLinks
+         .Select(link => link.SiteAssetId)
+         .Distinct()
+         .ToList();
+
+      int validAssetCount = await _dbContext.SiteAssets
+         .CountAsync(asset => siteAssetIds.Contains(asset.Id), cancellationToken);
+
+      if (validAssetCount != siteAssetIds.Count)
+      {
+         throw new InvalidOperationException(
+            "One or more linked assets do not exist.");
+      }
+
       var revision = new PostRevision()
       {
          PostId = post.Id,
@@ -245,6 +279,17 @@ public class SqlWritingStore : IWritingStore
          Content = content,
          CreatedBy = createdBy,
       };
+
+      foreach (var link in distinctLinks)
+      {
+         revision.AssetLinks.Add(new PostRevisionAssetLink()
+         {
+            SiteAssetId = link.SiteAssetId,
+            ReferenceKey = link.ReferenceKey,
+            Caption = link.Caption,
+            AltTextOverride = link.AltTextOverride,
+         });
+      }
 
       _dbContext.PostRevisions.Add(revision);
       await _dbContext.SaveChangesAsync(cancellationToken);
@@ -471,6 +516,25 @@ public class SqlWritingStore : IWritingStore
       }
    }
 
+   private static IReadOnlySet<string> GetAssetReferenceKeys(string? content)
+   {
+      if (string.IsNullOrWhiteSpace(content))
+      {
+         return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+      }
+
+      var matches = AssetTokenRegex().Matches(content);
+
+      return matches
+         .Select(match => match.Groups["key"].Value)
+         .ToHashSet(StringComparer.OrdinalIgnoreCase);
+   }
+
    private readonly ILogger<SqlWritingStore> _logger;
    private readonly SiteDbContext _dbContext;
+
+   [GeneratedRegex(
+   @"^\{\{asset:(?<key>[a-z0-9][a-z0-9-]*)\}\}\r?$",
+   RegexOptions.Multiline | RegexOptions.IgnoreCase)]
+   private static partial Regex AssetTokenRegex();
 }

@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -46,6 +47,7 @@ public class PostMetadataViewModel
    /// Controls how the post should be presented.
    /// </summary>
    [Required]
+   [DisplayName("Post Style")]
    public int? PostStyleId { get; set; }
 
    [Required]

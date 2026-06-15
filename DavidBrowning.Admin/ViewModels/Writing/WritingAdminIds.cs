@@ -36,4 +36,7 @@ public static class WritingAdminIds
 
    public const string PostRevisionContentOverlay = 
       "post-revision-content-overlay";
+
+   public const string PostRevisionPreviewRegion = 
+      "post-revision-content-preview-region";
 }

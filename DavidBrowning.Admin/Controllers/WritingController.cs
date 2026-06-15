@@ -8,17 +8,26 @@ using System.Threading.Tasks;
 using DavidBrowning.Admin.Extensions;
 using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing;
+using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Infrastructure.Rendering;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
 public partial class WritingController : Controller
 {
-   public WritingController(IWritingStore writingStore)
+   public WritingController(
+      ISlugService slugService,
+      IUncategorizedStore uncategorizedStore,
+      IWritingStore writingStore,
+      MarkdownPostContentRenderer postRendered)
    {
+      _slugService = slugService;
+      _uncategorizedStore = uncategorizedStore;
       _writingStore = writingStore;
+      _postRendered = postRendered;
    }
 
    public async Task<IActionResult> Index(
@@ -238,4 +247,7 @@ public partial class WritingController : Controller
    }
 
    private readonly IWritingStore _writingStore;
+   private readonly IUncategorizedStore _uncategorizedStore;
+   private readonly ISlugService _slugService;
+   private readonly MarkdownPostContentRenderer _postRendered;
 }

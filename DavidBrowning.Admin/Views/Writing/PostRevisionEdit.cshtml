@@ -8,110 +8,140 @@
 @using DavidBrowning.Models
 
 <section class="card">
-    <div class="card-body position-relative">
-        <div id="@WritingAdminIds.PostRevisionContentOverlay"
-             class="admin-form-overlay d-none"
-             aria-hidden="true">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Saving revision</span>
-            </div>
-        </div>
+	<div class="card-body position-relative">
+		<div id="@WritingAdminIds.PostRevisionContentOverlay"
+			 class="admin-form-overlay d-none" aria-hidden="true">
+			<div class="spinner-border" role="status">
+				<span class="visually-hidden">Saving revision</span>
+			</div>
+		</div>
 
-        <div class="d-flex flex-column flex-lg-row justify-content-between
+		<div class="d-flex flex-column flex-lg-row justify-content-between
                   align-items-lg-start gap-3 mb-4">
-            <div>
-                <h2 class="h4 card-title mb-1">
-                    @if (Model.EditMode == EditModes.Edit)
-                    {
-                        <text>Revision @Model.RevisionNumber</text>
-                    }
-                    else
-                    {
-                        <text>New revision</text>
-                    }
-                </h2>
+			<div>
+				<h2 class="h4 card-title mb-1">
+					@if (Model.EditMode == EditModes.Edit)
+					{
+						<text>Revision @Model.RevisionNumber</text>
+					}
+					else
+					{
+						<text>New revision</text>
+					}
+				</h2>
 
-                @if (Model.EditMode == EditModes.Edit)
-                {
-                    <p class="card-text text-secondary mb-0">
-                        Loaded from revision @Model.RevisionNumber.
-                        Saving creates a new revision.
-                    </p>
-                }
-                else
-                {
-                    <p class="card-text text-secondary mb-0">
-                        Create a new content snapshot for this post.
-                    </p>
-                }
-            </div>
+				@if (Model.EditMode == EditModes.Edit)
+				{
+					<p class="card-text text-secondary mb-0">
+						Loaded from revision @Model.RevisionNumber.
+						Saving creates a new revision.
+					</p>
+				}
+				else
+				{
+					<p class="card-text text-secondary mb-0">
+						Create a new content snapshot for this post.
+					</p>
+				}
+			</div>
 
-            <div class="d-flex flex-wrap gap-2">
-                @if (Model.IsCurrentRevision)
-                {
-                    <span class="badge text-bg-success align-self-start">
-                        Current revision
-                    </span>
-                }
+			<div class="d-flex flex-wrap gap-2">
+				@if (Model.IsCurrentRevision)
+				{
+					<span class="badge text-bg-success align-self-start">
+						Current revision
+					</span>
+				}
 
-                @if (Model.CreatedAtUtc.HasValue)
-                {
-                    <span class="badge text-bg-secondary align-self-start">
-                        @Model.CreatedAtUtc.Value.ToString("yyyy-MM-dd HH:mm")
-                    </span>
-                }
-            </div>
-        </div>
+				@if (Model.CreatedAtUtc.HasValue)
+				{
+					<span class="badge text-bg-secondary align-self-start">
+						@Model.CreatedAtUtc.Value.ToString("yyyy-MM-dd HH:mm")
+					</span>
+				}
+			</div>
+		</div>
 
-        <form method="post"
-              asp-controller="Writing"
-              asp-action="PostRevisionCreate"
-              hx-post="@Url.Action("PostRevisionCreate", "Writing")"
-              hx-target="#@WritingAdminIds.PostRevisionContentRegion"
-              hx-swap="innerHTML"
-              hx-indicator="#@WritingAdminIds.PostRevisionContentOverlay">
-            @Html.AntiForgeryToken()
+		<form method="post"
+			  asp-controller="Writing"
+			  asp-action="PostRevisionCreate"
+			  hx-post="@Url.Action("PostRevisionCreate", "Writing")"
+			  hx-target="#@WritingAdminIds.PostRevisionContentRegion"
+			  hx-swap="innerHTML"
+			  hx-indicator="#@WritingAdminIds.PostRevisionContentOverlay">
+			@Html.AntiForgeryToken()
 
-            <fieldset>
-                <input asp-for="PostId" type="hidden" />
+			<fieldset>
+				<input asp-for="PostId" type="hidden" />
 
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3">
-                </div>
+				<div asp-validation-summary="ModelOnly" class="text-danger mb-3">
+				</div>
 
-                <div class="mb-3">
-                    <label asp-for="ContentFormat" class="form-label"></label>
-                    <select asp-for="ContentFormat"
-                            asp-items="Html.GetEnumSelectList<ContentFormat>()"
-                            class="form-select">
-                    </select>
-                    <span asp-validation-for="ContentFormat"
-                          class="text-danger">
-                    </span>
-                </div>
+				<div class="mb-3">
+					<label asp-for="ContentFormat" class="form-label"></label>
+					<select asp-for="ContentFormat"
+							asp-items="Html.GetEnumSelectList<ContentFormat>()"
+							class="form-select">
+					</select>
+					<span asp-validation-for="ContentFormat" class="text-danger">
+					</span>
+				</div>
 
-                <div class="mb-3">
-                    <label asp-for="Content" class="form-label"></label>
-                    <textarea asp-for="Content"
-                              class="form-control font-monospace"
-                              rows="22" spellcheck="true"></textarea>
-                    <span asp-validation-for="Content"
-                          class="text-danger">
-                    </span>
-                </div>
+				<div class="mb-3">
+					<label asp-for="Content" class="form-label"></label>
+					<textarea asp-for="Content" data-asset-insertable
+							  class="form-control font-monospace"
+							  rows="22" spellcheck="true"></textarea>
+					<span asp-validation-for="Content" class="text-danger">
+					</span>
+				</div>
 
-                <div class="d-flex flex-column flex-sm-row gap-2">
-                    <button class="btn btn-primary" type="submit">
-                        Save as new revision
-                    </button>
+				<div data-asset-link-inputs>
+					@foreach (var link in Model.AssetLinks)
+					{
+						<div data-asset-link-reference-key="@link.ReferenceKey">
+							<input type="hidden"
+								   name="AssetLinks.Index"
+								   value="@link.ReferenceKey" />
 
-                    @if (Model.EditMode == EditModes.Edit)
-                    {
-                        <span class="text-secondary align-self-sm-center">
-                            This will not overwrite revision @Model.RevisionNumber.
-                        </span>
-                    }
-                </div>
-            </fieldset>
-        </form>
-    </div>
+							<input type="hidden"
+								   name="AssetLinks[@link.ReferenceKey].SiteAssetId"
+								   value="@link.SiteAssetId" />
+
+							<input type="hidden"
+								   name="AssetLinks[@link.ReferenceKey].ReferenceKey"
+								   value="@link.ReferenceKey" />
+
+							@if (!string.IsNullOrWhiteSpace(link.Caption))
+							{
+								<input type="hidden"
+									   name="AssetLinks[@link.ReferenceKey].Caption"
+									   value="@link.Caption" />
+							}
+
+							@if (!string.IsNullOrWhiteSpace(link.AltTextOverride))
+							{
+								<input type="hidden"
+									   name="AssetLinks[@link.ReferenceKey].AltTextOverride"
+									   value="@link.AltTextOverride" />
+							}
+						</div>
+					}
+				</div>
+
+				<div class="d-flex flex-column flex-sm-row gap-2">
+					<button class="btn btn-primary" type="submit">
+						Save as new revision
+					</button>
+
+					@if (Model.EditMode == EditModes.Edit)
+					{
+						<span class="text-secondary align-self-sm-center">
+							This will not overwrite revision @Model.RevisionNumber.
+						</span>
+					}
+				</div>
+			</fieldset>
+		</form>
+	</div>
 </section>

@@ -105,3 +105,7 @@ body {
 .admin-edit-sidebar.admin-offcanvas-wide {
    --bs-offcanvas-width: min(56rem, 100vw);
 }
+
+.list-group-item {
+   min-width: 12em;
+}
