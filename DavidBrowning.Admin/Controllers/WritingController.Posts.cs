@@ -2,9 +2,11 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Writing.Posts;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Models;
@@ -45,10 +47,10 @@ public partial class WritingController
       CancellationToken cancellationToken)
    {
       model.EditMode = ViewModels.EditModes.Create;
+      await PopulatePostMetadataOptionsAsync(model, cancellationToken);
 
       if (!ModelState.IsValid)
       {
-         await PopulatePostMetadataOptionsAsync(model, cancellationToken);
          return PartialView("PostMetadataEdit", model);
       }
 
@@ -63,9 +65,10 @@ public partial class WritingController
       PostMetadataViewModel model,
       CancellationToken cancellationToken)
    {
+      await PopulatePostMetadataOptionsAsync(model, cancellationToken);
+
       if (!ModelState.IsValid)
       {
-         await PopulatePostMetadataOptionsAsync(model, cancellationToken);
          return PartialView("PostMetadataEdit", model);
       }
 
@@ -73,12 +76,12 @@ public partial class WritingController
       {
          var result = await _writingStore.UpdatePostAsync(
             model.ToPost(), model.WritingTagIds, cancellationToken);
-         if(!result)
+         if (!result)
          {
             return BadRequest();
          }
       }
-      catch(DuplicateSlugException)
+      catch (DuplicateSlugException)
       {
          ModelState.AddModelError(nameof(model.Slug),
             "Another post already uses this slug.");
@@ -94,14 +97,30 @@ public partial class WritingController
       int? revisionId,
       CancellationToken cancellationToken)
    {
+      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+      if (post is null)
+      {
+         return NotFound();
+      }
+
       if (revisionId is null)
       {
-         return PartialView(nameof(PostRevisionEdit),
-            new PostRevisionContentViewModel()
-            {
-               PostId = postId,
-               ContentFormat = ContentFormat.Markdown,
-            });
+         var createModel = new PostRevisionContentViewModel()
+         {
+            PostId = postId,
+            ContentFormat = ContentFormat.Markdown,
+         };
+
+         var emptyPreviewModel = new IndexViewModel()
+         {
+            Metadata = await GetPostMetadataAsync(post, cancellationToken),
+            RevisionHistory = GetRevisionHistoryViewModel(post, null),
+            RevisionContent = createModel,
+            AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
+            ContentPreview = null,
+         };
+
+         return PartialView("PostRevisionEditRefresh", emptyPreviewModel);
       }
 
       var revision = await _writingStore.GetPostRevisionAsync(
@@ -112,15 +131,10 @@ public partial class WritingController
          return NotFound();
       }
 
-      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+      var viewModel = await GetPostIndexViewModelAsync(
+         post, revision.Id, cancellationToken);
 
-      if (post is null)
-      {
-         return NotFound();
-      }
-
-      return PartialView(nameof(PostRevisionEdit),
-         new PostRevisionContentViewModel(revision, post.CurrentRevisionId));
+      return PartialView("PostRevisionEditRefresh", viewModel);
    }
 
    [HttpPost]
@@ -136,9 +150,19 @@ public partial class WritingController
 
       string createdBy = "David Browning";
 
+      var assetLinks = model.AssetLinks
+         .Select(link => new PostRevisionAssetLink()
+         {
+            SiteAssetId = link.SiteAssetId,
+            ReferenceKey = link.ReferenceKey,
+            Caption = link.Caption,
+            AltTextOverride = link.AltTextOverride,
+         })
+         .ToList();
+
       var revision = await _writingStore.InsertPostRevisionAsync(
          model.PostId, model.ContentFormat!.Value, model.Content,
-         createdBy, cancellationToken);
+         assetLinks, createdBy, cancellationToken);
 
       if (revision is null)
       {
@@ -165,14 +189,14 @@ public partial class WritingController
       CancellationToken cancellationToken)
    {
       var post = await _writingStore.GetPostAsync(postId, cancellationToken);
-      if(post is null)
+      if (post is null)
       {
          return NotFound();
       }
 
       var updated = await _writingStore.SetCurrentRevisionAsync(
          postId, revisionId, cancellationToken);
-      if(!updated)
+      if (!updated)
       {
          return BadRequest();
       }
@@ -182,10 +206,43 @@ public partial class WritingController
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public IActionResult PostRevisionPreview(
-      PostRevisionContentViewModel model)
+   public async Task<IActionResult> PostRevisionPreview(
+      PostRevisionContentViewModel model,
+      CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      if (model.ContentFormat != ContentFormat.Markdown)
+      {
+         return PartialView(
+            "PostRevisionPreviewError",
+            "Preview is currently only supported for Markdown content.");
+      }
+
+      try
+      {
+         var revision = new PostRevision()
+         {
+            PostId = model.PostId,
+            RevisionNumber = 0,
+            ContentFormat = model.ContentFormat.Value,
+            Content = model.Content ?? string.Empty,
+            CreatedBy = "Preview",
+         };
+
+         var assetLinks = await GetPreviewAssetLinksAsync(
+            model.AssetLinks,
+            cancellationToken);
+
+         var rendered = await _postRendered.RenderAsync(
+            revision,
+            assetLinks,
+            cancellationToken);
+
+         return PartialView("PostRevisionPreviewBody", rendered);
+      }
+      catch (InvalidOperationException ex)
+      {
+         return PartialView("PostRevisionPreviewError", ex.Message);
+      }
    }
 
    private async Task<IndexViewModel> GetPostIndexViewModelAsync(
@@ -201,16 +258,25 @@ public partial class WritingController
             RevisionHistory = new PostRevisionHistoryViewModel()
             {
                PostId = 0,
-            }
+            },
+            AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
+            ContentPreview = null,
+            RevisionContent = null,
          };
-
       }
 
+      var revision = post.Revisions.SingleOrDefault(
+        revision => revision.Id == (selectedRevisionId ?? 0));
       return new IndexViewModel()
       {
          Metadata = await GetPostMetadataAsync(post, cancellationToken),
          RevisionHistory = GetRevisionHistoryViewModel(post, selectedRevisionId),
          RevisionContent = GetRevisionContentViewModel(post, selectedRevisionId),
+         AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
+         ContentPreview = revision is not null ?
+            await _postRendered.RenderAsync(
+               revision, revision.AssetLinks.ToList(), cancellationToken) :
+            null,
       };
    }
 
@@ -328,6 +394,94 @@ public partial class WritingController
          cancellationToken);
    }
 
+   private async Task<AssetChooserViewModel> GetAssetChooserViewModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var assets = await _uncategorizedStore.GetSiteAssetsAsync(
+         cancellationToken);
+      return new AssetChooserViewModel()
+      {
+         Assets = GetAssetChooserItems(assets),
+      };
+   }
+
+   private IReadOnlyList<AssetChooserItemViewModel> GetAssetChooserItems(
+      IReadOnlyList<SiteAsset> assets)
+   {
+      var usedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+      var items = new List<AssetChooserItemViewModel>();
+
+      foreach (var asset in assets.OrderBy(asset => asset.AssetKey))
+      {
+         string baseKey = Path.GetFileNameWithoutExtension(asset.AssetKey);
+         string referenceKey = _slugService.CreateSlug(baseKey);
+         string uniqueReferenceKey = GetUniqueReferenceKey(referenceKey, usedKeys);
+
+         items.Add(new AssetChooserItemViewModel()
+         {
+            Id = asset.Id,
+            AssetKey = asset.AssetKey,
+            ContentType = asset.ContentType,
+            ReferenceKey = uniqueReferenceKey,
+         });
+      }
+
+      return items;
+   }
+
+   private static string GetUniqueReferenceKey(
+      string referenceKey,
+      ISet<string> usedKeys)
+   {
+      if (usedKeys.Add(referenceKey))
+      {
+         return referenceKey;
+      }
+
+      for (int i = 2; ; i++)
+      {
+         string candidate = $"{referenceKey}-{i}";
+
+         if (usedKeys.Add(candidate))
+         {
+            return candidate;
+         }
+      }
+   }
+
+   private async Task<IReadOnlyList<PostRevisionAssetLink>> GetPreviewAssetLinksAsync(
+      IReadOnlyList<AssetLinkInputViewModel> inputLinks,
+      CancellationToken cancellationToken)
+   {
+      var links = new List<PostRevisionAssetLink>();
+
+      foreach (var inputLink in inputLinks
+         .GroupBy(link => link.ReferenceKey, StringComparer.OrdinalIgnoreCase)
+         .Select(group => group.First()))
+      {
+         var asset = await _uncategorizedStore.GetAssetAsync(
+            inputLink.SiteAssetId,
+            cancellationToken);
+
+         if (asset is null)
+         {
+            throw new InvalidOperationException(
+               $"The linked asset '{inputLink.ReferenceKey}' no longer exists.");
+         }
+
+         links.Add(new PostRevisionAssetLink()
+         {
+            SiteAssetId = asset.Id,
+            SiteAsset = asset,
+            ReferenceKey = inputLink.ReferenceKey,
+            Caption = inputLink.Caption,
+            AltTextOverride = inputLink.AltTextOverride,
+         });
+      }
+
+      return links;
+   }
+
    private IActionResult RedirectToPostEdit(int postId)
    {
       var url = Url.Action(nameof(PostEdit), new
@@ -352,4 +506,15 @@ public partial class WritingController
          id = postId,
       });
    }
+
+   private const string PostMetadataEditView = "PostMetadataEdit";
+   private const string PostRevisionEditView = "PostRevisionEdit";
+   private const string PostRevisionEditRefreshView =
+      "PostRevisionEditRefresh";
+   private const string PostRevisionCreateRefreshView =
+      "PostRevisionCreateRefresh";
+   private const string PostRevisionPreviewBodyView =
+      "PostRevisionPreviewBody";
+   private const string PostRevisionPreviewErrorView =
+      "PostRevisionPreviewError";
 }

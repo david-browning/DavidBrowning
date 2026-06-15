@@ -1,8 +1,10 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -36,6 +38,8 @@ public class PostRevisionContentViewModel
    [BindNever]
    public bool IsCurrentRevision { get; set; }
 
+   public List<AssetLinkInputViewModel> AssetLinks { get; set; } = new();
+
    public PostRevisionContentViewModel()
    {
 
@@ -55,5 +59,15 @@ public class PostRevisionContentViewModel
       ContentFormat = revision.ContentFormat;
       Content = revision.Content;
       IsCurrentRevision = revision.Id == currentRevisionId;
+
+      AssetLinks = revision.AssetLinks
+         .Select(link => new AssetLinkInputViewModel()
+         {
+            SiteAssetId = link.SiteAssetId,
+            ReferenceKey = link.ReferenceKey,
+            Caption = link.Caption,
+            AltTextOverride = link.AltTextOverride,
+         })
+         .ToList();
    }
 }

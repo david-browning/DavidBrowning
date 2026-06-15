@@ -1,0 +1,80 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.AssetChooserViewModel
+
+<section class="card" data-asset-chooser>
+	<div class="card-body">
+		<div class="d-flex flex-column flex-md-row justify-content-between
+                  align-items-md-start gap-3 mb-3">
+			<div>
+				<h2 class="h4 card-title mb-1">
+					Assets
+				</h2>
+				<p class="card-text text-secondary mb-0">
+					Double-click an asset to insert it into the active editor.
+				</p>
+			</div>
+
+			<div class="text-secondary small">
+				@Model.Assets.Count asset@(Model.Assets.Count == 1 ? "" : "s")
+			</div>
+		</div>
+
+		@if (Model.Assets.Count == 0)
+		{
+			<div class="alert alert-secondary mb-0" role="status">
+				No assets are available.
+			</div>
+		}
+		else
+		{
+			<div class="mb-3">
+				<label class="form-label" for="asset-chooser-search">
+					Search assets
+				</label>
+				<input id="asset-chooser-search" class="form-control" type="search"
+					   autocomplete="off" placeholder="Search by key or content type"
+					   data-asset-chooser-search />
+			</div>
+
+			<div class="list-group asset-chooser-list" data-asset-chooser-list>
+				@foreach (var asset in Model.Assets)
+				{
+					<div class="list-group-item" role="button" tabindex="0"
+						 data-asset-chooser-item
+						 data-asset-site-asset-id="@asset.Id"
+						 data-asset-reference-key="@asset.ReferenceKey"
+						 data-asset-insert-text="@asset.InsertText"
+						 data-asset-search-text="@($"{asset.AssetKey} {asset.ReferenceKey} {asset.ContentType}")">
+						<div class="d-flex justify-content-between align-items-center gap-3">
+							<div>
+								<div class="fw-semibold">
+									@asset.ReferenceKey
+								</div>
+								<div class="small text-secondary text-break">
+									@asset.AssetKey
+								</div>
+								<div class="small text-secondary">
+									@asset.ContentType
+								</div>
+							</div>
+
+							<button class="btn btn-sm btn-outline-primary"
+									type="button"
+									data-asset-chooser-insert>
+								Insert
+							</button>
+						</div>
+					</div>
+				}
+			</div>
+
+			<div class="alert alert-secondary mt-3 mb-0 d-none"
+				 role="status" data-asset-chooser-empty>
+				No assets match your search.
+			</div>
+		}
+	</div>
+</section>

@@ -48,6 +48,7 @@ public interface IWritingStore
       int postId,
       ContentFormat contentFormat,
       string? content,
+      IReadOnlyList<PostRevisionAssetLink> assetLinks,
       string createdBy,
       CancellationToken cancellationToken = default);
 
