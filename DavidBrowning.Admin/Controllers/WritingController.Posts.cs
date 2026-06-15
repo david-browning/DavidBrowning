@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -115,7 +116,7 @@ public partial class WritingController
             Metadata = await GetPostMetadataAsync(post, cancellationToken),
             RevisionHistory = GetRevisionHistoryViewModel(post, null),
             RevisionContent = createModel,
-            AssetChooser = await GetAssetChooseViewModelAsync(cancellationToken),
+            AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
             ContentPreview = null,
          };
 
@@ -258,7 +259,7 @@ public partial class WritingController
             {
                PostId = 0,
             },
-            AssetChooser = await GetAssetChooseViewModelAsync(cancellationToken),
+            AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
             ContentPreview = null,
             RevisionContent = null,
          };
@@ -271,7 +272,7 @@ public partial class WritingController
          Metadata = await GetPostMetadataAsync(post, cancellationToken),
          RevisionHistory = GetRevisionHistoryViewModel(post, selectedRevisionId),
          RevisionContent = GetRevisionContentViewModel(post, selectedRevisionId),
-         AssetChooser = await GetAssetChooseViewModelAsync(cancellationToken),
+         AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
          ContentPreview = revision is not null ?
             await _postRendered.RenderAsync(
                revision, revision.AssetLinks.ToList(), cancellationToken) :
@@ -393,22 +394,59 @@ public partial class WritingController
          cancellationToken);
    }
 
-   private async Task<AssetChooserViewModel> GetAssetChooseViewModelAsync(
+   private async Task<AssetChooserViewModel> GetAssetChooserViewModelAsync(
       CancellationToken cancellationToken)
    {
       var assets = await _uncategorizedStore.GetSiteAssetsAsync(
          cancellationToken);
       return new AssetChooserViewModel()
       {
-         Assets = assets.Select(a => new AssetChooserItemViewModel()
-         {
-            AssetKey = a.AssetKey,
-            ContentType = a.ContentType,
-            Id = a.Id,
-            ReferenceKey = _slugService.CreateSlug(a.AssetKey),
-         }).ToList(),
-         SelectedAssetKey = null,
+         Assets = GetAssetChooserItems(assets),
       };
+   }
+
+   private IReadOnlyList<AssetChooserItemViewModel> GetAssetChooserItems(
+      IReadOnlyList<SiteAsset> assets)
+   {
+      var usedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+      var items = new List<AssetChooserItemViewModel>();
+
+      foreach (var asset in assets.OrderBy(asset => asset.AssetKey))
+      {
+         string baseKey = Path.GetFileNameWithoutExtension(asset.AssetKey);
+         string referenceKey = _slugService.CreateSlug(baseKey);
+         string uniqueReferenceKey = GetUniqueReferenceKey(referenceKey, usedKeys);
+
+         items.Add(new AssetChooserItemViewModel()
+         {
+            Id = asset.Id,
+            AssetKey = asset.AssetKey,
+            ContentType = asset.ContentType,
+            ReferenceKey = uniqueReferenceKey,
+         });
+      }
+
+      return items;
+   }
+
+   private static string GetUniqueReferenceKey(
+      string referenceKey,
+      ISet<string> usedKeys)
+   {
+      if (usedKeys.Add(referenceKey))
+      {
+         return referenceKey;
+      }
+
+      for (int i = 2; ; i++)
+      {
+         string candidate = $"{referenceKey}-{i}";
+
+         if (usedKeys.Add(candidate))
+         {
+            return candidate;
+         }
+      }
    }
 
    private async Task<IReadOnlyList<PostRevisionAssetLink>> GetPreviewAssetLinksAsync(
@@ -468,4 +506,15 @@ public partial class WritingController
          id = postId,
       });
    }
+
+   private const string PostMetadataEditView = "PostMetadataEdit";
+   private const string PostRevisionEditView = "PostRevisionEdit";
+   private const string PostRevisionEditRefreshView =
+      "PostRevisionEditRefresh";
+   private const string PostRevisionCreateRefreshView =
+      "PostRevisionCreateRefresh";
+   private const string PostRevisionPreviewBodyView =
+      "PostRevisionPreviewBody";
+   private const string PostRevisionPreviewErrorView =
+      "PostRevisionPreviewError";
 }

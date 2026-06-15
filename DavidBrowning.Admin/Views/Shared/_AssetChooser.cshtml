@@ -4,38 +4,6 @@
 *@
 @model DavidBrowning.Admin.ViewModels.AssetChooserViewModel
 
-@functions {
-	private static string GetDisplayName(string assetKey)
-	{
-		string normalized = assetKey.Replace('\\', '/');
-		int slashIndex = normalized.LastIndexOf('/');
-
-		return slashIndex >= 0
-		   ? normalized[(slashIndex + 1)..]
-		   : normalized;
-	}
-
-	private static bool IsImage(string contentType)
-	{
-		return contentType.StartsWith(
-		   "image/",
-		   StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static string GetInsertText(
-	   DavidBrowning.Admin.ViewModels.AssetChooserItemViewModel asset)
-	{
-		string displayName = GetDisplayName(asset.AssetKey);
-
-		if (IsImage(asset.ContentType))
-		{
-			return $"![{displayName}]({asset.AssetKey})";
-		}
-
-		return $"[{displayName}]({asset.AssetKey})";
-	}
-}
-
 <section class="card" data-asset-chooser>
 	<div class="card-body">
 		<div class="d-flex flex-column flex-md-row justify-content-between
@@ -74,10 +42,6 @@
 			<div class="list-group asset-chooser-list" data-asset-chooser-list>
 				@foreach (var asset in Model.Assets)
 				{
-					string displayName = GetDisplayName(asset.AssetKey);
-					string insertText = GetInsertText(asset);
-					bool isImage = IsImage(asset.ContentType);
-
 					<div class="list-group-item" role="button" tabindex="0"
 						 data-asset-chooser-item
 						 data-asset-site-asset-id="@asset.Id"

@@ -103,6 +103,11 @@ public partial class SqlWritingStore : IWritingStore
             revision => revision.RevisionNumber))
          .Include(post => post.Tags)
             .ThenInclude(tag => tag.WritingTag)
+         .Include(post => post.Revisions.OrderByDescending(
+            revision => revision.RevisionNumber))
+         .Include(post => post.Revisions)
+            .ThenInclude(revision => revision.AssetLinks)
+               .ThenInclude(link => link.SiteAsset)
          .SingleOrDefaultAsync(post => post.Id == id, cancellationToken);
    }
 
@@ -214,8 +219,12 @@ public partial class SqlWritingStore : IWritingStore
    {
       return await _dbContext.PostRevisions
          .AsNoTracking()
-         .SingleOrDefaultAsync(rev =>
-            rev.PostId == postId && rev.Id == revisionId, cancellationToken);
+         .Include(revision => revision.AssetLinks)
+            .ThenInclude(link => link.SiteAsset)
+         .SingleOrDefaultAsync(
+            revision => revision.PostId == postId &&
+               revision.Id == revisionId,
+            cancellationToken);
    }
 
    public async Task<PostRevision?> InsertPostRevisionAsync(
@@ -308,14 +317,14 @@ public partial class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       var post = await _dbContext.Posts
-         .SingleOrDefaultAsync(post => post.Id == postId);
+         .SingleOrDefaultAsync(post => post.Id == postId, cancellationToken);
       if (post is null)
       {
          return false;
       }
 
       var revisionBelongsToPost = await _dbContext.PostRevisions
-         .AnyAsync(revision => 
+         .AnyAsync(revision =>
             revision.Id == revisionId && revision.PostId == postId,
             cancellationToken);
       if (!revisionBelongsToPost)

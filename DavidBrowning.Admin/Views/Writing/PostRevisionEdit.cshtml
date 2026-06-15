@@ -10,10 +10,9 @@
 <section class="card">
 	<div class="card-body position-relative">
 		<div id="@WritingAdminIds.PostRevisionContentOverlay"
-			 class="admin-form-overlay d-none" aria-hidden="true">
-			<div class="spinner-border" role="status">
-				<span class="visually-hidden">Saving revision</span>
-			</div>
+			 class="admin-form-overlay htmx-indicator"
+			 role="status" aria-live="polite" aria-label="Saving revision">
+			<partial name="_Waiting" />
 		</div>
 
 		<div class="d-flex flex-column flex-lg-row justify-content-between

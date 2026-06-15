@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -58,5 +59,15 @@ public class PostRevisionContentViewModel
       ContentFormat = revision.ContentFormat;
       Content = revision.Content;
       IsCurrentRevision = revision.Id == currentRevisionId;
+
+      AssetLinks = revision.AssetLinks
+         .Select(link => new AssetLinkInputViewModel()
+         {
+            SiteAssetId = link.SiteAssetId,
+            ReferenceKey = link.ReferenceKey,
+            Caption = link.Caption,
+            AltTextOverride = link.AltTextOverride,
+         })
+         .ToList();
    }
 }

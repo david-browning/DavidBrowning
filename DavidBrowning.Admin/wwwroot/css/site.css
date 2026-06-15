@@ -106,7 +106,7 @@ body {
    --bs-offcanvas-width: min(56rem, 100vw);
 }
 
-.list-group-item {
+.tag-list .list-group-item {
    min-width: 12em;
 }
 
