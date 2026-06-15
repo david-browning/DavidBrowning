@@ -122,7 +122,7 @@ public partial class WritingController
       }
 
       return PartialView(nameof(PostRevisionEdit),
-         new PostRevisionContentViewModel(revision, post.CurrentRevisionId));
+         new PostRevisionContentViewModel(revision, revisionId));
    }
 
    [HttpPost]
@@ -200,16 +200,32 @@ public partial class WritingController
    {
       if (model.ContentFormat != ContentFormat.Markdown)
       {
-         ModelState.AddModelError(
-            nameof(model.ContentFormat),
+         return PartialView(
+            "PostRevisionPreviewError",
             "Preview is currently only supported for Markdown content.");
-
-         return PartialView("PostRevisionPreviewError", ModelState);
       }
 
       try
       {
-         throw new NotImplementedException();
+         var revision = new PostRevision()
+         {
+            PostId = model.PostId,
+            RevisionNumber = 0,
+            ContentFormat = model.ContentFormat.Value,
+            Content = model.Content ?? string.Empty,
+            CreatedBy = "Preview",
+         };
+
+         var assetLinks = await GetPreviewAssetLinksAsync(
+            model.AssetLinks,
+            cancellationToken);
+
+         var rendered = await _postRendered.RenderAsync(
+            revision,
+            assetLinks,
+            cancellationToken);
+
+         return PartialView("PostRevisionPreviewBody", rendered);
       }
       catch (InvalidOperationException ex)
       {
@@ -382,6 +398,39 @@ public partial class WritingController
          }).ToList(),
          SelectedAssetKey = null,
       };
+   }
+
+   private async Task<IReadOnlyList<PostRevisionAssetLink>> GetPreviewAssetLinksAsync(
+      IReadOnlyList<AssetLinkInputViewModel> inputLinks,
+      CancellationToken cancellationToken)
+   {
+      var links = new List<PostRevisionAssetLink>();
+
+      foreach (var inputLink in inputLinks
+         .GroupBy(link => link.ReferenceKey, StringComparer.OrdinalIgnoreCase)
+         .Select(group => group.First()))
+      {
+         var asset = await _uncategorizedStore.GetAssetAsync(
+            inputLink.SiteAssetId,
+            cancellationToken);
+
+         if (asset is null)
+         {
+            throw new InvalidOperationException(
+               $"The linked asset '{inputLink.ReferenceKey}' no longer exists.");
+         }
+
+         links.Add(new PostRevisionAssetLink()
+         {
+            SiteAssetId = asset.Id,
+            SiteAsset = asset,
+            ReferenceKey = inputLink.ReferenceKey,
+            Caption = inputLink.Caption,
+            AltTextOverride = inputLink.AltTextOverride,
+         });
+      }
+
+      return links;
    }
 
    private IActionResult RedirectToPostEdit(int postId)

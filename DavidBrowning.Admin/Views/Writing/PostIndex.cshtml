@@ -15,38 +15,42 @@
 			Create and edit posts
 		</p>
 	</header>
-	<div class="row g-4">
+
+	<div class="d-grid gap-4">
 		<div id="@WritingAdminIds.PostMetadataRegion">
 			<partial name="PostMetadataEdit" model="Model.Metadata" />
 		</div>
-	</div>
-	<div class="row g-4 align-items-start">
-		<div class="col-12 col-xl-6">
-			@if (Model.Metadata.Id is null)
-			{
-				<div class="alert alert-secondary" role="status">
-					Save the post metadata before adding revisions.
-				</div>
-			}
-			else
-			{
-				<div id="@WritingAdminIds.PostRevisionHistoryRegion">
-					<partial name="PostRevisionHistory" model="Model.RevisionHistory" />
-				</div>
-				<div class="mt-4">
-					<partial name="_AssetChooser" model="Model.AssetChooser" />
-				</div>
-				<div id="@WritingAdminIds.PostRevisionContentRegion">
-					<partial name="PostRevisionEdit" model="Model.RevisionContent" />
-				</div>
-			}
-		</div>
 
-		<div class="col-12 col-xl-6">
-			<div id="@WritingAdminIds.PostRevisionPreviewRegion">
-				<partial name="PostRevisionPreview" model="Model.ContentPreview" />
+		@if (Model.Metadata.Id is null)
+		{
+			<div class="alert alert-secondary" role="status">
+				Save the post metadata before adding revisions.
 			</div>
-		</div>
+		}
+		else
+		{
+			<div id="@WritingAdminIds.PostRevisionHistoryRegion">
+				<partial name="PostRevisionHistory" model="Model.RevisionHistory" />
+			</div>
+
+			<div class="row g-4 align-items-stretch">
+				<div class="col-12 col-xl-6">
+					<div class="d-grid gap-4">
+						<partial name="_AssetChooser" model="Model.AssetChooser" />
+						<div id="@WritingAdminIds.PostRevisionContentRegion">
+							<partial name="PostRevisionEdit" model="Model.RevisionContent" />
+						</div>
+					</div>
+				</div>
+
+				<div class="col-12 col-xl-6 d-flex">
+					<div id="@WritingAdminIds.PostRevisionPreviewRegion"
+						 class="w-100">
+						<partial name="PostRevisionPreview" model="Model.ContentPreview" />
+					</div>
+				</div>
+			</div>
+		}
 	</div>
 </div>
 <script src="~/js/post-edit.js" asp-append-version="true"></script>

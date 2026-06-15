@@ -39,4 +39,7 @@ public static class WritingAdminIds
 
    public const string PostRevisionPreviewRegion = 
       "post-revision-content-preview-region";
+
+   public const string PostRevisionPreviewBodyRegion =
+      "post-revision-preview-body-region";
 }

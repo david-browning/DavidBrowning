@@ -109,3 +109,26 @@ body {
 .list-group-item {
    min-width: 12em;
 }
+
+.admin-preview-content {
+   background-color: var(--bs-body-bg);
+   color: var(--bs-body-color);
+}
+
+   .admin-preview-content * {
+      color: inherit;
+   }
+
+   .admin-preview-content a {
+      color: var(--bs-link-color);
+   }
+
+   .admin-preview-content pre,
+   .admin-preview-content code {
+      color: var(--bs-code-color);
+   }
+
+   .admin-preview-content img {
+      max-width: 100%;
+      height: auto;
+   }

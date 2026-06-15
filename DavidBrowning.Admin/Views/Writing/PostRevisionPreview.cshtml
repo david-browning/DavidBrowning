@@ -17,28 +17,18 @@
 				</p>
 			</div>
 
-			<button class="btn btn-sm btn-outline-primary"
+			<button class="btn btn-sm btn-outline-primary text-nowrap"
 					type="button"
 					hx-post="@Url.Action("PostRevisionPreview", "Writing")"
-					hx-target="#@WritingAdminIds.PostRevisionPreviewRegion"
+					hx-include="[data-post-revision-editor-form]"
+					hx-target="#@WritingAdminIds.PostRevisionPreviewBodyRegion"
 					hx-swap="innerHTML">
 				Update preview
 			</button>
 		</div>
 
-		<div>
-			@if (Model is null)
-			{
-				<div class="alert alert-secondary mb-0" role="status">
-					Preview has not been rendered yet.
-				</div>
-			}
-			else
-			{
-				<div class="wb-rendered-content border rounded p-3 bg-body">
-					@Html.Raw(Model.Html)
-				</div>
-			}
+		<div id="@WritingAdminIds.PostRevisionPreviewBodyRegion">
+			<partial name="PostRevisionPreviewBody" model="Model" />
 		</div>
 	</div>
 </section>

@@ -65,6 +65,7 @@
 		<form method="post"
 			  asp-controller="Writing"
 			  asp-action="PostRevisionCreate"
+			  data-post-revision-editor-form
 			  hx-post="@Url.Action("PostRevisionCreate", "Writing")"
 			  hx-target="#@WritingAdminIds.PostRevisionContentRegion"
 			  hx-swap="innerHTML"
