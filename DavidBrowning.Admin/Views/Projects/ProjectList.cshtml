@@ -18,9 +18,10 @@
 
 			<form method="post" asp-controller="Projects" asp-action="ProjectCreate">
 				@Html.AntiForgeryToken()
-				<button class="btn btn-primary" type="submit">
+				<a class="btn btn-primary" asp-controller="Projects" 
+				asp-action="ProjectCreate">
 					New project
-				</button>
+				</a>
 			</form>
 		</div>
 

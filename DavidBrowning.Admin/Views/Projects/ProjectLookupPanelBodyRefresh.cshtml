@@ -1,0 +1,9 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
+
+<div id="@Model.RegionId" hx-swap-oob="innerHTML">
+	<partial name="ProjectLookupPanelBody" model="Model" />
+</div>

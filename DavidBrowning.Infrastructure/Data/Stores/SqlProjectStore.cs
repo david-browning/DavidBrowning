@@ -348,11 +348,60 @@ public sealed class SqlProjectStore : IProjectStore
          .ToListAsync(cancellationToken);
    }
 
-   public Task<int> GetRequiredProjectAssetRoleIdAsync(
+   public async Task<int?> GetRequiredProjectAssetRoleIdAsync(
       string slug,
       CancellationToken cancellationToken = default)
-   { 
-      throw new NotImplementedException();
+   {
+      return (await _dbContext.ProjectAssetRoles
+         .SingleOrDefaultAsync(r => r.Slug == slug, cancellationToken))?.Id;
+   }
+
+   public Task<ProjectStatus?> GetProjectStatusAsync(
+      int id,
+      CancellationToken token = default)
+   {
+      return _dbContext.ProjectStatuses
+         .SingleOrDefaultAsync(x => x.Id == id, token);
+   }
+
+   public Task<ProjectOrigin?> GetProjectOriginAsync(
+      int id,
+      CancellationToken token = default)
+   {
+      return _dbContext.ProjectOrigins
+         .SingleOrDefaultAsync(x => x.Id == id, token);
+   }
+
+   public Task<ProjectType?> GetProjectTypeAsync(
+      int id,
+      CancellationToken token = default)
+   {
+      return _dbContext.ProjectTypes
+         .SingleOrDefaultAsync(x => x.Id == id, token);
+   }
+
+   public Task<ProjectVisibility?> GetProjectVisibilityAsync(
+      int id,
+      CancellationToken token = default)
+   {
+      return _dbContext.ProjectVisibilities
+         .SingleOrDefaultAsync(x => x.Id == id, token);
+   }
+
+   public Task<ProjectTag?> GetProjectTagAsync(
+      int id,
+      CancellationToken token = default)
+   {
+      return _dbContext.ProjectTags
+         .SingleOrDefaultAsync(x => x.Id == id, token);
+   }
+
+   public Task<ProjectStackTag?> GetProjectStackTagAsync(
+      int id,
+      CancellationToken token = default)
+   {
+      return _dbContext.ProjectStackTags
+         .SingleOrDefaultAsync(x => x.Id == id, token);
    }
 
    private async Task<IQueryable<Project>> BuildPublishedProjectQueryAsync(

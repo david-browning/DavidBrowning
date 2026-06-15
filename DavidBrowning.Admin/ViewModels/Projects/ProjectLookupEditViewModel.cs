@@ -3,6 +3,8 @@
 
 using System.ComponentModel.DataAnnotations;
 using DavidBrowning.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.Projects;
 
@@ -26,4 +28,16 @@ public sealed class ProjectLookupEditViewModel
    public int SortOrder { get; set; }
 
    public bool IsActive { get; set; } = true;
+
+   [BindNever]
+   [ValidateNever]
+   public string Title { get; set; } = string.Empty;
+
+   [BindNever]
+   [ValidateNever]
+   public string FormAction { get; set; } = string.Empty;
+
+   [BindNever]
+   [ValidateNever]
+   public string RefreshRegionId { get; set; } = string.Empty;
 }

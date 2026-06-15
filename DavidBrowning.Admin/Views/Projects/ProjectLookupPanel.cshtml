@@ -1,8 +1,5 @@
-﻿@*
-   Copyright © 2026 David Browning. All rights reserved.
-   Source-available for viewing only. No license granted.
-*@
-@model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
+﻿@model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
+@using DavidBrowning.Admin.ViewModels.Projects
 
 <section class="card h-100">
 	<div class="card-body">
@@ -19,46 +16,14 @@
 			<button class="btn btn-sm btn-primary text-nowrap"
 					type="button"
 					hx-get="@Url.Action(Model.CreateAction, "Projects")"
-					hx-target="#@Model.RegionId"
+					hx-target="#@ProjectAdminIds.ProjectLookupEditorRegion"
 					hx-swap="innerHTML">
 				Add
 			</button>
 		</div>
 
 		<div id="@Model.RegionId">
-			@if (Model.Items.Count == 0)
-			{
-				<div class="alert alert-secondary mb-0" role="status">
-					No items have been created.
-				</div>
-			}
-			else
-			{
-				<div class="list-group">
-					@foreach (var item in Model.Items)
-					{
-						<div class="list-group-item">
-							<div class="d-flex justify-content-between gap-3">
-								<div>
-									<div class="fw-semibold">
-										@item.DisplayName
-									</div>
-									<div class="small text-secondary">
-										@item.Slug
-									</div>
-								</div>
-
-								@if (!item.IsActive)
-								{
-									<span class="badge text-bg-secondary align-self-start">
-										Inactive
-									</span>
-								}
-							</div>
-						</div>
-					}
-				</div>
-			}
+			<partial name="ProjectLookupPanelBody" model="Model" />
 		</div>
 	</div>
 </section>

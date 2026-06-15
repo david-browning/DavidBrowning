@@ -3,6 +3,7 @@
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Projects.ProjectAdminIndexViewModel
+@using DavidBrowning.Admin.ViewModels.Projects
 
 @{
 	ViewData["Title"] = "Projects";
@@ -49,4 +50,5 @@
 			<partial name="ProjectList" model="Model.Projects" />
 		</div>
 	</div>
+	<div id="@ProjectAdminIds.ProjectLookupEditorRegion"></div>
 </div>

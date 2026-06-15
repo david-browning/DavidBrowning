@@ -54,6 +54,29 @@ public partial class ProjectsController : Controller
          project, cancellationToken));
    }
 
+   [HttpGet]
+   public async Task<IActionResult> ProjectCreate(
+      CancellationToken cancellationToken)
+   {
+      var metadata = new ProjectMetadataViewModel()
+      {
+         EditMode = EditModes.Create,
+      };
+
+      await PopulateProjectMetadataOptionsAsync(metadata, cancellationToken);
+
+      return View("ProjectEdit", new ProjectEditPageViewModel()
+      {
+         Metadata = metadata,
+         Content = new ProjectContentEditViewModel()
+         {
+            ProjectId = 0,
+         },
+         AssetChooser = await GetAssetChooserViewModelAsync(cancellationToken),
+         ContentPreview = null,
+      });
+   }
+
    [HttpPost]
    [ValidateAntiForgeryToken]
    public async Task<IActionResult> ProjectCreate(
@@ -324,9 +347,14 @@ public partial class ProjectsController : Controller
       IReadOnlyList<AssetLinkInputViewModel> inputLinks,
       CancellationToken cancellationToken)
    {
-      int defaultAssetRoleId =
+      var defaultAssetRoleId =
          await _projectStore.GetRequiredProjectAssetRoleIdAsync(
             "inline-content", cancellationToken);
+      if (defaultAssetRoleId is null)
+      {
+         throw new ArgumentException(
+            "Could not find assets with \"inline-content\" role.");
+      }
 
       var links = new List<ProjectAssetLink>();
 
@@ -337,7 +365,7 @@ public partial class ProjectsController : Controller
          links.Add(new ProjectAssetLink()
          {
             SiteAssetId = inputLink.SiteAssetId,
-            ProjectAssetRoleId = defaultAssetRoleId,
+            ProjectAssetRoleId = defaultAssetRoleId.Value,
             ReferenceKey = inputLink.ReferenceKey,
             Caption = inputLink.Caption,
             AltTextOverride = inputLink.AltTextOverride,

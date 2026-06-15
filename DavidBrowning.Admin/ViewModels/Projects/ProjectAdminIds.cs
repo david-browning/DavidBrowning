@@ -17,6 +17,9 @@ public static class ProjectAdminIds
 
    public const string ProjectPreviewBodyRegion = "project-preview-body-region";
 
+   public const string ProjectLookupEditorRegion =
+      "project-lookup-editor-region";
+
    public const string ProjectStatusPanelRegion =
       "project-status-panel-region";
 

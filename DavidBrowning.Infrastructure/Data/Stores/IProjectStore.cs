@@ -156,9 +156,33 @@ public interface IProjectStore
    Task<IReadOnlyList<Project>> GetProjectsAsync(
       CancellationToken cancellationToken = default);
 
-   Task<int> GetRequiredProjectAssetRoleIdAsync(
+   Task<int?> GetRequiredProjectAssetRoleIdAsync(
       string slug,
       CancellationToken cancellationToken = default);
+
+   Task<ProjectStatus?> GetProjectStatusAsync(
+      int id, 
+      CancellationToken token = default);
+
+   Task<ProjectOrigin?> GetProjectOriginAsync(
+      int id, 
+      CancellationToken token = default);
+   
+   Task<ProjectType?> GetProjectTypeAsync(
+      int id, 
+      CancellationToken token = default);
+   
+   Task<ProjectVisibility?> GetProjectVisibilityAsync(
+      int id, 
+      CancellationToken token = default);
+   
+   Task<ProjectTag?> GetProjectTagAsync(
+      int id, 
+      CancellationToken token = default);
+   
+   Task<ProjectStackTag?> GetProjectStackTagAsync(
+      int id, 
+      CancellationToken token = default);
 }
 
 public sealed class ProjectContentData
