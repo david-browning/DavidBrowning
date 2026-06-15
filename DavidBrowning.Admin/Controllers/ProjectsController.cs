@@ -216,6 +216,13 @@ public partial class ProjectsController : Controller
          Tags = await GetTagPanelAsync(cancellationToken),
          StackTags = await GetStackTagPanelAsync(cancellationToken),
          Projects = await GetProjectListViewModelAsync(cancellationToken),
+         LookupEditorOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = ProjectAdminIds.ProjectLookupEditorOffcanvas,
+            Title = "Project lookup editor",
+            Placeholder = "Select a project lookup value to edit.",
+            LoadingText = "Loading project lookup editor...",
+         },
       };
    }
 

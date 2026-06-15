@@ -4,6 +4,7 @@
 *@
 @model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
 @using DavidBrowning.Admin.ViewModels.Projects
+@using DavidBrowning.Admin.ViewModels
 
 @if (Model.Items.Count == 0)
 {
@@ -38,8 +39,12 @@ else
 						<button class="btn btn-sm btn-outline-primary"
 								type="button"
 								hx-get="@Url.Action(Model.EditAction, "Projects", new { id = item.Id })"
-								hx-target="#@ProjectAdminIds.ProjectLookupEditorRegion"
-								hx-swap="innerHTML">
+								hx-target="@AdminOffcanvasIds.BodySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+								hx-swap="innerHTML"
+								hx-indicator="@AdminOffcanvasIds.OverlaySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+								data-bs-toggle="offcanvas"
+								data-bs-target="@AdminOffcanvasIds.Selector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+								aria-controls="@ProjectAdminIds.ProjectLookupEditorOffcanvas">
 							Edit
 						</button>
 					</div>

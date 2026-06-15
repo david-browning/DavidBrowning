@@ -1,5 +1,10 @@
-﻿@model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
 @using DavidBrowning.Admin.ViewModels.Projects
+@using DavidBrowning.Admin.ViewModels
 
 <section class="card h-100">
 	<div class="card-body">
@@ -16,8 +21,12 @@
 			<button class="btn btn-sm btn-primary text-nowrap"
 					type="button"
 					hx-get="@Url.Action(Model.CreateAction, "Projects")"
-					hx-target="#@ProjectAdminIds.ProjectLookupEditorRegion"
-					hx-swap="innerHTML">
+					hx-target="@AdminOffcanvasIds.BodySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+					hx-swap="innerHTML"
+					hx-indicator="@AdminOffcanvasIds.OverlaySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+					data-bs-toggle="offcanvas"
+					data-bs-target="@AdminOffcanvasIds.Selector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+					aria-controls="@ProjectAdminIds.ProjectLookupEditorOffcanvas">
 				Add
 			</button>
 		</div>

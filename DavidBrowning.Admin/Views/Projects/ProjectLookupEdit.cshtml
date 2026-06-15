@@ -4,65 +4,52 @@
 *@
 @model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupEditViewModel
 @using DavidBrowning.Admin.ViewModels.Projects
+@using DavidBrowning.Admin.ViewModels
 
-<div class="offcanvas offcanvas-end admin-edit-sidebar show"
-	 tabindex="-1" aria-modal="true" role="dialog"
-	 id="@ProjectAdminIds.ProjectLookupEditorOffcanvas">
-	<div class="offcanvas-header">
-		<h2 class="h5 offcanvas-title">
-			@Model.Title
-		</h2>
+<form method="post"
+	  asp-controller="Projects"
+	  asp-action="@Model.FormAction"
+	  hx-post="@Url.Action(Model.FormAction, "Projects")"
+	  hx-target="@AdminOffcanvasIds.BodySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+	  hx-swap="innerHTML">
+	@Html.AntiForgeryToken()
+	@if (Model.Id is not null)
+	{
+		<input asp-for="Id" type="hidden" />
+	}
 
-		<button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-				aria-label="Close">
-		</button>
+	<div asp-validation-summary="ModelOnly" class="text-danger mb-3">
 	</div>
 
-	<div class="offcanvas-body">
-		<form method="post" asp-controller="Projects"
-			  asp-action="@Model.FormAction"
-			  hx-post="@Url.Action(Model.FormAction, "Projects")"
-			  hx-target="#@ProjectAdminIds.ProjectLookupEditorRegion"
-			  hx-swap="innerHTML">
-			@if (Model.Id is not null)
-			{
-				<input asp-for="Id" type="hidden" />
-			}
-
-			<div asp-validation-summary="ModelOnly" class="text-danger mb-3">
-			</div>
-
-			<div class="mb-3">
-				<label asp-for="DisplayName" class="form-label"></label>
-				<input asp-for="DisplayName" class="form-control" data-slug-source />
-				<span asp-validation-for="DisplayName" class="text-danger"></span>
-			</div>
-
-			<div class="mb-3">
-				<label asp-for="Slug" class="form-label"></label>
-				<input asp-for="Slug" class="form-control" data-slug-target />
-				<span asp-validation-for="Slug" class="text-danger"></span>
-			</div>
-
-			<div class="mb-3">
-				<label asp-for="Description" class="form-label"></label>
-				<textarea asp-for="Description" class="form-control" rows="4"></textarea>
-				<span asp-validation-for="Description" class="text-danger"></span>
-			</div>
-
-			<div class="mb-3">
-				<label asp-for="SortOrder" class="form-label"></label>
-				<input asp-for="SortOrder" class="form-control" type="number" />
-			</div>
-
-			<div class="form-check mb-4">
-				<input asp-for="IsActive" class="form-check-input" />
-				<label asp-for="IsActive" class="form-check-label"></label>
-			</div>
-
-			<button class="btn btn-primary" type="submit">
-				Save
-			</button>
-		</form>
+	<div class="mb-3">
+		<label asp-for="DisplayName" class="form-label"></label>
+		<input asp-for="DisplayName" class="form-control" data-slug-source />
+		<span asp-validation-for="DisplayName" class="text-danger"></span>
 	</div>
-</div>
+
+	<div class="mb-3">
+		<label asp-for="Slug" class="form-label"></label>
+		<input asp-for="Slug" class="form-control" data-slug-target />
+		<span asp-validation-for="Slug" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="Description" class="form-label"></label>
+		<textarea asp-for="Description" class="form-control" rows="4"></textarea>
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="SortOrder" class="form-label"></label>
+		<input asp-for="SortOrder" class="form-control" type="number" />
+	</div>
+
+	<div class="form-check mb-4">
+		<input asp-for="IsActive" class="form-check-input" />
+		<label asp-for="IsActive" class="form-check-label"></label>
+	</div>
+
+	<button class="btn btn-primary" type="submit">
+		Save
+	</button>
+</form>
