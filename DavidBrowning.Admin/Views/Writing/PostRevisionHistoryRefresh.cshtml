@@ -1,0 +1,11 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Writing.Posts.PostRevisionHistoryViewModel
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<div id="@WritingAdminIds.PostRevisionHistoryRegion"
+	 hx-swap-oob="innerHTML">
+	<partial name="PostRevisionHistory" model="Model" />
+</div>

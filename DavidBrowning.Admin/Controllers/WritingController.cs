@@ -181,17 +181,13 @@ public partial class WritingController : Controller
       WritingTagEditViewModel? existingTagModel,
       CancellationToken cancellationToken)
    {
-      var posts = await _writingStore.GetAllPostsAsync(cancellationToken);
       return new IndexViewModel()
       {
          Styles = await GetStylePanelViewModelAsync(
             existingPostStyleModel, cancellationToken),
          Tags = await GetTagPanelViewModelAsync(
             existingTagModel, cancellationToken),
-         Posts = new PostListViewModel()
-         {
-            Items = posts.Select(post => new PostListItemViewModel(post)).ToList(),
-         },
+         Posts = await GetPostListViewModelAsync(cancellationToken),
          TagEditOffcanvas = new AdminOffcanvasViewModel()
          {
             Id = WritingAdminIds.TagEditOffcanvas,

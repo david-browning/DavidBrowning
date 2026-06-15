@@ -1,7 +1,14 @@
-﻿using System;
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Admin.ViewModels.Writing.Posts;
+using DavidBrowning.Infrastructure.Data;
+using DavidBrowning.Models;
+using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
@@ -13,42 +20,336 @@ public partial class WritingController
       CancellationToken cancellationToken)
    {
       return View(await GetPostIndexViewModelAsync(
-         null, cancellationToken));
-   }
-
-   [HttpPost]
-   [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostCreate(
-      PostEditViewModel model,
-      CancellationToken cancellationToken)
-   {
-      throw new NotImplementedException();
+         null, null, cancellationToken));
    }
 
    [HttpGet]
-   public Task<IActionResult> PostEdit(
+   public async Task<IActionResult> PostEdit(
       int id,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var post = await _writingStore.GetPostAsync(id, cancellationToken);
+      if (post is null)
+      {
+         return NotFound();
+      }
+
+      return View(nameof(PostIndex), await GetPostIndexViewModelAsync(
+         post, post.CurrentRevisionId, cancellationToken));
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
-   public Task<IActionResult> PostEdit(
-      PostEditViewModel model,
+   public async Task<IActionResult> PostCreate(
+      PostMetadataViewModel model,
       CancellationToken cancellationToken)
+   {
+      model.EditMode = ViewModels.EditModes.Create;
+
+      if (!ModelState.IsValid)
+      {
+         await PopulatePostMetadataOptionsAsync(model, cancellationToken);
+         return PartialView("PostMetadataEdit", model);
+      }
+
+      int postId = await _writingStore.InsertPostAsync(
+         model.ToPost(), model.WritingTagIds, cancellationToken);
+      return RedirectToPostEdit(postId);
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> PostEdit(
+      PostMetadataViewModel model,
+      CancellationToken cancellationToken)
+   {
+      if (!ModelState.IsValid)
+      {
+         await PopulatePostMetadataOptionsAsync(model, cancellationToken);
+         return PartialView("PostMetadataEdit", model);
+      }
+
+      try
+      {
+         var result = await _writingStore.UpdatePostAsync(
+            model.ToPost(), model.WritingTagIds, cancellationToken);
+         if(!result)
+         {
+            return BadRequest();
+         }
+      }
+      catch(DuplicateSlugException)
+      {
+         ModelState.AddModelError(nameof(model.Slug),
+            "Another post already uses this slug.");
+         return PartialView("PostMetadataEdit", model);
+      }
+
+      return PartialView("PostMetadataEdit", model);
+   }
+
+   [HttpGet]
+   public async Task<IActionResult> PostRevisionEdit(
+      int postId,
+      int? revisionId,
+      CancellationToken cancellationToken)
+   {
+      if (revisionId is null)
+      {
+         return PartialView(nameof(PostRevisionEdit),
+            new PostRevisionContentViewModel()
+            {
+               PostId = postId,
+               ContentFormat = ContentFormat.Markdown,
+            });
+      }
+
+      var revision = await _writingStore.GetPostRevisionAsync(
+         postId, revisionId.Value, cancellationToken);
+
+      if (revision is null)
+      {
+         return NotFound();
+      }
+
+      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+
+      if (post is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView(nameof(PostRevisionEdit),
+         new PostRevisionContentViewModel(revision, post.CurrentRevisionId));
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> PostRevisionCreate(
+      PostRevisionContentViewModel model,
+      CancellationToken cancellationToken)
+   {
+      if (!ModelState.IsValid)
+      {
+         return PartialView(nameof(PostRevisionEdit), model);
+      }
+
+      string createdBy = "David Browning";
+
+      var revision = await _writingStore.InsertPostRevisionAsync(
+         model.PostId, model.ContentFormat!.Value, model.Content,
+         createdBy, cancellationToken);
+
+      if (revision is null)
+      {
+         return NotFound();
+      }
+
+      var post = await _writingStore.GetPostAsync(
+         model.PostId, cancellationToken);
+      if (post is null)
+      {
+         return NotFound();
+      }
+
+      var viewModel = await GetPostIndexViewModelAsync(
+         post, revision.Id, cancellationToken);
+      return PartialView("PostRevisionCreateRefresh", viewModel);
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> SetCurrentRevision(
+      int postId,
+      int revisionId,
+      CancellationToken cancellationToken)
+   {
+      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+      if(post is null)
+      {
+         return NotFound();
+      }
+
+      var updated = await _writingStore.SetCurrentRevisionAsync(
+         postId, revisionId, cancellationToken);
+      if(!updated)
+      {
+         return BadRequest();
+      }
+
+      return RedirectToPostEdit(postId);
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public IActionResult PostRevisionPreview(
+      PostRevisionContentViewModel model)
    {
       throw new NotImplementedException();
    }
 
    private async Task<IndexViewModel> GetPostIndexViewModelAsync(
-      PostEditViewModel? existingCreateModel,
+      Post? post,
+      int? selectedRevisionId,
       CancellationToken cancellationToken)
    {
+      if (post is null)
+      {
+         return new IndexViewModel()
+         {
+            Metadata = await GetPostMetadataAsync(null, cancellationToken),
+            RevisionHistory = new PostRevisionHistoryViewModel()
+            {
+               PostId = 0,
+            }
+         };
+
+      }
+
       return new IndexViewModel()
       {
-         Create = existingCreateModel ?? new PostEditViewModel(),
+         Metadata = await GetPostMetadataAsync(post, cancellationToken),
+         RevisionHistory = GetRevisionHistoryViewModel(post, selectedRevisionId),
+         RevisionContent = GetRevisionContentViewModel(post, selectedRevisionId),
       };
+   }
+
+   private async Task<PostMetadataViewModel> GetPostMetadataAsync(
+      Post? post,
+      CancellationToken cancellationToken)
+   {
+      var styles = await GetPostStyleOptionsAsync(
+         post?.PostStyleId,
+         cancellationToken);
+
+      var tags = await GetPostWritingTagOptionsAsync(cancellationToken);
+      if (post is null)
+      {
+         return new PostMetadataViewModel()
+         {
+            PostStyleOptions = styles,
+            WritingTagOptions = tags,
+         };
+      }
+
+      return new PostMetadataViewModel(post, styles, tags);
+   }
+
+   private PostRevisionContentViewModel GetRevisionContentViewModel(
+      Post post,
+      int? revisionId)
+   {
+      if (revisionId is null)
+      {
+         return new PostRevisionContentViewModel()
+         {
+            PostId = post.Id,
+            ContentFormat = ContentFormat.Markdown,
+         };
+      }
+
+      var revision = post.Revisions.SingleOrDefault(
+         revision => revision.Id == revisionId.Value);
+
+      if (revision is null)
+      {
+         throw new InvalidOperationException(
+            "The selected revision does not belong to this post.");
+      }
+
+      return new PostRevisionContentViewModel(revision, post.CurrentRevisionId);
+   }
+
+   private PostRevisionHistoryViewModel GetRevisionHistoryViewModel(
+      Post post,
+      int? selectedRevisionId)
+   {
+      int? resolvedSelectedRevisionId =
+         selectedRevisionId ?? post.CurrentRevisionId;
+
+      return new PostRevisionHistoryViewModel()
+      {
+         PostId = post.Id,
+         CurrentRevisionId = post.CurrentRevisionId,
+         SelectedRevisionId = resolvedSelectedRevisionId,
+         Items = post.Revisions
+         .Select(revision => new PostRevisionListItemViewModel(
+            revision, post.CurrentRevisionId, resolvedSelectedRevisionId))
+         .ToList(),
+      };
+   }
+
+   private async Task<PostListViewModel> GetPostListViewModelAsync(
+      CancellationToken cancellationToken)
+   {
+      var posts = await _writingStore.GetAllPostsAsync(cancellationToken);
+      return new PostListViewModel()
+      {
+         Items = posts.Select(post => new PostListItemViewModel(post)).ToList(),
+      };
+   }
+
+   private async Task<IReadOnlyList<PostStyleOptionViewModel>> GetPostStyleOptionsAsync(
+      int? selectedStyleId,
+      CancellationToken cancellationToken)
+   {
+      var styles = await _writingStore.GetPostStylesAsync(cancellationToken);
+
+      return styles
+         .Where(style => style.IsActive || style.Id == selectedStyleId)
+         .Select(style => new PostStyleOptionViewModel()
+         {
+            Id = style.Id,
+            DisplayName = style.DisplayName,
+            IsActive = style.IsActive,
+         })
+         .ToList();
+   }
+
+   private async Task<IReadOnlyList<WritingTagOptionViewModel>> GetPostWritingTagOptionsAsync(
+      CancellationToken cancellationToken)
+   {
+      var tags = await _writingStore.GetTagsAsync(cancellationToken);
+      return tags.Select(tag => new WritingTagOptionViewModel()
+      {
+         DisplayName = tag.DisplayName,
+         Id = tag.Id,
+         Slug = tag.Slug,
+      }).ToList();
+   }
+
+   private async Task PopulatePostMetadataOptionsAsync(
+      PostMetadataViewModel model,
+      CancellationToken cancellationToken)
+   {
+      model.PostStyleOptions = await GetPostStyleOptionsAsync(
+         model.PostStyleId, cancellationToken);
+      model.WritingTagOptions = await GetPostWritingTagOptionsAsync(
+         cancellationToken);
+   }
+
+   private IActionResult RedirectToPostEdit(int postId)
+   {
+      var url = Url.Action(nameof(PostEdit), new
+      {
+         id = postId,
+      });
+
+      if (string.IsNullOrWhiteSpace(url))
+      {
+         throw new InvalidOperationException(
+            "Could not build the post edit URL.");
+      }
+
+      if (Request.Headers.ContainsKey("HX-Request"))
+      {
+         Response.Headers["HX-Redirect"] = url;
+         return Ok();
+      }
+
+      return RedirectToAction(nameof(PostEdit), new
+      {
+         id = postId,
+      });
    }
 }

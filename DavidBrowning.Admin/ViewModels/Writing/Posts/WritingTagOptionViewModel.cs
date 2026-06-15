@@ -2,6 +2,11 @@
 // Source-available for viewing only. No license granted.
 namespace DavidBrowning.Admin.ViewModels.Writing.Posts;
 
-public sealed class PostEditViewModel
+public sealed class WritingTagOptionViewModel
 {
+   public int Id { get; set; }
+
+   public required string DisplayName { get; set; }
+
+   public required string Slug { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -62,6 +63,7 @@ public class SqlWritingStore : IWritingStore
    {
       return await _dbContext.Posts
          .AsNoTracking()
+         .AsSplitQuery()
          .Include(post => post.PostStyle)
          .Include(post => post.Revisions)
          .Include(post => post.Tags)
@@ -74,10 +76,9 @@ public class SqlWritingStore : IWritingStore
    public async Task<IReadOnlyList<Post>> GetFeaturedPostsAsync(
       CancellationToken cancellationToken = default)
    {
-      var posts = await CreatePublishedPostSummaryQuery()
+      return await CreatePublishedPostSummaryQuery()
          .Where(post => post.IsFeatured)
          .ToListAsync(cancellationToken);
-      return posts;
    }
 
    public async Task<Post?> GetPublishedPostBySlugAsync(
@@ -85,10 +86,201 @@ public class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentException.ThrowIfNullOrWhiteSpace(slug);
-
-      var post = await CreatePublishedPostDetailQuery()
+      return await CreatePublishedPostDetailQuery()
          .SingleOrDefaultAsync(post => post.Slug == slug, cancellationToken);
-      return post;
+   }
+
+   public async Task<Post?> GetPostAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.Posts
+         .AsNoTracking()
+         .AsSplitQuery()
+         .Include(post => post.PostStyle)
+         .Include(post => post.Revisions.OrderByDescending(
+            revision => revision.RevisionNumber))
+         .Include(post => post.Tags)
+            .ThenInclude(tag => tag.WritingTag)
+         .SingleOrDefaultAsync(post => post.Id == id, cancellationToken);
+   }
+
+   public async Task<int> InsertPostAsync(
+      Post post,
+      IReadOnlyList<int> writingTagIds,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(post);
+      ArgumentNullException.ThrowIfNull(writingTagIds);
+
+      if (await _dbContext.Posts.AnyAsync(
+         p => p.Id != post.Id && p.Slug == post.Slug,
+         cancellationToken))
+      {
+         throw new DuplicateSlugException(post.Slug);
+      }
+
+      bool styleExists = await _dbContext.PostStyles
+         .AnyAsync(style => style.Id == post.PostStyleId, cancellationToken);
+      if (!styleExists)
+      {
+         throw new InvalidOperationException(
+            "The selected post style does not exist.");
+      }
+
+      var distinctTagIds = writingTagIds.Distinct().ToHashSet();
+      int validTagCount = await _dbContext.WritingTags
+         .CountAsync(tag => distinctTagIds.Contains(tag.Id), cancellationToken);
+      if (validTagCount != distinctTagIds.Count)
+      {
+         throw new InvalidOperationException(
+            "One or more selected writing tags do not exist.");
+      }
+
+      var utcNow = DateTime.UtcNow;
+
+      post.Id = 0;
+      post.CreatedDateUtc = utcNow;
+      post.LastUpdatedDateUtc = utcNow;
+      post.CurrentRevisionId = null;
+      post.CurrentRevision = null;
+      post.PostStyle = null;
+
+      foreach (int tagId in distinctTagIds)
+      {
+         post.Tags.Add(new PostTag()
+         {
+            WritingTagId = tagId,
+         });
+      }
+
+      _dbContext.Posts.Add(post);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return post.Id;
+   }
+
+   public async Task<bool> UpdatePostAsync(
+      Post post,
+      IReadOnlyList<int> writingTagIds,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(post);
+      ArgumentNullException.ThrowIfNull(writingTagIds);
+      var existing = await _dbContext.Posts
+         .Include(p => p.Tags)
+         .SingleOrDefaultAsync(p => p.Id == post.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      if (await _dbContext.Posts.AnyAsync(
+         p => p.Id != post.Id && p.Slug == post.Slug,
+         cancellationToken))
+      {
+         throw new DuplicateSlugException(post.Slug);
+      }
+
+      var distinctTagIds = writingTagIds.Distinct().ToHashSet();
+
+      int validTagCount = await _dbContext.WritingTags
+         .CountAsync(tag => distinctTagIds.Contains(tag.Id), cancellationToken);
+      if (validTagCount != distinctTagIds.Count)
+      {
+         throw new InvalidOperationException(
+            "One or more selected writing tags do not exist.");
+      }
+
+      existing.IsFeatured = post.IsFeatured;
+      existing.PostStyleId = post.PostStyleId;
+      existing.Slug = post.Slug;
+      existing.Status = post.Status;
+      existing.Subtitle = post.Subtitle;
+      existing.Summary = post.Summary;
+      existing.Title = post.Title;
+      existing.PublishedDateUtc = post.PublishedDateUtc;
+      existing.LastUpdatedDateUtc = DateTime.UtcNow;
+
+      UpdatePostTags(existing, distinctTagIds);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
+   }
+
+   public async Task<PostRevision?> GetPostRevisionAsync(
+      int postId,
+      int revisionId,
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.PostRevisions
+         .AsNoTracking()
+         .SingleOrDefaultAsync(rev =>
+            rev.PostId == postId && rev.Id == revisionId, cancellationToken);
+   }
+
+   public async Task<PostRevision?> InsertPostRevisionAsync(
+      int postId,
+      ContentFormat contentFormat,
+      string? content,
+      string createdBy,
+      CancellationToken cancellationToken = default)
+   {
+      var post = await _dbContext.Posts
+         .Include(post => post.Revisions)
+         .SingleOrDefaultAsync(post => post.Id == postId, cancellationToken);
+      if (post is null)
+      {
+         return null;
+      }
+
+      int nextRevisionNumber = post.Revisions
+         .Select(revision => revision.RevisionNumber)
+         .DefaultIfEmpty(0)
+         .Max() + 1;
+
+      var revision = new PostRevision()
+      {
+         PostId = post.Id,
+         RevisionNumber = nextRevisionNumber,
+         ContentFormat = contentFormat,
+         Content = content,
+         CreatedBy = createdBy,
+      };
+
+      _dbContext.PostRevisions.Add(revision);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      if (post.CurrentRevisionId is null)
+      {
+         post.CurrentRevisionId = revision.Id;
+         await _dbContext.SaveChangesAsync(cancellationToken);
+      }
+
+      return revision;
+   }
+
+   public async Task<bool> SetCurrentRevisionAsync(
+      int postId,
+      int revisionId,
+      CancellationToken cancellationToken = default)
+   {
+      var post = await _dbContext.Posts
+         .SingleOrDefaultAsync(post => post.Id == postId);
+      if (post is null)
+      {
+         return false;
+      }
+
+      var revisionBelongsToPost = await _dbContext.PostRevisions
+         .AnyAsync(revision => 
+            revision.Id == revisionId && revision.PostId == postId,
+            cancellationToken);
+      if (!revisionBelongsToPost)
+      {
+         return false;
+      }
+
+      post.CurrentRevisionId = revisionId;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    public async Task<IReadOnlyList<WritingTag>> GetTagsAsync(
@@ -137,7 +329,7 @@ public class SqlWritingStore : IWritingStore
 
       var stored = await _dbContext.WritingTags
          .SingleOrDefaultAsync(t => t.Id == tag.Id, cancellationToken);
-      if(stored is null)
+      if (stored is null)
       {
          return false;
       }
@@ -184,7 +376,7 @@ public class SqlWritingStore : IWritingStore
    {
       ArgumentNullException.ThrowIfNull(style);
       if (await _dbContext.SlugExistsAsync<PostStyle>(
-         style.Slug,cancellationToken: cancellationToken))
+         style.Slug, cancellationToken: cancellationToken))
       {
          throw new DuplicateSlugException(style.Slug);
       }
@@ -247,6 +439,36 @@ public class SqlWritingStore : IWritingStore
          .OrderByDescending(post => post.PublishedDateUtc)
          .ThenByDescending(post => post.CreatedDateUtc)
          .ThenByDescending(post => post.Id);
+   }
+
+   private static void UpdatePostTags(
+      Post existing,
+      IReadOnlySet<int> selectedTagIds)
+   {
+      var existingTagIds = existing.Tags
+         .Select(tag => tag.WritingTagId)
+         .ToHashSet();
+
+      var tagsToRemove = existing.Tags
+         .Where(tag => !selectedTagIds.Contains(tag.WritingTagId))
+         .ToList();
+
+      foreach (var tag in tagsToRemove)
+      {
+         existing.Tags.Remove(tag);
+      }
+
+      var tagIdsToAdd = selectedTagIds
+         .Where(tagId => !existingTagIds.Contains(tagId));
+
+      foreach (int tagId in tagIdsToAdd)
+      {
+         existing.Tags.Add(new PostTag()
+         {
+            PostId = existing.Id,
+            WritingTagId = tagId,
+         });
+      }
    }
 
    private readonly ILogger<SqlWritingStore> _logger;
