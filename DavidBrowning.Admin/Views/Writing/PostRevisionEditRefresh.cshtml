@@ -1,0 +1,14 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Writing.Posts.IndexViewModel
+@using DavidBrowning.Admin.ViewModels.Writing
+
+<partial name="PostRevisionEdit" model="Model.RevisionContent" />
+
+<div id="@WritingAdminIds.PostRevisionPreviewBodyRegion"
+	 hx-swap-oob="innerHTML">
+	<partial name="PostRevisionPreviewBody"
+			 model="Model.ContentPreview" />
+</div>

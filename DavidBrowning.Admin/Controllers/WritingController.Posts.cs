@@ -96,14 +96,30 @@ public partial class WritingController
       int? revisionId,
       CancellationToken cancellationToken)
    {
+      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+      if (post is null)
+      {
+         return NotFound();
+      }
+
       if (revisionId is null)
       {
-         return PartialView(nameof(PostRevisionEdit),
-            new PostRevisionContentViewModel()
-            {
-               PostId = postId,
-               ContentFormat = ContentFormat.Markdown,
-            });
+         var createModel = new PostRevisionContentViewModel()
+         {
+            PostId = postId,
+            ContentFormat = ContentFormat.Markdown,
+         };
+
+         var emptyPreviewModel = new IndexViewModel()
+         {
+            Metadata = await GetPostMetadataAsync(post, cancellationToken),
+            RevisionHistory = GetRevisionHistoryViewModel(post, null),
+            RevisionContent = createModel,
+            AssetChooser = await GetAssetChooseViewModelAsync(cancellationToken),
+            ContentPreview = null,
+         };
+
+         return PartialView("PostRevisionEditRefresh", emptyPreviewModel);
       }
 
       var revision = await _writingStore.GetPostRevisionAsync(
@@ -114,15 +130,10 @@ public partial class WritingController
          return NotFound();
       }
 
-      var post = await _writingStore.GetPostAsync(postId, cancellationToken);
+      var viewModel = await GetPostIndexViewModelAsync(
+         post, revision.Id, cancellationToken);
 
-      if (post is null)
-      {
-         return NotFound();
-      }
-
-      return PartialView(nameof(PostRevisionEdit),
-         new PostRevisionContentViewModel(revision, revisionId));
+      return PartialView("PostRevisionEditRefresh", viewModel);
    }
 
    [HttpPost]
