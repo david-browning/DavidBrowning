@@ -2,11 +2,13 @@
 // Source-available for viewing only. No license granted.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DavidBrowning.Admin.ViewModels.About;
 
@@ -43,6 +45,13 @@ public sealed class InterestEditViewModel
    [ValidateNever]
    public required FontAwesomeIconPickerViewModel IconPicker { get; set; }
 
+   public int? FeaturedPostId { get; set; }
+
+   [BindNever]
+   [ValidateNever]
+   public IReadOnlyList<SelectListItem> FeaturedPostOptions { get; set; } =
+      Array.Empty<SelectListItem>();
+
    public InterestEditViewModel()
    {
    }
@@ -50,7 +59,8 @@ public sealed class InterestEditViewModel
    [SetsRequiredMembers]
    public InterestEditViewModel(
       Interest interest,
-      FontAwesomeIconPickerViewModel picker)
+      FontAwesomeIconPickerViewModel picker,
+      IReadOnlyList<SelectListItem> featuredPostOptions)
    {
       EditMode = EditModes.Edit;
       Id = interest.Id;
@@ -58,30 +68,27 @@ public sealed class InterestEditViewModel
       DisplayName = interest.DisplayName;
       Summary = interest.Summary;
       IsActive = interest.IsActive;
-      SortOrder = interest.SortOrder;
       SelectedIconCssClass = interest.IconCssClass;
+      FeaturedPostId = interest.FeaturedPostId;
       IconPicker = picker;
+      FeaturedPostOptions = featuredPostOptions;
    }
 
    public Interest ToInterest()
    {
-      if (Id is null)
-      {
-         throw new ArgumentException(nameof(Id));
-      }
-
       ArgumentException.ThrowIfNullOrEmpty(Slug, nameof(Slug));
       ArgumentException.ThrowIfNullOrEmpty(DisplayName, nameof(DisplayName));
       ArgumentException.ThrowIfNullOrEmpty(Summary, nameof(Summary));
 
       return new()
       {
-         Id = Id.Value,
+         Id = Id ?? 0,
          Slug = Slug,
          DisplayName = DisplayName,
          Summary = Summary,
          IsActive = IsActive,
          IconCssClass = SelectedIconCssClass,
+         FeaturedPostId = FeaturedPostId
       };
    }
 }

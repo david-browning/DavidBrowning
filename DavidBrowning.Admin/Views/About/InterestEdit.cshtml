@@ -98,6 +98,23 @@
 							</span>
 						</div>
 
+						<div class="mb-3">
+							<label class="form-label" asp-for="FeaturedPostId">
+								Featured post
+							</label>
+
+							<select class="form-select" asp-for="FeaturedPostId"
+									asp-items="Model.FeaturedPostOptions">
+							</select>
+
+							<div class="form-text">
+								Optional writing post to promote from this interest card.
+							</div>
+
+							<span class="text-danger" asp-validation-for="FeaturedPostId">
+							</span>
+						</div>
+
 						<div class="col-12">
 							<div class="form-check">
 								<input asp-for="IsActive"

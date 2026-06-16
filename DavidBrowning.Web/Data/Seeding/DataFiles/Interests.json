@@ -8,7 +8,8 @@
       "SortOrder": 10,
       "IsActive": true,
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
-      "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+      "UpdatedAtUtc": "2026-05-01T00:00:00Z",
+      "FeaturedPostId": 1
    },
    {
       "Id": 2,
@@ -19,7 +20,8 @@
       "SortOrder": 20,
       "IsActive": true,
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
-      "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+      "UpdatedAtUtc": "2026-05-01T00:00:00Z",
+      "FeaturedPostId": 1
    },
    {
       "Id": 3,
@@ -30,7 +32,8 @@
       "SortOrder": 30,
       "IsActive": true,
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
-      "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+      "UpdatedAtUtc": "2026-05-01T00:00:00Z",
+      "FeaturedPostId": 1
    },
    {
       "Id": 4,
@@ -41,7 +44,8 @@
       "SortOrder": 40,
       "IsActive": true,
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
-      "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+      "UpdatedAtUtc": "2026-05-01T00:00:00Z",
+      "FeaturedPostId": 1
    },
    {
       "Id": 5,
@@ -52,7 +56,8 @@
       "SortOrder": 50,
       "IsActive": true,
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
-      "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+      "UpdatedAtUtc": "2026-05-01T00:00:00Z",
+      "FeaturedPostId": 1
    },
    {
       "Id": 6,
@@ -63,6 +68,7 @@
       "SortOrder": 60,
       "IsActive": true,
       "CreatedAtUtc": "2026-05-01T00:00:00Z",
-      "UpdatedAtUtc": "2026-05-01T00:00:00Z"
+      "UpdatedAtUtc": "2026-05-01T00:00:00Z",
+      "FeaturedPostId": 1
    }
 ]

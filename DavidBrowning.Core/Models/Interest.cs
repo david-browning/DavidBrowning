@@ -1,6 +1,8 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using DavidBrowning.Models.Writing;
 using Microsoft.EntityFrameworkCore;
 
 namespace DavidBrowning.Models;
@@ -70,4 +72,9 @@ public sealed class Interest :
    /// Stored in UTC.
    /// </summary>
    public DateTime UpdatedAtUtc { get; set; }
+
+   public int? FeaturedPostId { get; set; }
+
+   [ForeignKey(nameof(FeaturedPostId))]
+   public Post? FeaturedPost { get; set; }
 }
