@@ -1,6 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -18,6 +19,7 @@ public sealed class ProjectLookupEditViewModel
    [StringLength(DataConstants.MaxSlugLength)]
    public string? Slug { get; set; }
 
+   [DisplayName("Display Name")]
    [Required]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? DisplayName { get; set; }

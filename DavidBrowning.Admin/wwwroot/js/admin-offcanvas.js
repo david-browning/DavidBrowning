@@ -6,6 +6,13 @@
 
    const offcanvasSelector = "[data-admin-offcanvas]";
    const bodySelector = "[data-admin-offcanvas-body]";
+   const autofocusSelector = "[data-admin-autofocus]";
+   const focusableSelector =
+      "input:not([type='hidden']):not([disabled]), " +
+      "select:not([disabled]), " +
+      "textarea:not([disabled]), " +
+      "button:not([disabled]), " +
+      "a[href]";
 
    function resetOffcanvas(offcanvas) {
       const body = offcanvas.querySelector(bodySelector);
@@ -23,6 +30,10 @@
       body.replaceChildren(placeholder);
    }
 
+   function scheduleFocusFirstField(offcanvas) {
+      window.setTimeout(() => focusFirstField(offcanvas), 0);
+   }
+
    function wireOffcanvas(offcanvas) {
       if (!(offcanvas instanceof HTMLElement)) {
          return;
@@ -33,6 +44,11 @@
       }
 
       offcanvas.dataset.adminOffcanvasWired = "true";
+
+      offcanvas.addEventListener("shown.bs.offcanvas", () => {
+         scheduleFocusFirstField(offcanvas);
+      });
+
       offcanvas.addEventListener(
          "hidden.bs.offcanvas", () => resetOffcanvas(offcanvas));
    }
@@ -63,7 +79,48 @@
       instance.hide();
    }
 
+   function focusFirstField(offcanvas) {
+      const body = offcanvas.querySelector(bodySelector);
+
+      if (!(body instanceof HTMLElement)) {
+         return;
+      }
+
+      const preferred = body.querySelector(autofocusSelector);
+      const fallback = body.querySelector(focusableSelector);
+      const target = preferred ?? fallback;
+
+      if (!(target instanceof HTMLElement)) {
+         return;
+      }
+
+      window.setTimeout(() => {
+         target.focus({ preventScroll: true });
+
+         if (target instanceof HTMLInputElement ||
+            target instanceof HTMLTextAreaElement) {
+            target.select();
+         }
+      }, 0);
+   }
+
    document.addEventListener("DOMContentLoaded", () => wireAllOffcanvases());
-   document.body.addEventListener("htmx:afterSwap", event => wireAllOffcanvases(event.detail.target));
    document.body.addEventListener("adminOffcanvasClose", event => closeOffcanvas(event.detail.offcanvasId));
+   document.body.addEventListener("htmx:afterSwap", event => {
+      wireAllOffcanvases(event.detail.target);
+
+      const target = event.detail.target;
+      if (!(target instanceof HTMLElement)) {
+         return;
+      }
+
+      const offcanvas = target.closest(offcanvasSelector);
+      if (!(offcanvas instanceof HTMLElement)) {
+         return;
+      }
+
+      if (offcanvas.classList.contains("show")) {
+         scheduleFocusFirstField(offcanvas);
+      }
+   });
 })();

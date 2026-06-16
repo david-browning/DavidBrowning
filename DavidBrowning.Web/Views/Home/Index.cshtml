@@ -24,62 +24,82 @@
 	<div class="container">
 		<header class="wb-section-header">
 			<p class="wb-kicker">01 / Explore</p>
-			<h2>Ideas worth exploring</h2>
+			<h2>Four ways to explore</h2>
 		</header>
-		<div class="row row-cols-1 row-cols-lg-4 g-4 align-items-center">
+
+		<div class="row row-cols-1 row-cols-lg-4 g-4 align-items-stretch">
 			<div class="col">
-				<article class="wb-card h-100">
+				<article class="wb-card h-100 d-flex flex-column">
 					<h3>
-						<i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+						<i class="fa-solid fa-briefcase"
+						   aria-hidden="true"></i>
 						Work
 					</h3>
-					<p class="text-secondary">
-						Lorem ipsum-style test prose
+
+					<p class="text-secondary mb-4">
+						The professional path: systems shipped, teams supported, and problems solved.
 					</p>
-					<a class="stretched-link" href="/work">
+
+					<a class="stretched-link mt-auto"
+					   href="/work">
 						See my career
 					</a>
 				</article>
 			</div>
+
 			<div class="col">
-				<article class="wb-card h-100">
+				<article class="wb-card h-100 d-flex flex-column">
 					<h3>
-						<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+						<i class="fa-solid fa-diagram-project"
+						   aria-hidden="true"></i>
 						Projects
 					</h3>
-					<p class="text-secondary">
-						Lorem ipsum-style test prose
+
+					<p class="text-secondary mb-4">
+						Practical builds, design tradeoffs, and the engineering decisions behind them.
 					</p>
-					<a class="stretched-link" href="/projects">
+
+					<a class="stretched-link mt-auto"
+					   href="/projects">
 						Explore projects
 					</a>
 				</article>
 			</div>
+
 			<div class="col">
-				<article class="wb-card h-100">
+				<article class="wb-card h-100 d-flex flex-column">
 					<h3>
-						<i class="fa-solid fa-pen" aria-hidden="true"></i>
+						<i class="fa-solid fa-pen"
+						   aria-hidden="true"></i>
 						Writing
 					</h3>
-					<p class="text-secondary">
-						Lorem ipsum-style test prose
+
+					<p class="text-secondary mb-4">
+						Essays on software, systems, learning, design, and the occasional useful tangent.
 					</p>
-					<a class="stretched-link" href="/writing">
-						What I write
+
+					<a class="stretched-link mt-auto"
+					   href="/writing">
+						Read the writing
 					</a>
 				</article>
 			</div>
+
 			<div class="col">
-				<article class="wb-card h-100">
+				<article class="wb-card h-100 d-flex flex-column">
 					<h3>
-						<i class="fa-solid fa-user" aria-hidden="true"></i>
+						<i class="fa-solid fa-user"
+						   aria-hidden="true"></i>
 						About
 					</h3>
-					<p class="text-secondary">
-						Lorem ipsum-style test prose
+
+					<p class="text-secondary mb-4">
+						The context behind the work: interests, values, background, and what keeps me curious.
 					</p>
-					<a class="stretched-link" href="/about">
-						More about the person
+
+					<a class="stretched-link mt-auto"
+					   href="/about">
+						More about me
 					</a>
 				</article>
 			</div>
@@ -90,8 +110,10 @@
 <section class="wb-section">
 	<div class="container">
 		<header class="wb-section-header">
-			<p class="wb-kicker">02 / Selected projects</p>
-			<h2>From the workbench</h2>
+			<p class="wb-kicker">02 / Featured projects</p>
+			<a asp-controller="Projects" class="text-reset text-decoration-none">
+				<h2>From the workbench</h2>
+			</a>
 		</header>
 		<div class="row g-4">
 			<div class="col">
@@ -111,7 +133,9 @@
 	<div class="container">
 		<header class="wb-section-header">
 			<p class="wb-kicker">03 / Recent writing</p>
-			<h2>From the notebook</h2>
+			<a asp-controller="Writing" class="text-reset text-decoration-none">
+				<h2>From the notebook</h2>
+			</a>
 		</header>
 		<div class="row g-4">
 			<div class="col">
@@ -131,7 +155,9 @@
 	<div class="container">
 		<header class="wb-section-header">
 			<p class="wb-kicker">04 / In progress</p>
-			<h2>On the workbench</h2>
+			<a asp-controller="About" class="text-reset text-decoration-none">
+				<h2>On the workbench</h2>
+			</a>
 		</header>
 		<div class="row g-4">
 			<div class="col">

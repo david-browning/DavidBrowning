@@ -17,7 +17,7 @@ public sealed class ProjectAdminIndexViewModel
 
    public required ProjectLookupPanelViewModel StackTags { get; set; }
 
-   public required ProjectListViewModel Projects { get; set; }
+   public required ReorderListViewModel Projects { get; set; }
 
    public required AdminOffcanvasViewModel LookupEditorOffcanvas { get; set; }
 }

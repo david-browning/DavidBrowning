@@ -20,11 +20,9 @@
 			Metadata
 		</h2>
 
-		<form method="post"
-			  asp-controller="Projects"
+		<form method="post" asp-controller="Projects"
 			  asp-action="@formAction"
-			  data-project-metadata-form
-			  data-slug-editor
+			  data-project-metadata-form data-slug-editor
 			  hx-post="@Url.Action(formAction, "Projects")"
 			  hx-target="#@ProjectAdminIds.ProjectMetadataRegion"
 			  hx-swap="innerHTML">
@@ -59,8 +57,7 @@
 					<div class="col-12">
 						<label asp-for="Description" class="form-label"></label>
 						<textarea asp-for="Description" class="form-control" rows="3"></textarea>
-						<span asp-validation-for="Description"
-							  class="text-danger"></span>
+						<span asp-validation-for="Description" class="text-danger"></span>
 					</div>
 
 					<div class="col-12 col-md-6 col-xl-3">
@@ -70,6 +67,7 @@
 						<select asp-for="ProjectStatusId" class="form-select"
 								asp-items="@(new SelectList(Model.StatusOptions, "Id", "DisplayName"))">
 						</select>
+						<span asp-validation-for="ProjectStatusId" class="text-danger"></span>
 					</div>
 
 					<div class="col-12 col-md-6 col-xl-3">
@@ -79,6 +77,7 @@
 						<select asp-for="ProjectTypeId" class="form-select"
 								asp-items="@(new SelectList(Model.TypeOptions, "Id", "DisplayName"))">
 						</select>
+						<span asp-validation-for="ProjectTypeId" class="text-danger"></span>
 					</div>
 
 					<div class="col-12 col-md-6 col-xl-3">
@@ -88,6 +87,7 @@
 						<select asp-for="ProjectOriginId" class="form-select"
 								asp-items="@(new SelectList(Model.OriginOptions, "Id", "DisplayName"))">
 						</select>
+						<span asp-validation-for="ProjectOriginId" class="text-danger"></span>
 					</div>
 
 					<div class="col-12 col-md-6 col-xl-3">
@@ -97,13 +97,13 @@
 						<select asp-for="ProjectVisibilityId" class="form-select"
 								asp-items="@(new SelectList(Model.VisibilityOptions, "Id", "DisplayName"))">
 						</select>
+						<span asp-validation-for="ProjectVisibilityId" class="text-danger"></span>
 					</div>
 
 					<div class="col-12 col-md-6">
 						<label asp-for="Role" class="form-label"></label>
 						<input asp-for="Role" class="form-control"
 							   list="project-role-options" autocomplete="off" />
-
 						<datalist id="project-role-options">
 							<option value="Creator"></option>
 							<option value="Developer"></option>
@@ -113,17 +113,18 @@
 							<option value="Maintainer"></option>
 							<option value="Contributor"></option>
 						</datalist>
-					</div>
-
-					<div class="col-12 col-md-6">
-						<label asp-for="DateDisplayText" class="form-label"></label>
-						<input asp-for="DateDisplayText" class="form-control" />
+						<span asp-validation-for="Role" class="text-danger"></span>
 					</div>
 
 					<div class="col-12">
 						<label asp-for="ContributionSummary" class="form-label"></label>
-						<textarea asp-for="ContributionSummary"
-								  class="form-control" rows="3"></textarea>
+						<textarea asp-for="ContributionSummary" class="form-control" rows="3"></textarea>
+					</div>
+
+					<div class="col-12 col-md-4">
+						<label asp-for="DateDisplayText" class="form-label"></label>
+						<input asp-for="DateDisplayText" class="form-control" autocomplete="off" />
+						<span asp-validation-for="DateDisplayText" class="text-danger"></span>
 					</div>
 
 					<div class="col-12 col-md-4">
@@ -135,12 +136,57 @@
 						<label asp-for="EndDate" class="form-label"></label>
 						<input asp-for="EndDate" type="date" class="form-control" />
 					</div>
+				</div>
+				<br/>
+				<div class="row g-4">
+					<div class="col-12 col-lg-6 scrollable-list-panel">
+						<h3 class="h6 mb-3">
+							Project tags
+						</h3>
 
-					<div class="col-12 col-md-4">
-						<label asp-for="SortOrder" class="form-label"></label>
-						<input asp-for="SortOrder" type="number" class="form-control" />
+						<div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-3 g-2 tag-list">
+							@foreach (var tag in Model.TagOptions)
+							{
+								<div class="col list-group-item m-1">
+									<div class="form-check">
+										<input class="form-check-input" type="checkbox"
+											   name="ProjectTagIds" value="@tag.Id"
+											   checked="@Model.ProjectTagIds.Contains(tag.Id)"
+											   id="project-tag-@tag.Id" />
+										<label class="form-check-label" for="project-tag-@tag.Id">
+											@tag.DisplayName
+										</label>
+									</div>
+								</div>
+							}
+						</div>
 					</div>
 
+					<div class="col-12 col-lg-6 scrollable-list-panel">
+						<h3 class="h6 mb-3">
+							Stack tags
+						</h3>
+
+						<div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-3 g-2 tag-list">
+							@foreach (var tag in Model.StackTagOptions)
+							{
+								<div class="col list-group-item m-1">
+									<div class="form-check">
+										<input class="form-check-input"
+											   type="checkbox" name="ProjectStackTagIds"
+											   value="@tag.Id" checked="@Model.ProjectStackTagIds.Contains(tag.Id)"
+											   id="project-stack-tag-@tag.Id" />
+										<label class="form-check-label" for="project-stack-tag-@tag.Id">
+											@tag.DisplayName
+										</label>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div class="row g-4">
 					<div class="col-12">
 						<div class="form-check">
 							<input asp-for="IsFeatured" class="form-check-input"
@@ -148,53 +194,14 @@
 							<label asp-for="IsFeatured" class="form-check-label">
 								Mark as featured project
 							</label>
+							<p class="text-secondary">
+								Featured projects will show on the home page and top of the project page.
+							</p>
 						</div>
 					</div>
 				</div>
-
-				<hr />
-
-				<div class="row g-4">
-					<div class="col-12 col-lg-6">
-						<h3 class="h6">
-							Project tags
-						</h3>
-
-						@foreach (var tag in Model.TagOptions)
-						{
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox"
-									   name="ProjectTagIds" value="@tag.Id"
-									   checked="@Model.ProjectTagIds.Contains(tag.Id)"
-									   id="project-tag-@tag.Id" />
-								<label class="form-check-label" for="project-tag-@tag.Id">
-									@tag.DisplayName
-								</label>
-							</div>
-						}
-					</div>
-
-					<div class="col-12 col-lg-6">
-						<h3 class="h6">
-							Stack tags
-						</h3>
-
-						@foreach (var tag in Model.StackTagOptions)
-						{
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox"
-									   name="ProjectStackTagIds" value="@tag.Id"
-									   checked="@Model.ProjectStackTagIds.Contains(tag.Id)"
-									   id="project-stack-tag-@tag.Id" />
-								<label class="form-check-label" for="project-stack-tag-@tag.Id">
-									@tag.DisplayName
-								</label>
-							</div>
-						}
-					</div>
-				</div>
-
-				<div class="mt-4">
+				<hr/>
+				<div class="mt-8">
 					<button class="btn btn-primary" type="submit">
 						Save metadata
 					</button>
