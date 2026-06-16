@@ -1,8 +1,10 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
 @model DavidBrowning.Web.ViewModels.InterestCardViewModel
+@inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 @{
 	var icoClass = $"fa-solid {Model.IconCssClass} fa-2xl icon-accent";
+	var url = urlBuilder.GetDetailsUrl(Model.FeaturedPost!.Slug, "writing");
 }
 <article class="wb-card h-100">
 	<h3>@Model.Title</h3>
@@ -11,9 +13,30 @@
 		<i class="@icoClass" aria-hidden="true"></i>
 
 		<p class="text-secondary mb-0">
-			@Model.Description
+			@Model.Summary
 		</p>
 	</div>
+
+	@if (Model.FeaturedPost is not null)
+	{
+		<div class="mt-auto pt-3 pl-3">
+@* 			<p class="wb-kicker mb-2">
+				Featured writing
+			</p> *@
+
+			<a class="wb-card-link"
+			   href="@url">
+				@Model.FeaturedPost.Title
+			</a>
+
+			@if (!string.IsNullOrWhiteSpace(Model.FeaturedPost.Summary))
+			{
+				<p class="text-secondary small mt-2 mb-0">
+					@Model.FeaturedPost.Summary
+				</p>
+			}
+		</div>
+	}
 
 	@if (Model.Image is not null)
 	{

@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,9 @@ using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
+using DavidBrowning.Models.Writing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DavidBrowning.Admin.Controllers;
 
@@ -20,9 +23,11 @@ public sealed class AboutController : Controller
 {
    public AboutController(
       IContentStore contentStore,
+      IWritingStore writingStore,
       IUncategorizedStore uncategorizedStore)
    {
       _contentStore = contentStore;
+      _writingStore = writingStore;
       _uncategorizedStore = uncategorizedStore;
    }
 
@@ -41,7 +46,7 @@ public sealed class AboutController : Controller
    {
       await FontAwesomeIconPickerViewModel.LoadAndValidateIconPickerAsync(
          _contentStore, model, ModelState, cancellationToken);
-
+      model.FeaturedPostOptions = await GetFeaturedPostOptionsAsync(cancellationToken);
       if (!ModelState.IsValid)
       {
          if (Request.IsHtmxRequest())
@@ -91,10 +96,11 @@ public sealed class AboutController : Controller
          return NotFound();
       }
 
-      FontAwesomeIconPickerViewModel iconPicker = 
+      FontAwesomeIconPickerViewModel iconPicker =
          await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
             _contentStore, interest.IconCssClass, cancellationToken);
-      var model = new InterestEditViewModel(interest, iconPicker);
+      var postOptions = await GetFeaturedPostOptionsAsync(cancellationToken);
+      var model = new InterestEditViewModel(interest, iconPicker, postOptions);
       if (Request.IsHtmxRequest())
       {
          return PartialView(nameof(InterestEdit), model);
@@ -111,7 +117,7 @@ public sealed class AboutController : Controller
    {
       model.IconPicker = await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
             _contentStore, model.SelectedIconCssClass, cancellationToken);
-
+      model.FeaturedPostOptions = await GetFeaturedPostOptionsAsync(cancellationToken);
       if (!model.IconPicker.Supports(model.SelectedIconCssClass))
       {
          ModelState.AddModelError(
@@ -219,7 +225,6 @@ public sealed class AboutController : Controller
          await FontAwesomeIconPickerViewModel.LoadIconPickerAsync(
             _contentStore, selectedIconCssClass, cancellationToken);
 
-
       createModel ??= new InterestEditViewModel()
       {
          IconPicker = iconPicker,
@@ -227,6 +232,8 @@ public sealed class AboutController : Controller
 
       createModel.EditMode = EditModes.Create;
       createModel.IconPicker = iconPicker;
+      createModel.FeaturedPostOptions = await GetFeaturedPostOptionsAsync(
+         cancellationToken);
 
       return new IndexViewModel()
       {
@@ -283,7 +290,32 @@ public sealed class AboutController : Controller
          }
       };
    }
-   
+
+   private async Task<IReadOnlyList<SelectListItem>>
+      GetFeaturedPostOptionsAsync(CancellationToken cancellationToken)
+   {
+      IReadOnlyList<Post> posts = await _writingStore.GetPublishedPostsAsync(
+         cancellationToken);
+
+      List<SelectListItem> options = new()
+         {
+            new SelectListItem()
+            {
+               Value = string.Empty,
+               Text = "No featured post",
+            },
+         };
+
+      options.AddRange(posts.Select(post => new SelectListItem()
+         {
+            Value = post.Id.ToString(CultureInfo.InvariantCulture),
+            Text = post.Title,
+         }));
+
+      return options;
+   }
+
    private readonly IUncategorizedStore _uncategorizedStore;
    private readonly IContentStore _contentStore;
+   private readonly IWritingStore _writingStore;
 }

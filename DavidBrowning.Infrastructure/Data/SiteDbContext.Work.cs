@@ -42,7 +42,14 @@ public sealed partial class SiteDbContext
             .HasDefaultValueSql("sysutcdatetime()")
             .IsRequired();
 
+         entity.HasOne(interest => interest.FeaturedPost)
+            .WithMany()
+            .HasForeignKey(interest => interest.FeaturedPostId)
+            .OnDelete(DeleteBehavior.SetNull);
+
          entity.HasIndex(interest => interest.SortOrder);
+
+         entity.HasIndex(interest => interest.FeaturedPostId);
       });
    }
 

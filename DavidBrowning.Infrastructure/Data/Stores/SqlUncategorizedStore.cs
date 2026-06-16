@@ -23,6 +23,7 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
    {
       return await _context.Interests
          .AsNoTracking()
+         .Include(interest => interest.FeaturedPost)
          .OrderBy(interest => interest.SortOrder)
          .ThenBy(interest => interest.DisplayName)
          .ToListAsync(cancellationToken);
@@ -50,6 +51,8 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
          throw new DuplicateSlugException(interest.Slug);
       }
 
+      await ValidateFeaturedPostAsync(interest.FeaturedPostId, cancellationToken);
+      interest.FeaturedPost = null;
       _context.Interests.Add(interest);
       await _context.SaveChangesAsync(cancellationToken);
       _logger.LogInformation(
@@ -58,8 +61,8 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
    }
 
    public async Task<bool> UpdateInterestAsync(
-      Interest interest,
-      CancellationToken cancellationToken)
+    Interest interest,
+    CancellationToken cancellationToken)
    {
       ArgumentNullException.ThrowIfNull(interest);
       if (await _context.SlugExistsAsync<Interest>(
@@ -67,6 +70,9 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       {
          throw new DuplicateSlugException(interest.Slug);
       }
+
+      await ValidateFeaturedPostAsync(
+         interest.FeaturedPostId, cancellationToken);
 
       Interest? storedInterest = await _context.Interests
          .SingleOrDefaultAsync(
@@ -83,6 +89,7 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       storedInterest.Summary = interest.Summary;
       storedInterest.IconCssClass = interest.IconCssClass;
       storedInterest.IsActive = interest.IsActive;
+      storedInterest.FeaturedPostId = interest.FeaturedPostId;
 
       await _context.SaveChangesAsync(cancellationToken);
       _logger.LogInformation(
@@ -195,6 +202,25 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       ArgumentNullException.ThrowIfNull(asset);
       await _context.SiteAssets.AddAsync(asset, cancellationToken);
       await _context.SaveChangesAsync(cancellationToken);
+   }
+
+   private async Task ValidateFeaturedPostAsync(
+      int? featuredPostId,
+      CancellationToken cancellationToken)
+   {
+      if (featuredPostId is null)
+      {
+         return;
+      }
+
+      bool postExists = await _context.Posts.AnyAsync(
+         post => post.Id == featuredPostId.Value, cancellationToken);
+
+      if (!postExists)
+      {
+         throw new InvalidOperationException(
+            "The selected featured post does not exist.");
+      }
    }
 
    private readonly ILogger<SqlUncategorizedStore> _logger;

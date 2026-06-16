@@ -24,10 +24,20 @@ CREATE TABLE dbo.db_Interests
    UpdatedAtUtc datetime2(0) NOT NULL
       CONSTRAINT DF_db_Interests_UpdatedAtUtc DEFAULT (sysutcdatetime()),
 
+   FeaturedPostId int NULL,
+
    CONSTRAINT PK_db_Interests PRIMARY KEY (Id),
 
-   CONSTRAINT UQ_db_Interests_Slug UNIQUE (Slug)
+   CONSTRAINT UQ_db_Interests_Slug UNIQUE (Slug),
+
+   CONSTRAINT FK_db_Interests_db_Posts_FeaturedPostId 
+      FOREIGN KEY (FeaturedPostId)
+      REFERENCES dbo.db_Posts(Id)
+      ON DELETE SET NULL
 );
 
 CREATE INDEX IX_db_Interests_IsActive_SortOrder
 ON dbo.db_Interests(IsActive, SortOrder);
+
+CREATE INDEX IX_db_Interests_FeaturedPostId
+ON dbo.db_Interests(FeaturedPostId);
