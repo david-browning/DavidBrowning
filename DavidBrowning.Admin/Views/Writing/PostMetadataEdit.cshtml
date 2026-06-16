@@ -23,7 +23,7 @@
 		<p>Create metadata for a post</p>
 		<div class="admin-form-region">
 			<form method="post" asp-controller="Writing" asp-action="@formAction"
-				  data-post-metadata-form
+				  data-post-metadata-form data-slug-editor
 				  data-post-metadata-edit-mode="@isEditMode.ToString().ToLowerInvariant()"
 				  hx-post="@Url.Action(formAction, "Writing")" hx-target="@htmxTarget"
 				  hx-swap="innerHTML" hx-disabled-elt="find fieldset"

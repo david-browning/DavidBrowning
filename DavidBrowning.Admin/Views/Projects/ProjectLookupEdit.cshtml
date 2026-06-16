@@ -9,6 +9,7 @@
 <form method="post"
 	  asp-controller="Projects"
 	  asp-action="@Model.FormAction"
+	  data-slug-editor
 	  hx-post="@Url.Action(Model.FormAction, "Projects")"
 	  hx-target="@AdminOffcanvasIds.BodySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
 	  hx-swap="innerHTML">

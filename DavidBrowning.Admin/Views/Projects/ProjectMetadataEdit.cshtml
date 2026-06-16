@@ -24,6 +24,7 @@
 			  asp-controller="Projects"
 			  asp-action="@formAction"
 			  data-project-metadata-form
+			  data-slug-editor
 			  hx-post="@Url.Action(formAction, "Projects")"
 			  hx-target="#@ProjectAdminIds.ProjectMetadataRegion"
 			  hx-swap="innerHTML">
@@ -67,10 +68,7 @@
 							Status
 						</label>
 						<select asp-for="ProjectStatusId" class="form-select"
-								asp-items="@(new SelectList(
-							 								Model.StatusOptions,
-															"Id",
-															"DisplayName"))">
+								asp-items="@(new SelectList(Model.StatusOptions, "Id", "DisplayName"))">
 						</select>
 					</div>
 
@@ -79,10 +77,7 @@
 							Type
 						</label>
 						<select asp-for="ProjectTypeId" class="form-select"
-								asp-items="@(new SelectList(
-							 								Model.TypeOptions,
-															"Id",
-															"DisplayName"))">
+								asp-items="@(new SelectList(Model.TypeOptions, "Id", "DisplayName"))">
 						</select>
 					</div>
 
@@ -91,10 +86,7 @@
 							Origin
 						</label>
 						<select asp-for="ProjectOriginId" class="form-select"
-								asp-items="@(new SelectList(
-							 								Model.OriginOptions,
-															"Id",
-															"DisplayName"))">
+								asp-items="@(new SelectList(Model.OriginOptions, "Id", "DisplayName"))">
 						</select>
 					</div>
 
@@ -103,16 +95,24 @@
 							Visibility
 						</label>
 						<select asp-for="ProjectVisibilityId" class="form-select"
-								asp-items="@(new SelectList(
-							 								Model.VisibilityOptions,
-															"Id",
-															"DisplayName"))">
+								asp-items="@(new SelectList(Model.VisibilityOptions, "Id", "DisplayName"))">
 						</select>
 					</div>
 
 					<div class="col-12 col-md-6">
 						<label asp-for="Role" class="form-label"></label>
-						<input asp-for="Role" class="form-control" />
+						<input asp-for="Role" class="form-control"
+							   list="project-role-options" autocomplete="off" />
+
+						<datalist id="project-role-options">
+							<option value="Creator"></option>
+							<option value="Developer"></option>
+							<option value="Engineer"></option>
+							<option value="Release Driver"></option>
+							<option value="Tools Engineer"></option>
+							<option value="Maintainer"></option>
+							<option value="Contributor"></option>
+						</datalist>
 					</div>
 
 					<div class="col-12 col-md-6">
