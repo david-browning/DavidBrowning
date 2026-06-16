@@ -46,9 +46,31 @@
 			</div>
 		</section>
 
-		<div id="project-list-region">
-			<partial name="ProjectList" model="Model.Projects" />
-		</div>
+		<section class="card">
+			<div class="card-body">
+				<div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+					<div>
+						<h2 class="h4 card-title mb-1">
+							Projects
+						</h2>
+						<p class="card-text text-secondary mb-0">
+							Create, edit, and order portfolio projects.
+						</p>
+					</div>
+
+					<div class="text-md-end">
+						<a class="btn btn-primary" asp-controller="Projects"
+						   asp-action="ProjectCreate">
+							New project
+						</a>
+					</div>
+				</div>
+
+				<div id="@ProjectAdminIds.ProjectListRegion">
+					<partial name="_ReorderList" model="Model.Projects" />
+				</div>
+			</div>
+		</section>
 	</div>
 	<partial name="_AdminOffcanvas" model="Model.LookupEditorOffcanvas" />
 </div>

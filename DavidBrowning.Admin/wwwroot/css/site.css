@@ -107,7 +107,7 @@ body {
 }
 
 .tag-list .list-group-item {
-   min-width: 12em;
+   max-width: 12em;
 }
 
 .admin-preview-content {
@@ -132,3 +132,11 @@ body {
       max-width: 100%;
       height: auto;
    }
+
+.scrollable-list-panel {
+   gap: 0.5rem;
+   max-height: 14rem;
+   overflow-y: scroll;
+   overflow-y: hidden;
+   scrollbar-gutter: stable;
+}

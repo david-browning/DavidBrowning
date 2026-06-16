@@ -40,7 +40,7 @@ public sealed class ProjectMetadataViewModel
    [Required(ErrorMessage = "Select a project status.")]
    public int? ProjectStatusId { get; set; }
 
-   [DisplayName("Project Name")]
+   [DisplayName("Project Type")]
    [Required(ErrorMessage = "Select a project type.")]
    public int? ProjectTypeId { get; set; }
 
@@ -60,15 +60,15 @@ public sealed class ProjectMetadataViewModel
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? ContributionSummary { get; set; }
 
-   public bool IsFeatured { get; set; }
+   public bool IsFeatured { get; set; } = false;
 
-   public int SortOrder { get; set; }
-
+   [DisplayName("Project Start Date")]
    public DateOnly? StartDate { get; set; }
 
+   [DisplayName("Project End Date")]
    public DateOnly? EndDate { get; set; }
 
-   [DisplayName("Project Date")]
+   [DisplayName("Project Display Date")]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? DateDisplayText { get; set; }
 
@@ -133,7 +133,6 @@ public sealed class ProjectMetadataViewModel
       Role = project.Role;
       ContributionSummary = project.ContributionSummary;
       IsFeatured = project.IsFeatured;
-      SortOrder = project.SortOrder;
       StartDate = project.StartDate;
       EndDate = project.EndDate;
       DateDisplayText = project.DateDisplayText;
@@ -183,7 +182,6 @@ public sealed class ProjectMetadataViewModel
          Role = Role,
          ContributionSummary = ContributionSummary,
          IsFeatured = IsFeatured,
-         SortOrder = SortOrder,
          StartDate = StartDate,
          EndDate = EndDate,
          DateDisplayText = DateDisplayText,

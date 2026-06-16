@@ -149,7 +149,8 @@ public interface IProjectStore
 
    Task<bool> UpdateProjectContentAsync(
       int projectId,
-      string? content,
+      string contentAssetKey,
+      long contentLengthBytes,
       IReadOnlyList<ProjectAssetLink> assetLinks,
       CancellationToken cancellationToken = default);
 
@@ -231,15 +232,25 @@ public interface IProjectStore
    Task<bool> UpdateProjectStackTagAsync(
       ProjectStackTag tag,
       CancellationToken cancellationToken = default);
+
+   Task ReorderProjectsAsync(
+      IReadOnlyList<int> idsInDisplayOrder,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> DeleteProjectAsync(
+      int id,
+      CancellationToken cancellationToken = default);
 }
 
 public sealed class ProjectContentData
 {
+   public int ProjectId { get; init; }
+
+   public required string ProjectSlug { get; init; }
+
    public int? ContentAssetId { get; init; }
 
    public string? ContentAssetKey { get; init; }
-
-   public string? Content { get; init; }
 
    public IReadOnlyList<ProjectAssetLink> AssetLinks { get; init; } =
       Array.Empty<ProjectAssetLink>();

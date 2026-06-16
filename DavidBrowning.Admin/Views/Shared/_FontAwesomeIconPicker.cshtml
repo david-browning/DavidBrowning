@@ -17,9 +17,7 @@
 		</button>
 	</div>
 
-	<div class="fontawesome-icon-grid"
-		 role="listbox"
-		 aria-label="Available icons">
+	<div class="fontawesome-icon-grid" role="listbox" aria-label="Available icons">
 		@foreach (string iconCssClass in Model.SupportedIconCssClasses)
 		{
 			var highlight = DavidBrowning.Helpers.FontAwesomeHelpers.GetDisplayName(iconCssClass);

@@ -1,6 +1,9 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+using System.Text;
+using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Cache;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -295,38 +298,249 @@ public sealed class SqlProjectStore : IProjectStore
          .SingleOrDefaultAsync(cancellationToken);
    }
 
-   public Task<int> InsertProjectAsync(
+   public async Task<int> InsertProjectAsync(
       Project project,
       IList<int> projectTags,
       IList<int> stackIds,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(project);
+      ArgumentException.ThrowIfNullOrWhiteSpace(project.Slug);
+
+      if (await _dbContext.Posts.AnyAsync(
+         p => p.Id != project.Id && p.Slug == project.Slug,
+         cancellationToken))
+      {
+         throw new DuplicateSlugException(project.Slug);
+      }
+
+      int? maxSortOrder = await _dbContext.Projects
+         .Select(project => (int?)project.SortOrder)
+         .MaxAsync(cancellationToken);
+
+      project.SortOrder = (maxSortOrder ?? 0) + 1;
+
+      foreach (int tagId in projectTags.Distinct())
+      {
+         project.TagLinks.Add(new ProjectTagLink()
+         {
+            Project = project,
+            ProjectTagId = tagId,
+         });
+      }
+
+      foreach (int stackId in stackIds.Distinct())
+      {
+         project.StackTagLinks.Add(new ProjectStackTagLink()
+         {
+            Project = project,
+            ProjectStackTagId = stackId,
+         });
+      }
+
+      _dbContext.Projects.Add(project);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return project.Id;
    }
 
-   public Task<bool> UpdateProjectAsync(
+   public async Task<bool> UpdateProjectAsync(
       Project project,
       IList<int> projectTags,
       IList<int> stackIds,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(project);
+      ArgumentException.ThrowIfNullOrWhiteSpace(project.Slug);
+
+      if (await _dbContext.Posts.AnyAsync(
+         p => p.Id != project.Id && p.Slug == project.Slug,
+         cancellationToken))
+      {
+         throw new DuplicateSlugException(project.Slug);
+      }
+
+      var storedProject = await _dbContext.Projects
+         .Include(project => project.TagLinks)
+         .Include(project => project.StackTagLinks)
+         .SingleOrDefaultAsync(
+            existingProject => existingProject.Id == project.Id,
+            cancellationToken);
+
+      if (storedProject is null)
+      {
+         return false;
+      }
+
+      storedProject.Slug = project.Slug;
+      storedProject.Name = project.Name;
+      storedProject.Description = project.Description;
+      storedProject.ProjectStatusId = project.ProjectStatusId;
+      storedProject.ProjectTypeId = project.ProjectTypeId;
+      storedProject.ProjectOriginId = project.ProjectOriginId;
+      storedProject.ProjectVisibilityId = project.ProjectVisibilityId;
+      storedProject.Role = project.Role;
+      storedProject.ContributionSummary = project.ContributionSummary;
+      storedProject.IsFeatured = project.IsFeatured;
+      storedProject.StartDate = project.StartDate;
+      storedProject.EndDate = project.EndDate;
+      storedProject.DateDisplayText = project.DateDisplayText;
+
+      ReplaceProjectTagLinks(storedProject, projectTags);
+      ReplaceProjectStackTagLinks(storedProject, stackIds);
+
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
-   public Task<ProjectContentData?> GetProjectContentAsync(
+   public async Task<ProjectContentData?> GetProjectContentAsync(
       int projectId,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      var project = await _dbContext.Projects
+         .AsNoTracking()
+         .AsSplitQuery()
+         .Include(project => project.AssetLinks)
+            .ThenInclude(link => link.SiteAsset)
+         .Include(project => project.AssetLinks)
+            .ThenInclude(link => link.ProjectAssetRole)
+         .SingleOrDefaultAsync(
+            project => project.Id == projectId, cancellationToken);
+
+      if (project is null)
+      {
+         return null;
+      }
+
+      var contentLink = project.AssetLinks.SingleOrDefault(link =>
+         link.ProjectAssetRole?.Slug == _detailsContentRoleSlug);
+
+      return new ProjectContentData()
+      {
+         ProjectId = project.Id,
+         ProjectSlug = project.Slug,
+         ContentAssetId = contentLink?.SiteAssetId,
+         ContentAssetKey = contentLink?.SiteAsset?.AssetKey,
+         AssetLinks = project.AssetLinks
+            .Where(link => !string.IsNullOrWhiteSpace(link.ReferenceKey))
+            .OrderBy(link => link.SortOrder)
+            .ToList(),
+      };
    }
 
-   public Task<bool> UpdateProjectContentAsync(
+   public async Task<bool> UpdateProjectContentAsync(
       int projectId,
-      string? content,
+      string contentAssetKey,
+      long contentLengthBytes,
       IReadOnlyList<ProjectAssetLink> assetLinks,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentException.ThrowIfNullOrWhiteSpace(contentAssetKey);
+
+      var project = await _dbContext.Projects
+         .Include(project => project.AssetLinks)
+            .ThenInclude(link => link.SiteAsset)
+         .Include(project => project.AssetLinks)
+            .ThenInclude(link => link.ProjectAssetRole)
+         .SingleOrDefaultAsync(
+            project => project.Id == projectId,
+            cancellationToken);
+
+      if (project is null)
+      {
+         return false;
+      }
+
+      int detailsContentRoleId = await GetRequiredRoleIdAsync(
+         _detailsContentRoleSlug, cancellationToken);
+
+      var contentLink = project.AssetLinks.SingleOrDefault(link =>
+         link.ProjectAssetRoleId == detailsContentRoleId);
+
+      SiteAsset? contentAsset = contentLink?.SiteAsset;
+
+      if (contentAsset is null)
+      {
+         contentAsset = await _dbContext.SiteAssets.SingleOrDefaultAsync(
+            asset => asset.AssetKey == contentAssetKey, cancellationToken);
+
+         if (contentAsset is null)
+         {
+            contentAsset = new SiteAsset()
+            {
+               AssetKey = contentAssetKey,
+               ContentType = _detailsContentType,
+               OriginalFileName = Path.GetFileName(contentAssetKey),
+               SizeBytes = contentLengthBytes,
+            };
+
+            _dbContext.SiteAssets.Add(contentAsset);
+         }
+
+         project.AssetLinks.Add(new ProjectAssetLink()
+         {
+            ProjectId = project.Id,
+            SiteAsset = contentAsset,
+            ProjectAssetRoleId = detailsContentRoleId,
+            SortOrder = 0,
+         });
+      }
+      else
+      {
+         contentAsset.AssetKey = contentAssetKey;
+         contentAsset.ContentType = _detailsContentType;
+         contentAsset.OriginalFileName ??= Path.GetFileName(contentAssetKey);
+         contentAsset.SizeBytes = contentLengthBytes;
+      }
+
+      ReplaceProjectInlineAssetLinks(project, assetLinks);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
+   }
+
+   public async Task ReorderProjectsAsync(
+      IReadOnlyList<int> idsInDisplayOrder,
+      CancellationToken cancellationToken = default)
+   {
+      int changedRecordCount = await _dbContext.ApplySortOrderAsync<Project>(
+       idsInDisplayOrder, cancellationToken);
+      if (changedRecordCount == 0)
+      {
+         return;
+      }
+
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task<bool> DeleteProjectAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      bool exists = await _dbContext.Projects
+         .AnyAsync(project => project.Id == id, cancellationToken);
+      if (!exists)
+      {
+         return false;
+      }
+
+      await _dbContext.ProjectTagLinks
+         .Where(link => link.ProjectId == id)
+         .ExecuteDeleteAsync(cancellationToken);
+      await _dbContext.ProjectStackTagLinks
+         .Where(link => link.ProjectId == id)
+         .ExecuteDeleteAsync(cancellationToken);
+      await _dbContext.ProjectLinks
+         .Where(link => link.ProjectId == id)
+         .ExecuteDeleteAsync(cancellationToken);
+      await _dbContext.ProjectAssetLinks
+         .Where(link => link.ProjectId == id)
+         .ExecuteDeleteAsync(cancellationToken);
+      await _dbContext.ProjectPosts
+         .Where(link => link.ProjectId == id)
+         .ExecuteDeleteAsync(cancellationToken);
+      await _dbContext.Projects
+         .Where(project => project.Id == id)
+         .ExecuteDeleteAsync(cancellationToken);
+      return true;
    }
 
    public async Task<IReadOnlyList<Project>> GetProjectsAsync(
@@ -454,7 +668,7 @@ public sealed class SqlProjectStore : IProjectStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(type);
-      if(await _dbContext.SlugExistsAsync<ProjectType>(
+      if (await _dbContext.SlugExistsAsync<ProjectType>(
          type.Slug, cancellationToken: cancellationToken))
       {
          throw new DuplicateSlugException(type.Slug);
@@ -469,7 +683,7 @@ public sealed class SqlProjectStore : IProjectStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(tag);
-      if(await _dbContext.SlugExistsAsync<ProjectTag>(
+      if (await _dbContext.SlugExistsAsync<ProjectTag>(
          tag.Slug, cancellationToken: cancellationToken))
       {
          throw new DuplicateSlugException(tag.Slug);
@@ -484,7 +698,7 @@ public sealed class SqlProjectStore : IProjectStore
       CancellationToken cancellationToken = default)
    {
       ArgumentNullException.ThrowIfNull(tag);
-      if(await _dbContext.SlugExistsAsync<ProjectStackTag>(
+      if (await _dbContext.SlugExistsAsync<ProjectStackTag>(
          tag.Slug, cancellationToken: cancellationToken))
       {
          throw new DuplicateSlugException(tag.Slug);
@@ -560,6 +774,92 @@ public sealed class SqlProjectStore : IProjectStore
          .Include(project => project.StackTagLinks)
             .ThenInclude(link => link.ProjectStackTag);
    }
+
+   private static void ReplaceProjectTagLinks(
+      Project project,
+      IEnumerable<int> tagIds)
+   {
+      project.TagLinks.Clear();
+      foreach (int tagId in tagIds.Distinct())
+      {
+         project.TagLinks.Add(new ProjectTagLink()
+         {
+            ProjectId = project.Id,
+            ProjectTagId = tagId,
+         });
+      }
+   }
+
+   private static void ReplaceProjectStackTagLinks(
+      Project project,
+      IEnumerable<int> stackIds)
+   {
+      project.StackTagLinks.Clear();
+      foreach (int stackId in stackIds.Distinct())
+      {
+         project.StackTagLinks.Add(new ProjectStackTagLink()
+         {
+            ProjectId = project.Id,
+            ProjectStackTagId = stackId,
+         });
+      }
+   }
+
+   private async Task<int> GetRequiredRoleIdAsync(
+      string roleSlug,
+      CancellationToken cancellationToken)
+   {
+      int? roleId = await GetRequiredProjectAssetRoleIdAsync(
+         roleSlug, cancellationToken);
+
+      if (roleId is null)
+      {
+         throw new InvalidOperationException(
+            $"Required project asset role '{roleSlug}' was not found.");
+      }
+
+      return roleId.Value;
+   }
+
+   private static void ReplaceProjectInlineAssetLinks(
+      Project project,
+      IReadOnlyList<ProjectAssetLink> assetLinks)
+   {
+      var existingInlineLinks = project.AssetLinks
+         .Where(link => !string.IsNullOrWhiteSpace(link.ReferenceKey))
+         .ToList();
+
+      foreach (var existingLink in existingInlineLinks)
+      {
+         project.AssetLinks.Remove(existingLink);
+      }
+
+      int sortOrder = 0;
+
+      foreach (var assetLink in assetLinks
+         .Where(link => !string.IsNullOrWhiteSpace(link.ReferenceKey))
+         .GroupBy(link => new
+         {
+            link.SiteAssetId,
+            link.ProjectAssetRoleId,
+         })
+         .Select(group => group.First()))
+      {
+         project.AssetLinks.Add(new ProjectAssetLink()
+         {
+            ProjectId = project.Id,
+            SiteAssetId = assetLink.SiteAssetId,
+            ProjectAssetRoleId = assetLink.ProjectAssetRoleId,
+            ReferenceKey = assetLink.ReferenceKey,
+            Caption = assetLink.Caption,
+            AltTextOverride = assetLink.AltTextOverride,
+            SortOrder = sortOrder++,
+         });
+      }
+   }
+
+   private const string _detailsContentRoleSlug = "details-content";
+   private const string _detailsContentType = "text/markdown";
 
    private readonly ILogger<SqlProjectStore> _logger;
    private readonly SiteDbContext _dbContext;

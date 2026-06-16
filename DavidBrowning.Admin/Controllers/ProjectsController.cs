@@ -1,15 +1,16 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Projects;
 using DavidBrowning.Infrastructure;
+using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
@@ -22,12 +23,14 @@ public partial class ProjectsController : Controller
 {
    public ProjectsController(
       ISlugService slugService,
+      IContentStore contentStore,
       IProjectStore projectStore,
       IUncategorizedStore uncategorizedStore,
       IMarkdownDocumentRenderer markdownRenderer)
    {
       _slugService = slugService;
       _projectStore = projectStore;
+      _contentStore = contentStore;
       _uncategorizedStore = uncategorizedStore;
       _markdownRenderer = markdownRenderer;
    }
@@ -156,11 +159,32 @@ public partial class ProjectsController : Controller
          return PartialView("ProjectContentEdit", model);
       }
 
+      var contentData = await _projectStore.GetProjectContentAsync(
+         model.ProjectId, cancellationToken);
+
+      if (contentData is null)
+      {
+         return NotFound();
+      }
+
       var assetLinks = await BuildProjectAssetLinksAsync(
          model.AssetLinks, cancellationToken);
 
+      string content = model.Content ?? string.Empty;
+      byte[] contentBytes = Encoding.UTF8.GetBytes(content);
+
+      string contentAssetKey = contentData.ContentAssetKey ??
+         CreateProjectDetailsAssetKey(contentData.ProjectSlug);
+
+      await using (var stream = new MemoryStream(contentBytes, writable: false))
+      {
+         await _contentStore.WriteAsync(
+            contentAssetKey, stream, cancellationToken);
+      }
+
       bool updated = await _projectStore.UpdateProjectContentAsync(
-         model.ProjectId, model.Content, assetLinks, cancellationToken);
+         model.ProjectId, contentAssetKey, contentBytes.LongLength,
+         assetLinks, cancellationToken);
 
       if (!updated)
       {
@@ -204,6 +228,52 @@ public partial class ProjectsController : Controller
       }
    }
 
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> ProjectDelete(
+      int id,
+      CancellationToken cancellationToken)
+   {
+      bool deleted = await _projectStore.DeleteProjectAsync(
+         id, cancellationToken);
+
+      if (!deleted)
+      {
+         return NotFound();
+      }
+
+      return RedirectToAction(nameof(Index));
+   }
+
+   [HttpPost]
+   [ValidateAntiForgeryToken]
+   public async Task<IActionResult> ProjectReorder(
+      ReorderListRequestViewModel model,
+      CancellationToken cancellationToken)
+   {
+      if (!ModelState.IsValid)
+      {
+         return BadRequest();
+      }
+
+      var idsInDisplayOrder = model.Items
+         .OrderBy(item => item.SortOrder)
+         .Select(item => item.Id)
+         .ToList();
+
+      try
+      {
+         await _projectStore.ReorderProjectsAsync(
+            idsInDisplayOrder, cancellationToken);
+      }
+      catch (InvalidOperationException)
+      {
+         return BadRequest();
+      }
+
+      return RedirectToAction(nameof(Index));
+   }
+
    private async Task<ProjectAdminIndexViewModel> GetIndexViewModelAsync(
       CancellationToken cancellationToken)
    {
@@ -215,7 +285,7 @@ public partial class ProjectsController : Controller
          Visibilities = await GetVisibilityPanelAsync(cancellationToken),
          Tags = await GetTagPanelAsync(cancellationToken),
          StackTags = await GetStackTagPanelAsync(cancellationToken),
-         Projects = await GetProjectListViewModelAsync(cancellationToken),
+         Projects = await GetProjectReorderListViewModelAsync(cancellationToken),
          LookupEditorOffcanvas = new AdminOffcanvasViewModel()
          {
             Id = ProjectAdminIds.ProjectLookupEditorOffcanvas,
@@ -247,11 +317,11 @@ public partial class ProjectsController : Controller
       int projectId,
       CancellationToken cancellationToken)
    {
-      var content = await _projectStore.GetProjectContentAsync(
+      var contentData = await _projectStore.GetProjectContentAsync(
          projectId,
          cancellationToken);
 
-      if (content is null)
+      if (contentData is null)
       {
          return new ProjectContentEditViewModel()
          {
@@ -260,13 +330,33 @@ public partial class ProjectsController : Controller
          };
       }
 
+      string? content = null;
+
+      if (!string.IsNullOrWhiteSpace(contentData.ContentAssetKey))
+      {
+         var storedAsset = await _contentStore.GetAssetAsync(
+            contentData.ContentAssetKey,
+            cancellationToken);
+
+         if (!storedAsset.ContentType.Equals(
+            _detailsContentType,
+            StringComparison.OrdinalIgnoreCase))
+         {
+            throw new InvalidOperationException(
+               $"Project details asset '{contentData.ContentAssetKey}' must use " +
+               $"content type '{_detailsContentType}'.");
+         }
+
+         content = storedAsset.Text ?? string.Empty;
+      }
+
       return new ProjectContentEditViewModel()
       {
-         ProjectId = projectId,
-         ContentAssetId = content.ContentAssetId,
-         ContentAssetKey = content.ContentAssetKey,
-         Content = content.Content,
-         AssetLinks = content.AssetLinks
+         ProjectId = contentData.ProjectId,
+         ContentAssetId = contentData.ContentAssetId,
+         ContentAssetKey = contentData.ContentAssetKey,
+         Content = content,
+         AssetLinks = contentData.AssetLinks
             .Where(link => !string.IsNullOrWhiteSpace(link.ReferenceKey))
             .Select(link => new AssetLinkInputViewModel()
             {
@@ -579,14 +669,54 @@ public partial class ProjectsController : Controller
       };
    }
 
-   private async Task<ProjectListViewModel> GetProjectListViewModelAsync(
+   private async Task<ReorderListViewModel> GetProjectReorderListViewModelAsync(
       CancellationToken cancellationToken)
    {
       var projects = await _projectStore.GetProjectsAsync(cancellationToken);
-      return new ProjectListViewModel()
+
+      return new ReorderListViewModel()
       {
-         Items = projects.Select(p => new ProjectListItemViewModel(p)).ToList(),
+         Title = "Projects",
+         Description = null,
+         RenderCard = false,
+         EmptyMessage = "No projects have been created.",
+         ReoderParameters = new ReoderParameters()
+         {
+            ReorderController = "Projects",
+            ReorderAction = nameof(ProjectReorder),
+         },
+         Items = projects
+            .OrderBy(project => project.SortOrder)
+            .ThenBy(project => project.Name)
+            .Select(project => new ReorderListItemViewModel()
+            {
+               Id = project.Id,
+               DisplayName = project.Name,
+               SecondaryText = GetProjectSecondaryText(project),
+               SortOrder = project.SortOrder,
+               IsActive = null,
+               EditController = "Projects",
+               EditAction = nameof(ProjectEdit),
+               DeleteController = "Projects",
+               DeleteAction = nameof(ProjectDelete),
+            })
+            .ToList(),
       };
+   }
+
+   private static string GetProjectSecondaryText(Project project)
+   {
+      var parts = new[]
+      {
+      project.Slug,
+      project.ProjectStatus?.DisplayName,
+      project.ProjectOrigin?.DisplayName,
+      project.ProjectType?.DisplayName,
+      project.ProjectVisibility?.DisplayName,
+   };
+
+      return string.Join(" · ", parts.Where(
+         part => !string.IsNullOrWhiteSpace(part)));
    }
 
    private async Task<IReadOnlyList<LookupOptionViewModel>> GetStatusOptionsAsync(
@@ -664,8 +794,17 @@ public partial class ProjectsController : Controller
       }).ToList();
    }
 
+   private static string CreateProjectDetailsAssetKey(string projectSlug)
+   {
+      ArgumentException.ThrowIfNullOrWhiteSpace(projectSlug);
+      return $"projects/{projectSlug}/details.md";
+   }
+
    private readonly ISlugService _slugService;
    private readonly IProjectStore _projectStore;
+   private readonly IContentStore _contentStore;
    private readonly IUncategorizedStore _uncategorizedStore;
    private readonly IMarkdownDocumentRenderer _markdownRenderer;
+
+   private const string _detailsContentType = "text/markdown";
 }
