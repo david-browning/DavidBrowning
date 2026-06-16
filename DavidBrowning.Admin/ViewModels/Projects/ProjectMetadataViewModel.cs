@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -27,6 +28,7 @@ public sealed class ProjectMetadataViewModel
    [StringLength(DataConstants.MaxSlugLength)]
    public string? Slug { get; set; }
 
+   [DisplayName("Project Name")]
    [Required]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? Name { get; set; }
@@ -34,21 +36,27 @@ public sealed class ProjectMetadataViewModel
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? Description { get; set; }
 
-   [Required]
+   [DisplayName("Project Status")]
+   [Required(ErrorMessage = "Select a project status.")]
    public int? ProjectStatusId { get; set; }
 
-   [Required]
+   [DisplayName("Project Name")]
+   [Required(ErrorMessage = "Select a project type.")]
    public int? ProjectTypeId { get; set; }
 
-   [Required]
+   [DisplayName("Project Origin")]
+   [Required(ErrorMessage = "Choose where the project came from.")]
    public int? ProjectOriginId { get; set; }
 
-   [Required]
+   [DisplayName("Project Visibility")]
+   [Required(ErrorMessage = "Select a project visibility.")]
    public int? ProjectVisibilityId { get; set; }
 
+   [DisplayName("Project Contribution Role")]
    [StringLength(DataConstants.MaxNameLength)]
    public string? Role { get; set; }
 
+   [DisplayName("Project Contribution Summary")]
    [StringLength(DataConstants.MaxMetadataLength)]
    public string? ContributionSummary { get; set; }
 
@@ -60,13 +68,16 @@ public sealed class ProjectMetadataViewModel
 
    public DateOnly? EndDate { get; set; }
 
+   [DisplayName("Project Date")]
    [StringLength(DataConstants.MaxLabelLength)]
    public string? DateDisplayText { get; set; }
 
+   [DisplayName("Project Tags")]
    [CollectionCount(0, MaximumCount = 20,
       ErrorMessage = "Select no more than 20 project tags.")]
    public List<int> ProjectTagIds { get; set; } = new();
 
+   [DisplayName("Technology Stacks")]
    [CollectionCount(0, MaximumCount = 20,
       ErrorMessage = "Select no more than 20 stack tags.")]
    public List<int> ProjectStackTagIds { get; set; } = new();
