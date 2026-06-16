@@ -1,0 +1,97 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectContentEditViewModel
+@using DavidBrowning.Admin.ViewModels.Projects
+
+<section class="card">
+	<div class="card-body position-relative">
+		<div id="@ProjectAdminIds.ProjectContentOverlay"
+			 class="admin-form-overlay htmx-indicator"
+			 role="status" aria-live="polite" aria-label="Saving project content">
+			<partial name="_Waiting" />
+		</div>
+
+		<div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+			<div>
+				<h2 class="h4 card-title mb-1">
+					Details content
+				</h2>
+				<p class="card-text text-secondary mb-0">
+					Edit the Markdown content rendered on the project detail page.
+				</p>
+			</div>
+		</div>
+
+		<form method="post"
+			  asp-controller="Projects"
+			  asp-action="ProjectContentSave"
+			  data-project-content-editor-form
+			  hx-post="@Url.Action("ProjectContentSave", "Projects")"
+			  hx-target="#@ProjectAdminIds.ProjectContentRegion"
+			  hx-swap="innerHTML"
+			  hx-indicator="#@ProjectAdminIds.ProjectContentOverlay">
+			@Html.AntiForgeryToken()
+
+			<fieldset>
+				<input asp-for="ProjectId" type="hidden" />
+				<input asp-for="ContentAssetId" type="hidden" />
+				<input asp-for="ContentAssetKey" type="hidden" />
+
+				<div asp-validation-summary="ModelOnly"
+					 class="text-danger mb-3">
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="Content" class="form-label"></label>
+					<textarea asp-for="Content"
+							  class="form-control font-monospace"
+							  rows="24" spellcheck="true"
+							  data-asset-insertable></textarea>
+					<span asp-validation-for="Content"
+						  class="text-danger"></span>
+				</div>
+
+				<div data-asset-link-inputs>
+					@foreach (var link in Model.AssetLinks)
+					{
+						<div data-asset-link-reference-key="@link.ReferenceKey">
+							<input type="hidden"
+								   name="AssetLinks.Index"
+								   value="@link.ReferenceKey" />
+
+							<input type="hidden"
+								   name="AssetLinks[@link.ReferenceKey].SiteAssetId"
+								   value="@link.SiteAssetId" />
+
+							<input type="hidden"
+								   name="AssetLinks[@link.ReferenceKey].ReferenceKey"
+								   value="@link.ReferenceKey" />
+
+							@if (!string.IsNullOrWhiteSpace(link.Caption))
+							{
+								<input type="hidden"
+									   name="AssetLinks[@link.ReferenceKey].Caption"
+									   value="@link.Caption" />
+							}
+
+							@if (!string.IsNullOrWhiteSpace(link.AltTextOverride))
+							{
+								<input type="hidden"
+									   name="AssetLinks[@link.ReferenceKey].AltTextOverride"
+									   value="@link.AltTextOverride" />
+							}
+						</div>
+					}
+				</div>
+
+				<div class="d-flex gap-2">
+					<button class="btn btn-primary" type="submit">
+						Save content
+					</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</section>

@@ -1,0 +1,18 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Models.RenderedContent?
+
+@if (Model is null)
+{
+	<div class="alert alert-secondary mb-0" role="status">
+		Preview has not been rendered yet.
+	</div>
+}
+else
+{
+	<div class="admin-preview-content border rounded p-3">
+		@Html.Raw(Model.Html)
+	</div>
+}

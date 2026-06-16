@@ -1,0 +1,55 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectLookupPanelViewModel
+@using DavidBrowning.Admin.ViewModels.Projects
+@using DavidBrowning.Admin.ViewModels
+
+@if (Model.Items.Count == 0)
+{
+	<div class="alert alert-secondary mb-0" role="status">
+		No items have been created.
+	</div>
+}
+else
+{
+	<div class="list-group">
+		@foreach (var item in Model.Items)
+		{
+			<div class="list-group-item">
+				<div class="d-flex justify-content-between gap-3">
+					<div>
+						<div class="fw-semibold">
+							@item.DisplayName
+						</div>
+						<div class="small text-secondary">
+							@item.Slug
+						</div>
+					</div>
+
+					<div class="d-flex gap-2 align-items-start">
+						@if (!item.IsActive)
+						{
+							<span class="badge text-bg-secondary">
+								Inactive
+							</span>
+						}
+
+						<button class="btn btn-sm btn-outline-primary"
+								type="button"
+								hx-get="@Url.Action(Model.EditAction, "Projects", new { id = item.Id })"
+								hx-target="@AdminOffcanvasIds.BodySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+								hx-swap="innerHTML"
+								hx-indicator="@AdminOffcanvasIds.OverlaySelector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+								data-bs-toggle="offcanvas"
+								data-bs-target="@AdminOffcanvasIds.Selector(ProjectAdminIds.ProjectLookupEditorOffcanvas)"
+								aria-controls="@ProjectAdminIds.ProjectLookupEditorOffcanvas">
+							Edit
+						</button>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+}

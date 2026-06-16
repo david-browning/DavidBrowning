@@ -1,0 +1,205 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Projects.ProjectMetadataViewModel
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Projects
+
+@{
+	bool isEditMode = Model.EditMode == EditModes.Edit;
+	string formAction = isEditMode
+	   ? nameof(ProjectsController.ProjectEdit)
+	   : nameof(ProjectsController.ProjectCreate);
+}
+
+<section class="card">
+	<div class="card-body">
+		<h2 class="h4 card-title">
+			Metadata
+		</h2>
+
+		<form method="post"
+			  asp-controller="Projects"
+			  asp-action="@formAction"
+			  data-project-metadata-form
+			  data-slug-editor
+			  hx-post="@Url.Action(formAction, "Projects")"
+			  hx-target="#@ProjectAdminIds.ProjectMetadataRegion"
+			  hx-swap="innerHTML">
+			@Html.AntiForgeryToken()
+
+			<fieldset>
+				@if (isEditMode)
+				{
+					<input asp-for="Id" type="hidden" />
+				}
+
+				<div asp-validation-summary="ModelOnly"
+					 class="alert alert-danger"
+					 role="alert">
+				</div>
+
+				<div class="row g-3">
+					<div class="col-12 col-lg-6">
+						<label asp-for="Name" class="form-label"></label>
+						<input asp-for="Name" class="form-control"
+							   autocomplete="off" data-slug-source />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+
+					<div class="col-12 col-lg-6">
+						<label asp-for="Slug" class="form-label"></label>
+						<input asp-for="Slug" class="form-control"
+							   autocomplete="off" data-slug-target />
+						<span asp-validation-for="Slug" class="text-danger"></span>
+					</div>
+
+					<div class="col-12">
+						<label asp-for="Description" class="form-label"></label>
+						<textarea asp-for="Description" class="form-control" rows="3"></textarea>
+						<span asp-validation-for="Description"
+							  class="text-danger"></span>
+					</div>
+
+					<div class="col-12 col-md-6 col-xl-3">
+						<label asp-for="ProjectStatusId" class="form-label">
+							Status
+						</label>
+						<select asp-for="ProjectStatusId" class="form-select"
+								asp-items="@(new SelectList(Model.StatusOptions, "Id", "DisplayName"))">
+						</select>
+					</div>
+
+					<div class="col-12 col-md-6 col-xl-3">
+						<label asp-for="ProjectTypeId" class="form-label">
+							Type
+						</label>
+						<select asp-for="ProjectTypeId" class="form-select"
+								asp-items="@(new SelectList(Model.TypeOptions, "Id", "DisplayName"))">
+						</select>
+					</div>
+
+					<div class="col-12 col-md-6 col-xl-3">
+						<label asp-for="ProjectOriginId" class="form-label">
+							Origin
+						</label>
+						<select asp-for="ProjectOriginId" class="form-select"
+								asp-items="@(new SelectList(Model.OriginOptions, "Id", "DisplayName"))">
+						</select>
+					</div>
+
+					<div class="col-12 col-md-6 col-xl-3">
+						<label asp-for="ProjectVisibilityId" class="form-label">
+							Visibility
+						</label>
+						<select asp-for="ProjectVisibilityId" class="form-select"
+								asp-items="@(new SelectList(Model.VisibilityOptions, "Id", "DisplayName"))">
+						</select>
+					</div>
+
+					<div class="col-12 col-md-6">
+						<label asp-for="Role" class="form-label"></label>
+						<input asp-for="Role" class="form-control"
+							   list="project-role-options" autocomplete="off" />
+
+						<datalist id="project-role-options">
+							<option value="Creator"></option>
+							<option value="Developer"></option>
+							<option value="Engineer"></option>
+							<option value="Release Driver"></option>
+							<option value="Tools Engineer"></option>
+							<option value="Maintainer"></option>
+							<option value="Contributor"></option>
+						</datalist>
+					</div>
+
+					<div class="col-12 col-md-6">
+						<label asp-for="DateDisplayText" class="form-label"></label>
+						<input asp-for="DateDisplayText" class="form-control" />
+					</div>
+
+					<div class="col-12">
+						<label asp-for="ContributionSummary" class="form-label"></label>
+						<textarea asp-for="ContributionSummary"
+								  class="form-control" rows="3"></textarea>
+					</div>
+
+					<div class="col-12 col-md-4">
+						<label asp-for="StartDate" class="form-label"></label>
+						<input asp-for="StartDate" type="date" class="form-control" />
+					</div>
+
+					<div class="col-12 col-md-4">
+						<label asp-for="EndDate" class="form-label"></label>
+						<input asp-for="EndDate" type="date" class="form-control" />
+					</div>
+
+					<div class="col-12 col-md-4">
+						<label asp-for="SortOrder" class="form-label"></label>
+						<input asp-for="SortOrder" type="number" class="form-control" />
+					</div>
+
+					<div class="col-12">
+						<div class="form-check">
+							<input asp-for="IsFeatured" class="form-check-input"
+								   type="checkbox" />
+							<label asp-for="IsFeatured" class="form-check-label">
+								Mark as featured project
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<hr />
+
+				<div class="row g-4">
+					<div class="col-12 col-lg-6">
+						<h3 class="h6">
+							Project tags
+						</h3>
+
+						@foreach (var tag in Model.TagOptions)
+						{
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox"
+									   name="ProjectTagIds" value="@tag.Id"
+									   checked="@Model.ProjectTagIds.Contains(tag.Id)"
+									   id="project-tag-@tag.Id" />
+								<label class="form-check-label" for="project-tag-@tag.Id">
+									@tag.DisplayName
+								</label>
+							</div>
+						}
+					</div>
+
+					<div class="col-12 col-lg-6">
+						<h3 class="h6">
+							Stack tags
+						</h3>
+
+						@foreach (var tag in Model.StackTagOptions)
+						{
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox"
+									   name="ProjectStackTagIds" value="@tag.Id"
+									   checked="@Model.ProjectStackTagIds.Contains(tag.Id)"
+									   id="project-stack-tag-@tag.Id" />
+								<label class="form-check-label" for="project-stack-tag-@tag.Id">
+									@tag.DisplayName
+								</label>
+							</div>
+						}
+					</div>
+				</div>
+
+				<div class="mt-4">
+					<button class="btn btn-primary" type="submit">
+						Save metadata
+					</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</section>
