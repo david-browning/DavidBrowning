@@ -1,5 +1,265 @@
 ﻿@*
-   Copyright Â© 2026 David Browning. All rights reserved.
+   Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Models.Error.WebsiteError
+
+@{
+	string stackTraceId = $"error-stack-trace-{Model.Id}";
+	string routeValuesId = $"error-route-values-{Model.Id}";
+}
+
+@functions {
+	private static string Display(string? value)
+	{
+		return string.IsNullOrWhiteSpace(value)
+		   ? "—"
+		   : value;
+	}
+}
+
+<div class="d-grid gap-4 admin-error-details">
+	<section>
+		<h3 class="h6 admin-error-section-title">
+			Summary
+		</h3>
+
+		<dl class="admin-error-detail-list">
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Occurred</dt>
+				<dd class="admin-error-detail-value">
+					<time datetime="@Model.OccurredAtUtc.ToString("O")">
+						@Model.OccurredAtUtc.ToString("yyyy-MM-dd HH:mm:ss")
+					</time>
+					<span class="text-secondary">UTC</span>
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Handled</dt>
+				<dd class="admin-error-detail-value">
+					@(Model.IsHandled ? "Yes" : "No")
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Status code</dt>
+				<dd class="admin-error-detail-value">
+					@(Model.StatusCode?.ToString() ?? "—")
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Environment</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.EnvironmentName)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Application version</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.ApplicationVersion)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Machine</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.MachineName)
+				</dd>
+			</div>
+		</dl>
+	</section>
+
+	<section>
+		<h3 class="h6 admin-error-section-title">
+			Request
+		</h3>
+
+		<dl class="admin-error-detail-list">
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Trace identifier</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.TraceIdentifier)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Correlation ID</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.CorrelationId)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Method</dt>
+				<dd class="admin-error-detail-value">
+					@Display(Model.HttpMethod)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Path</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.Path)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Query string</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.QueryString)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Endpoint</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.EndpointName)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Route values</dt>
+				<dd class="admin-error-detail-value">
+					@if (string.IsNullOrWhiteSpace(Model.RouteValuesJson))
+					{
+						<span>—</span>
+					}
+					else
+					{
+						<div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+							<span class="small text-secondary">
+								JSON
+							</span>
+
+							<button class="btn btn-sm btn-outline-secondary"
+									type="button"
+									data-admin-copy-target="#@routeValuesId"
+									aria-label="Copy route values">
+								<i class="fa-regular fa-copy me-1" aria-hidden="true"></i>
+								<span data-admin-copy-label>Copy</span>
+							</button>
+						</div>
+
+						<pre class="admin-error-code-block border rounded p-2 mb-0"><code id="@routeValuesId">@Model.RouteValuesJson</code></pre>
+					}
+				</dd>
+			</div>
+		</dl>
+	</section>
+
+	<section>
+		<h3 class="h6 admin-error-section-title">
+			Exception
+		</h3>
+
+		<dl class="admin-error-detail-list">
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Type</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Model.ExceptionType
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Message</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Model.ExceptionMessage
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Source</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.ExceptionSource)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Inner type</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.InnerExceptionType)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Inner message</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.InnerExceptionMessage)
+				</dd>
+			</div>
+		</dl>
+	</section>
+
+	@if (!string.IsNullOrWhiteSpace(Model.StackTrace))
+	{
+		<section>
+			<div class="justify-content-between align-items-center gap-3 admin-error-section-title">
+				<h3 class="h6 mb-0">
+					Stack trace
+				</h3>
+
+				<button class="btn btn-sm btn-outline-secondary"
+						type="button"
+						data-admin-copy-target="#@stackTraceId"
+						aria-label="Copy stack trace">
+					<i class="fa-regular fa-copy me-1" aria-hidden="true"></i>
+					<span data-admin-copy-label>Copy</span>
+				</button>
+			</div>
+
+			<pre class="admin-error-code-block border rounded p-2 mb-0"><code id="@stackTraceId">@Model.StackTrace</code></pre>
+		</section>
+	}
+
+	<section>
+		<h3 class="h6 admin-error-section-title">
+			Client
+		</h3>
+
+		<dl class="admin-error-detail-list">
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">User</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.UserName)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Remote IP address</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.RemoteIpAddress)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">User agent</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.UserAgent)
+				</dd>
+			</div>
+
+			<div class="admin-error-detail-row">
+				<dt class="admin-error-detail-label">Referrer</dt>
+				<dd class="admin-error-detail-value text-break">
+					@Display(Model.Referrer)
+				</dd>
+			</div>
+		</dl>
+	</section>
+
+	@if (!string.IsNullOrWhiteSpace(Model.Notes))
+	{
+		<section>
+			<h3 class="h6 admin-error-section-title">
+				Notes
+			</h3>
+
+			<p class="mb-0 text-break">
+				@Model.Notes
+			</p>
+		</section>
+	}
+</div>

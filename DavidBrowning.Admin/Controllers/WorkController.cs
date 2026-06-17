@@ -41,18 +41,18 @@ public partial class WorkController : Controller
          Resume = await GetResumeIndexViewModelAsync(cancellationToken),
          CredentialPreview = credentials.Select(
             c => new ViewModels.Work.Credentials.PreviewViewModel()
-         {
+            {
                Id = c.Id,
                IssuingOrganization = c.IssuingOrganization,
                Name = c.Name,
-         }).ToList(),
+            }).ToList(),
          ExperiencePreview = experiences.Select(
             e => new ViewModels.Work.Experience.PreviewViewModel()
-         {
+            {
                CompanyName = e.CompanyName,
                Id = e.Id,
                Roles = e.Roles.ToList(),
-         }).ToList(),
+            }).ToList(),
       };
    }
 

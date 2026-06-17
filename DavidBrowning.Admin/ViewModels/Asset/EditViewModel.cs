@@ -78,7 +78,7 @@ public sealed class EditViewModel
    {
       ArgumentException.ThrowIfNullOrEmpty(AssetKey);
       ArgumentException.ThrowIfNullOrEmpty(ContentType);
-      if(SizeBytes is null)
+      if (SizeBytes is null)
       {
          throw new NullReferenceException(nameof(SizeBytes));
       }

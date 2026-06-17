@@ -1,7 +1,5 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.Text;
-using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
@@ -708,46 +706,167 @@ public sealed class SqlProjectStore : IProjectStore
       await _dbContext.SaveChangesAsync(cancellationToken);
    }
 
-   public Task<bool> UpdateProjectStatusAsync(
+   public async Task<bool> UpdateProjectStatusAsync(
       ProjectStatus status,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(status);
+      if (await _dbContext.SlugExistsAsync<ProjectStatus>(
+         status.Slug, excludedId: status.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(status.Slug);
+      }
+
+      var existing = await _dbContext.ProjectStatuses
+         .SingleOrDefaultAsync(e => e.Id == status.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.Slug = status.Slug;
+      existing.SortOrder = status.SortOrder;
+      existing.DisplayName = status.DisplayName;
+      existing.Description = status.Description;
+      existing.IsActive = status.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
-   public Task<bool> UpdateProjectOriginAsync(
+   public async Task<bool> UpdateProjectOriginAsync(
       ProjectOrigin origin,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+
+      ArgumentNullException.ThrowIfNull(origin);
+      if (await _dbContext.SlugExistsAsync<ProjectOrigin>(
+         origin.Slug, excludedId: origin.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(origin.Slug);
+      }
+
+      var existing = await _dbContext.ProjectOrigins
+         .SingleOrDefaultAsync(e => e.Id == origin.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.Slug = origin.Slug;
+      existing.SortOrder = origin.SortOrder;
+      existing.DisplayName = origin.DisplayName;
+      existing.Description = origin.Description;
+      existing.IsActive = origin.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
-   public Task<bool> UpdateProjectTypeAsync(
+   public async Task<bool> UpdateProjectTypeAsync(
       ProjectType type,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(type);
+      if (await _dbContext.SlugExistsAsync<ProjectType>(
+         type.Slug, excludedId: type.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(type.Slug);
+      }
+
+      var existing = await _dbContext.ProjectTypes
+         .SingleOrDefaultAsync(e => e.Id == type.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.Slug = type.Slug;
+      existing.SortOrder = type.SortOrder;
+      existing.DisplayName = type.DisplayName;
+      existing.Description = type.Description;
+      existing.IsActive = type.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
-   public Task<bool> UpdateProjectVisibilityAsync(
+   public async Task<bool> UpdateProjectVisibilityAsync(
       ProjectVisibility visibility,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(visibility);
+      if (await _dbContext.SlugExistsAsync<ProjectVisibility>(
+         visibility.Slug, excludedId: visibility.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(visibility.Slug);
+      }
+
+      var existing = await _dbContext.ProjectVisibilities
+         .SingleOrDefaultAsync(e => e.Id == visibility.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.Slug = visibility.Slug;
+      existing.SortOrder = visibility.SortOrder;
+      existing.DisplayName = visibility.DisplayName;
+      existing.Description = visibility.Description;
+      existing.IsActive = visibility.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
-   public Task<bool> UpdateProjectTagAsync(
+   public async Task<bool> UpdateProjectTagAsync(
       ProjectTag tag,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(tag);
+      if (await _dbContext.SlugExistsAsync<ProjectTag>(
+         tag.Slug, excludedId: tag.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
+      var existing = await _dbContext.ProjectTags
+         .SingleOrDefaultAsync(e => e.Id == tag.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.Slug = tag.Slug;
+      existing.SortOrder = tag.SortOrder;
+      existing.DisplayName = tag.DisplayName;
+      existing.Description = tag.Description;
+      existing.IsActive = tag.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
-   public Task<bool> UpdateProjectStackTagAsync(
+   public async Task<bool> UpdateProjectStackTagAsync(
       ProjectStackTag tag,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ArgumentNullException.ThrowIfNull(tag);
+      if (await _dbContext.SlugExistsAsync<ProjectStackTag>(
+         tag.Slug, excludedId: tag.Id, cancellationToken))
+      {
+         throw new DuplicateSlugException(tag.Slug);
+      }
+
+      var existing = await _dbContext.ProjectStackTags
+         .SingleOrDefaultAsync(e => e.Id == tag.Id, cancellationToken);
+      if (existing is null)
+      {
+         return false;
+      }
+
+      existing.Slug = tag.Slug;
+      existing.SortOrder = tag.SortOrder;
+      existing.DisplayName = tag.DisplayName;
+      existing.Description = tag.Description;
+      existing.IsActive = tag.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
    }
 
    private async Task<IQueryable<Project>> BuildPublishedProjectQueryAsync(

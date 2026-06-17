@@ -29,15 +29,15 @@ public static class WritingAdminIds
 
    public const string PostRevisionHistoryRegion = "post-revisions-region";
 
-   public const string PostRevisionContentRegion = 
+   public const string PostRevisionContentRegion =
       "post-revision-content-region";
 
    public const string PostMetadataOverlay = "post-metadata-overlay";
 
-   public const string PostRevisionContentOverlay = 
+   public const string PostRevisionContentOverlay =
       "post-revision-content-overlay";
 
-   public const string PostRevisionPreviewRegion = 
+   public const string PostRevisionPreviewRegion =
       "post-revision-content-preview-region";
 
    public const string PostRevisionPreviewBodyRegion =

@@ -11,4 +11,5 @@ public class IndexViewModel
    public required IReadOnlyList<WebsiteError> Errors { get; init; }
 
    public required PagerViewModel Pager { get; init; }
+   public required AdminOffcanvasViewModel DetailsOffcanvas { get; init; }
 }

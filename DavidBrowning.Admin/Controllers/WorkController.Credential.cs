@@ -27,7 +27,7 @@ public partial class WorkController
       EditViewModel model,
       CancellationToken cancellationToken)
    {
-      if(!ModelState.IsValid)
+      if (!ModelState.IsValid)
       {
          return PartialView(nameof(CredentialEdit), model);
       }
@@ -36,7 +36,7 @@ public partial class WorkController
       await _workStore.InsertCredentialAsync(cred, cancellationToken);
       ModelState.Clear();
       return PartialView(
-         "CredentialCreateRefresh", 
+         "CredentialCreateRefresh",
          await GetCredentialIndexViewModelAsync(null, cancellationToken));
    }
 
@@ -61,21 +61,21 @@ public partial class WorkController
       EditViewModel model,
       CancellationToken cancellationToken)
    {
-      if(!ModelState.IsValid)
+      if (!ModelState.IsValid)
       {
          return PartialView(nameof(CredentialEdit), model);
       }
       var cred = model.ToCredential();
       bool updated = await _workStore.UpdateCredentialAsync(
          cred, cancellationToken);
-      if(!updated)
+      if (!updated)
       {
          return NotFound();
       }
 
       Response.TriggerAdminOffcanvasClose(
          ViewModels.Work.WorkAdminIds.CredentialEditOffcanvas);
-      return PartialView("CredentialListRefresh", 
+      return PartialView("CredentialListRefresh",
          await GetCredentialListViewModelAsync(cancellationToken));
    }
 
@@ -86,7 +86,7 @@ public partial class WorkController
       CancellationToken cancellationToken)
    {
       var cred = await _workStore.GetCredentialAsync(id, cancellationToken);
-      if(cred is null)
+      if (cred is null)
       {
          return NotFound();
       }
@@ -169,17 +169,17 @@ public partial class WorkController
                ViewModels.Work.WorkAdminIds.CredentialEditOffcanvas,
 
             Items = credentials.Select(c => new ReorderListItemViewModel()
-               {
-                  Id = c.Id,
-                  DisplayName = c.Name,
-                  SecondaryText = c.IssuingOrganization,
-                  IsActive = c.IsActive,
-                  SortOrder = c.SortOrder,
-                  EditController = "Work",
-                  EditAction = nameof(CredentialEdit),
-                  DeleteController = "Work",
-                  DeleteAction = nameof(CredentialDelete),
-               })
+            {
+               Id = c.Id,
+               DisplayName = c.Name,
+               SecondaryText = c.IssuingOrganization,
+               IsActive = c.IsActive,
+               SortOrder = c.SortOrder,
+               EditController = "Work",
+               EditAction = nameof(CredentialEdit),
+               DeleteController = "Work",
+               DeleteAction = nameof(CredentialDelete),
+            })
                .ToList()
          }
       };

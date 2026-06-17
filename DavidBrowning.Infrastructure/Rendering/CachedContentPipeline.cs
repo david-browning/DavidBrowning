@@ -26,7 +26,7 @@ public sealed class CachedContentPipeline : IContentPipeline
 
       return _cache.GetOrCreateAsync(
          cacheKey,
-         token => _pipeline.GetRenderedContentAsync( assetKey, options, token),
+         token => _pipeline.GetRenderedContentAsync(assetKey, options, token),
          cancellationToken);
    }
 

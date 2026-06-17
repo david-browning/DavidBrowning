@@ -160,10 +160,9 @@ public class WritingController : Controller
       var pagedPosts = await _writingStore.GetPagedPublishedPostsAsync(
          page, _pageSize, cancellationToken);
 
-      IReadOnlyList<Post> featuredPosts =
-         page == 1
-            ? await _writingStore.GetFeaturedPostsAsync(cancellationToken)
-            : Array.Empty<Post>();
+      IReadOnlyList<Post> featuredPosts = page == 1 ?
+         await _writingStore.GetFeaturedPostsAsync(cancellationToken) :
+         Array.Empty<Post>();
 
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "Heros/Writing.json", cancellationToken);
@@ -179,11 +178,9 @@ public class WritingController : Controller
          Posts = pagedPosts.Items,
          FeaturedPosts = featuredPosts,
          Pager = new PagerViewModel(
-            currentPage: pagedPosts.Page,
-            totalPages: pagedPosts.TotalPages,
-            controller: "Writing",
-            indexAction: nameof(Index),
-            pageAction: nameof(Page)),
+            pagedPosts.Page,
+            (int)Math.Ceiling((double)pagedPosts.TotalCount / (double)_pageSize),
+            "Writing", nameof(Index), nameof(Page)),
          Seo = new()
          {
             Title = hero.Title,

@@ -13,7 +13,7 @@
 }
 else
 {
-	<ul class="list-group list-group-flush">
+	<ul class="list-group list-group-flush scrollable-list-panel">
 		@foreach (var style in Model.OrderBy(style => style.SortOrder).ThenBy(style => style.DisplayName))
 		{
 			<li class="list-group-item px-0">

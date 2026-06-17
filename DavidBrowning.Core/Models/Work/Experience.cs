@@ -12,7 +12,7 @@ namespace DavidBrowning.Models.Work;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(SortOrder))]
-public sealed class Experience : 
+public sealed class Experience :
    ISortableRecord,
    IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {
@@ -56,6 +56,6 @@ public sealed class Experience :
    /// </summary>
    public DateTime UpdatedAtUtc { get; set; }
 
-   public ICollection<ExperienceRole> Roles { get; set;  } =
+   public ICollection<ExperienceRole> Roles { get; set; } =
       new List<ExperienceRole>();
 }

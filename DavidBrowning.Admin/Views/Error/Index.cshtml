@@ -4,11 +4,11 @@
 *@
 @model DavidBrowning.Admin.ViewModels.Error.IndexViewModel
 
-
 <section>
 	<div class="container">
 		<partial name="List" model="Model.Errors" />
 		<partial name="_Pager" model="Model.Pager" />
 	</div>
 
+	<partial name="_AdminOffcanvas" model="Model.DetailsOffcanvas" />
 </section>

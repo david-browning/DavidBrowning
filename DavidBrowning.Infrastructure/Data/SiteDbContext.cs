@@ -92,7 +92,7 @@ public sealed partial class SiteDbContext : DbContext
    }
 
    public override Task<int> SaveChangesAsync(
-      bool acceptAllChangesOnSuccess, 
+      bool acceptAllChangesOnSuccess,
       CancellationToken cancellationToken = default)
    {
       SetTimestamps();

@@ -13,7 +13,7 @@ namespace DavidBrowning.Models;
 /// </summary>
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Slug), IsUnique = true)]
-public sealed class Interest : 
+public sealed class Interest :
    IQueryableSlug, ISortableRecord,
    IDateCreatedTrackedEntity, IDateUpdatedTrackedEntity
 {

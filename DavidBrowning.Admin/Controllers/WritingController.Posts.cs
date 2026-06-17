@@ -506,15 +506,4 @@ public partial class WritingController
          id = postId,
       });
    }
-
-   private const string PostMetadataEditView = "PostMetadataEdit";
-   private const string PostRevisionEditView = "PostRevisionEdit";
-   private const string PostRevisionEditRefreshView =
-      "PostRevisionEditRefresh";
-   private const string PostRevisionCreateRefreshView =
-      "PostRevisionCreateRefresh";
-   private const string PostRevisionPreviewBodyView =
-      "PostRevisionPreviewBody";
-   private const string PostRevisionPreviewErrorView =
-      "PostRevisionPreviewError";
 }

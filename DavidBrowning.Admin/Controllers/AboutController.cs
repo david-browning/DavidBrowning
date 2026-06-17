@@ -307,10 +307,10 @@ public sealed class AboutController : Controller
          };
 
       options.AddRange(posts.Select(post => new SelectListItem()
-         {
-            Value = post.Id.ToString(CultureInfo.InvariantCulture),
-            Text = post.Title,
-         }));
+      {
+         Value = post.Id.ToString(CultureInfo.InvariantCulture),
+         Text = post.Title,
+      }));
 
       return options;
    }

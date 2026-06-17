@@ -1,14 +1,9 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using DavidBrowning.Admin.Controllers;
 using DavidBrowning.Models;
-using DavidBrowning.Models.Work;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DavidBrowning.Admin.ViewModels.Work.Experience;
@@ -40,7 +35,7 @@ public sealed class EditViewModel
 
    [SetsRequiredMembers]
    public EditViewModel(
-      Models.Work.Experience experience, 
+      Models.Work.Experience experience,
       ReorderListViewModel roleModel)
    {
       EditMode = EditModes.Edit;
