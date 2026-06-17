@@ -26,7 +26,7 @@ public interface IContentStore
       string assetKey,
       CancellationToken cancellationToken = default);
 
-   Task<bool> AssetExists(
+   Task<bool> AssetExistsAsync(
       string assetKey,
       CancellationToken cancellationToken = default);
 

@@ -61,13 +61,13 @@ public sealed class LocalContentStore : IContentStore
       };
    }
 
-   public async Task<bool> AssetExists(
+   public Task<bool> AssetExistsAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
       cancellationToken.ThrowIfCancellationRequested();
       var fullPath = GetAssetFullPath(assetKey);
-      return File.Exists(fullPath);
+      return Task.FromResult(File.Exists(fullPath));
    }
 
    public Task<Stream> OpenReadAsync(

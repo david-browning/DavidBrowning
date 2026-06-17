@@ -46,7 +46,8 @@ public class StructuredDataBuilder
 
    public JsonObject CreateProjectMetadata(Project project)
    {
-      return null;
+      return new JsonObject();
+
    }
 
    private JsonObject CreateAuthor()
