@@ -83,9 +83,9 @@ public static partial class Program
                "Secrets:Provider is KeyVault, but KeyVault:Uri is missing.");
          }
 
-         builder.Configuration.AddAzureKeyVault(
-            new Uri(keyVaultUriText),
-            new DefaultAzureCredential());
+         //builder.Configuration.AddAzureKeyVault(
+         //   new Uri(keyVaultUriText),
+         //   new DefaultAzureCredential());
          return;
       }
 

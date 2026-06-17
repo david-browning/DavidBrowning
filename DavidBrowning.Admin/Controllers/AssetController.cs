@@ -174,6 +174,28 @@ public class AssetController : Controller
       return File(content, asset.ContentType, asset.OriginalFileName);
    }
 
+   [HttpGet]
+   public async Task<IActionResult> TestBlobContentStore(
+      [FromServices] IContentStore contentStore,
+      CancellationToken cancellationToken)
+   {
+      const string assetKey = "tests/blob-store-smoke-test.txt";
+      await using var stream = new MemoryStream(
+         System.Text.Encoding.UTF8.GetBytes("Hello from AzureBlobContentStore."));
+      ContentWriteResults writeResult = await contentStore.WriteAsync(
+         assetKey, stream, cancellationToken);
+      StoredAsset asset = await contentStore.GetAssetAsync(
+         assetKey, cancellationToken);
+
+      return Content(
+         $"Write result: {writeResult}\n" +
+         $"Asset key: {asset.AssetKey}\n" +
+         $"Content type: {asset.ContentType}\n" +
+         $"Content length: {asset.ContentLength}\n" +
+         $"Text: {asset.Text}",
+         "text/plain");
+   }
+
    private async Task<IndexViewModel> GetIndexModelAsync(
       EditViewModel? existingCreateModel,
       CancellationToken cancellationToken)
