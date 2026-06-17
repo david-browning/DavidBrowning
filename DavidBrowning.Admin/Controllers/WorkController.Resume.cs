@@ -50,7 +50,7 @@ public partial class WorkController
    private async Task<IndexViewModel> GetResumeIndexViewModelAsync(
       CancellationToken cancellationToken)
    {
-      if (await _contentStore.AssetExists(FixedAssetKeys.ResumePDFAssetKey))
+      if (await _contentStore.AssetExistsAsync(FixedAssetKeys.ResumePDFAssetKey))
       {
          var resumeFile = await _contentStore.GetAssetAsync(
             FixedAssetKeys.ResumePDFAssetKey, cancellationToken);

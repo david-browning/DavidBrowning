@@ -12,7 +12,7 @@ public sealed class AzureBlobContentStore : IContentStore
       throw new NotImplementedException();
    }
 
-   public Task<bool> AssetExists(
+   public Task<bool> AssetExistsAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
