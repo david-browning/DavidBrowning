@@ -1,43 +1,163 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using DavidBrowning.Infrastructure.Options;
+using Microsoft.Extensions.Options;
+
 namespace DavidBrowning.Infrastructure.Assets;
 
 public sealed class AzureBlobContentStore : IContentStore
 {
-   public Task<StoredAsset> GetAssetAsync(
+   public AzureBlobContentStore(
+      IOptions<AzureBlobContentStoreOptions> options)
+   {
+      ArgumentNullException.ThrowIfNull(options);
+
+      var storeOptions = options.Value;
+      ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ConnectionString);
+      ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ContainerName);
+      _containerClient = new BlobContainerClient(
+         storeOptions.ConnectionString, storeOptions.ContainerName);
+   }
+
+   public async Task<StoredAsset> GetAssetAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ValidateAssetKey(assetKey);
+      BlobClient blobClient = _containerClient.GetBlobClient(assetKey);
+
+      try
+      {
+         BlobProperties properties = await blobClient.GetPropertiesAsync(
+            cancellationToken: cancellationToken);
+
+         string contentType = string.IsNullOrWhiteSpace(properties.ContentType) ?
+            AssetHelpers.GetContentType(assetKey) : properties.ContentType;
+
+         string? text = null;
+         if (AssetHelpers.IsTextContentType(contentType))
+         {
+            BlobDownloadResult download = await blobClient.DownloadContentAsync(
+               cancellationToken);
+            text = download.Content.ToString();
+         }
+
+         return new StoredAsset()
+         {
+            AssetKey = assetKey,
+            ContentType = contentType,
+            ContentLength = properties.ContentLength,
+            Text = text,
+            EntityTag = properties.ETag.ToString(),
+            LastModifiedUtc = properties.LastModified,
+         };
+      }
+      catch (RequestFailedException ex) when (ex.Status == 404)
+      {
+         throw new FileNotFoundException(
+            "Blob asset not found. Asset keys are case-sensitive.",
+            assetKey, ex);
+      }
    }
 
-   public Task<bool> AssetExistsAsync(
+   public async Task<bool> AssetExistsAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ValidateAssetKey(assetKey);
+      BlobClient blobClient = _containerClient.GetBlobClient(assetKey);
+      Response<bool> exists = await blobClient.ExistsAsync(cancellationToken);
+      return exists.Value;
    }
 
-   public Task<Stream> OpenReadAsync(
+   public async Task<Stream> OpenReadAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ValidateAssetKey(assetKey);
+      BlobClient blobClient = _containerClient.GetBlobClient(assetKey);
+
+      try
+      {
+         Response<BlobDownloadStreamingResult> download =
+            await blobClient.DownloadStreamingAsync(
+               cancellationToken: cancellationToken);
+         return download.Value.Content;
+      }
+      catch (RequestFailedException ex) when (ex.Status == 404)
+      {
+         throw new FileNotFoundException(
+            "Blob asset not found. Asset keys are case-sensitive.",
+            assetKey, ex);
+      }
    }
 
-   public Task<ContentWriteResults> WriteAsync(string assetKey,
-      Stream
-      contentStream,
+   public async Task<ContentWriteResults> WriteAsync(
+      string assetKey,
+      Stream contentStream,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ValidateAssetKey(assetKey);
+      ArgumentNullException.ThrowIfNull(contentStream);
+
+      await _containerClient.CreateIfNotExistsAsync(
+         cancellationToken: cancellationToken);
+      BlobClient blobClient = _containerClient.GetBlobClient(assetKey);
+      bool existed = await blobClient.ExistsAsync(cancellationToken);
+      if (contentStream.CanSeek)
+      {
+         contentStream.Position = 0;
+      }
+
+      var uploadOptions = new BlobUploadOptions()
+      {
+         HttpHeaders = new BlobHttpHeaders()
+         {
+            ContentType = AssetHelpers.GetContentType(assetKey),
+         },
+      };
+
+      await blobClient.UploadAsync(
+         contentStream, uploadOptions, cancellationToken);
+      return existed ?
+         ContentWriteResults.Overwritten : ContentWriteResults.CreatedNew;
    }
 
-   public Task DeleteFileAsync(
+   public async Task DeleteFileAsync(
       string assetKey,
       CancellationToken cancellationToken = default)
    {
-      throw new NotImplementedException();
+      ValidateAssetKey(assetKey);
+      BlobClient blobClient = _containerClient.GetBlobClient(assetKey);
+      await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
    }
+
+   private static void ValidateAssetKey(string assetKey)
+   {
+      ArgumentException.ThrowIfNullOrWhiteSpace(assetKey);
+
+      if (assetKey.StartsWith('/') || assetKey.StartsWith('\\'))
+      {
+         throw new ArgumentException(
+            "Asset keys cannot begin with a slash.", nameof(assetKey));
+      }
+
+      if (assetKey.Contains("..", StringComparison.Ordinal))
+      {
+         throw new InvalidOperationException(
+            $"Asset key contains an invalid path segment: '{assetKey}'.");
+      }
+
+      if (Path.IsPathRooted(assetKey))
+      {
+         throw new ArgumentException(
+            "Asset keys must not be rooted file paths.", nameof(assetKey));
+      }
+   }
+
+   private readonly BlobContainerClient _containerClient;
 }

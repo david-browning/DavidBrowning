@@ -79,6 +79,12 @@ public static class ServiceCollectionExtensions
       services.Configure<SiteMetadataOptions>(
          configuration.GetSection("MetadataOptions"));
 
+      services.Configure<AzureBlobContentStoreOptions>(
+         configuration.GetSection(
+            $"{ConfigurationHelpers.StoresSectionName}:" +
+            $"{ConfigurationHelpers.ContentStoreName}:" +
+            $"{ConfigurationHelpers.AzureStorageBlobsProviderName}"));
+
       return services;
 
    }
