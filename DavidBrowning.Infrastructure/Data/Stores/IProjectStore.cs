@@ -132,7 +132,7 @@ public interface IProjectStore
       CancellationToken cancellationToken = default);
 
    Task<int> InsertProjectAsync(
-      Project project, 
+      Project project,
       IList<int> projectTags,
       IList<int> stackIds,
       CancellationToken cancellationToken = default);
@@ -162,27 +162,27 @@ public interface IProjectStore
       CancellationToken cancellationToken = default);
 
    Task<ProjectStatus?> GetProjectStatusAsync(
-      int id, 
+      int id,
       CancellationToken token = default);
 
    Task<ProjectOrigin?> GetProjectOriginAsync(
-      int id, 
+      int id,
       CancellationToken token = default);
-   
+
    Task<ProjectType?> GetProjectTypeAsync(
-      int id, 
+      int id,
       CancellationToken token = default);
-   
+
    Task<ProjectVisibility?> GetProjectVisibilityAsync(
-      int id, 
+      int id,
       CancellationToken token = default);
-   
+
    Task<ProjectTag?> GetProjectTagAsync(
-      int id, 
+      int id,
       CancellationToken token = default);
-   
+
    Task<ProjectStackTag?> GetProjectStackTagAsync(
-      int id, 
+      int id,
       CancellationToken token = default);
 
    Task InsertProjectStatusAsync(

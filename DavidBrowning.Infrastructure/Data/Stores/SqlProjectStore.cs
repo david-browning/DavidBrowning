@@ -855,7 +855,7 @@ public sealed class SqlProjectStore : IProjectStore
 
       var existing = await _dbContext.ProjectStackTags
          .SingleOrDefaultAsync(e => e.Id == tag.Id, cancellationToken);
-      if(existing is null)
+      if (existing is null)
       {
          return false;
       }

@@ -1,8 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace DavidBrowning.Infrastructure.Validators;
@@ -69,7 +67,7 @@ public sealed class CollectionCountAttribute : ValidationAttribute
 
    public override string FormatErrorMessage(string name)
    {
-      if(!string.IsNullOrEmpty(ErrorMessage))
+      if (!string.IsNullOrEmpty(ErrorMessage))
       {
          return ErrorMessage;
       }

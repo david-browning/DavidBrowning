@@ -109,8 +109,8 @@ public class ErrorController : Controller
       {
          Errors = pagedErrors.Items,
          Pager = new PagerViewModel(
-            page, 
-            (int)Math.Ceiling((double)pagedErrors.TotalCount / (double)_pageSize), 
+            page,
+            (int)Math.Ceiling((double)pagedErrors.TotalCount / (double)_pageSize),
             "Error",
             nameof(Index), nameof(Page)),
          DetailsOffcanvas = new AdminOffcanvasViewModel()

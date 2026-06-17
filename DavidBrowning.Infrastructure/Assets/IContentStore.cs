@@ -38,11 +38,11 @@ public interface IContentStore
       CancellationToken cancellationToken = default);
 
    Task<ContentWriteResults> WriteAsync(
-      string assetKey, 
-      Stream contentStream, 
+      string assetKey,
+      Stream contentStream,
       CancellationToken cancellationToken = default);
 
    Task DeleteFileAsync(
-      string assetKey, 
+      string assetKey,
       CancellationToken cancellationToken = default);
 }

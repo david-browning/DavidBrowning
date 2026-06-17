@@ -160,8 +160,8 @@ public class WritingController : Controller
       var pagedPosts = await _writingStore.GetPagedPublishedPostsAsync(
          page, _pageSize, cancellationToken);
 
-      IReadOnlyList<Post> featuredPosts = page == 1 ? 
-         await _writingStore.GetFeaturedPostsAsync(cancellationToken) : 
+      IReadOnlyList<Post> featuredPosts = page == 1 ?
+         await _writingStore.GetFeaturedPostsAsync(cancellationToken) :
          Array.Empty<Post>();
 
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(

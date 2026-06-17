@@ -30,8 +30,8 @@ public sealed class AzureBlobContentStore : IContentStore
       Stream
       contentStream,
       CancellationToken cancellationToken = default)
-   { 
-      throw new NotImplementedException(); 
+   {
+      throw new NotImplementedException();
    }
 
    public Task DeleteFileAsync(

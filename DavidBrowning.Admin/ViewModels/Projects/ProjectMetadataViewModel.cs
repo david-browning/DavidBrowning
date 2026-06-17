@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Infrastructure.Validators;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;

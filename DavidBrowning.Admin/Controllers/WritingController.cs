@@ -126,7 +126,7 @@ public partial class WritingController : Controller
       {
          await _writingStore.InsertTagAsync(model.ToTag(), cancellationToken);
       }
-      catch(DuplicateSlugException)
+      catch (DuplicateSlugException)
       {
          ModelState.AddModelError(nameof(model.Slug),
             "Another post tag already uses this slug.");

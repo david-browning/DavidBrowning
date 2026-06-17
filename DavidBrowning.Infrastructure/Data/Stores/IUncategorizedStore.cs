@@ -34,10 +34,10 @@ public interface IUncategorizedStore
       CancellationToken cancellationToken = default);
 
    Task<IReadOnlyList<SiteAsset>> GetSiteAssetsAsync(
-      CancellationToken cancellationToken= default);
+      CancellationToken cancellationToken = default);
 
    Task<SiteAsset?> GetAssetAsync(
-      int id, 
+      int id,
       CancellationToken cancellationToken = default);
 
    Task<bool> DeleteAssetAsync(

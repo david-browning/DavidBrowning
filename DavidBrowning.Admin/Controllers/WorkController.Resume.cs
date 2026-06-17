@@ -79,7 +79,7 @@ public partial class WorkController
    {
       if (model.UploadedFile is null || model.UploadedFile.Length == 0)
       {
-         ModelState.AddModelError(nameof(model.UploadedFile), 
+         ModelState.AddModelError(nameof(model.UploadedFile),
             "Select a PDF file to upload.");
          return;
       }
@@ -90,23 +90,23 @@ public partial class WorkController
          if (model.UploadedFile.Length >
              maximumResumeSizeBytes)
          {
-            ModelState.AddModelError(nameof(model.UploadedFile), 
+            ModelState.AddModelError(nameof(model.UploadedFile),
                "The resume must be 5 MB or smaller.");
             return;
          }
 
-         if (!string.Equals(Path.GetExtension(model.UploadedFile.FileName), 
+         if (!string.Equals(Path.GetExtension(model.UploadedFile.FileName),
             ".pdf", StringComparison.OrdinalIgnoreCase))
          {
-            ModelState.AddModelError(nameof(model.UploadedFile), 
+            ModelState.AddModelError(nameof(model.UploadedFile),
                "The selected file must have a .pdf extension.");
             return;
          }
 
-         if (!string.Equals(model.UploadedFile.ContentType, "application/pdf", 
+         if (!string.Equals(model.UploadedFile.ContentType, "application/pdf",
             StringComparison.OrdinalIgnoreCase))
          {
-            ModelState.AddModelError(nameof(model.UploadedFile), 
+            ModelState.AddModelError(nameof(model.UploadedFile),
                "The selected file must have the PDF content type.");
             return;
          }
@@ -114,7 +114,7 @@ public partial class WorkController
          if (!await PdfFileValidator.HasPdfSignatureAsync(
             model.UploadedFile, cancellationToken))
          {
-            ModelState.AddModelError(nameof(model.UploadedFile), 
+            ModelState.AddModelError(nameof(model.UploadedFile),
                "The selected file does not contain a valid PDF signature.");
             return;
          }

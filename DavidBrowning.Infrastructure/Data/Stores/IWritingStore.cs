@@ -27,7 +27,7 @@ public interface IWritingStore
 
    Task<Post?> GetPostAsync(
       int id,
-      CancellationToken cancellationToken= default);
+      CancellationToken cancellationToken = default);
 
    Task<int> InsertPostAsync(
       Post post,
@@ -75,7 +75,7 @@ public interface IWritingStore
 
    Task<bool> UpdateTagAsync(
       WritingTag tag,
-      CancellationToken cancellationToken= default);
+      CancellationToken cancellationToken = default);
 
    Task<IReadOnlyList<Post>> GetPublishedPostsByTagSlugAsync(
       string tagSlug,

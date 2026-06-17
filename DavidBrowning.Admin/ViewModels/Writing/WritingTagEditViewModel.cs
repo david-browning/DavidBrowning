@@ -1,9 +1,9 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
-using System.ComponentModel.DataAnnotations;
-using DavidBrowning.Models.Writing;
-using DavidBrowning.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
+using DavidBrowning.Models;
+using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Admin.ViewModels.Writing;
 
