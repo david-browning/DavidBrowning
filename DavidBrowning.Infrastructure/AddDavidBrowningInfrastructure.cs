@@ -111,11 +111,7 @@ public static class ServiceCollectionExtensions
       // Configure how to get content
       string contentStoreProvider = GetConfiguredStoreProvider(
          configuration, ConfigurationHelpers.ContentStoreName, ConfigurationHelpers.DummyProviderName);
-      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.DummyProviderName))
-      {
-         services.AddSingleton<IContentStore, DummyContentStore>();
-      }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
+      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
       {
          services.AddSingleton<IContentStore, LocalContentStore>();
       }
@@ -411,11 +407,7 @@ public static class ServiceCollectionExtensions
       // Configure how to get content
       string contentStoreProvider = GetConfiguredStoreProvider(
          configuration, ConfigurationHelpers.ContentStoreName, ConfigurationHelpers.DummyProviderName);
-      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.DummyProviderName))
-      {
-         services.AddSingleton<IContentStore, DummyContentStore>();
-      }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
+      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
       {
          services.AddSingleton<IContentStore, LocalContentStore>();
       }

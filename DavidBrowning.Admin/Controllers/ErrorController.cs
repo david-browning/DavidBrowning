@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using DavidBrowning.Admin.ViewModels;
 using DavidBrowning.Admin.ViewModels.Error;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Infrastructure.Data.Stores;
@@ -72,11 +73,17 @@ public class ErrorController : Controller
    }
 
    [HttpGet]
-   public Task<IActionResult> Details(
-      int id, 
+   public async Task<IActionResult> Details(
+      int id,
       CancellationToken cancellationToken)
    {
-      throw new NotImplementedException();
+      var error = await _errorStore.GetErrorAsync(id, cancellationToken);
+      if (error is null)
+      {
+         return NotFound();
+      }
+
+      return PartialView("Details", error);
    }
 
    private async Task<IActionResult> GetPageAsync(
@@ -103,10 +110,17 @@ public class ErrorController : Controller
          Errors = pagedErrors.Items,
          Pager = new PagerViewModel(
             page, 
-            pagedErrors.TotalCount, 
-            "Error", 
-            nameof(Index), 
-            nameof(Page)),
+            (int)Math.Ceiling((double)pagedErrors.TotalCount / (double)_pageSize), 
+            "Error",
+            nameof(Index), nameof(Page)),
+         DetailsOffcanvas = new AdminOffcanvasViewModel()
+         {
+            Id = ErrorAdminIds.ErrorDetailsOffcanvas,
+            Title = "Error details",
+            Placeholder = "Select an error to view details.",
+            LoadingText = "Loading error details...",
+            CssClass = "admin-offcanvas-wide",
+         },
       };
    }
 

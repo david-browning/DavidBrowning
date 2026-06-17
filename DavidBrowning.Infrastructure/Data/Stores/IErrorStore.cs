@@ -7,11 +7,6 @@ namespace DavidBrowning.Infrastructure.Data.Stores;
 
 public interface IErrorStore
 {
-   Task<PagedResult<WebsiteError>> GetErrorsAsync(
-      int page,
-      int pageSize,
-      CancellationToken cancellationToken = default);
-
    Task<PagedResult<WebsiteError>> GetPagedErrorsAsync(
       int page,
       int pageSize,

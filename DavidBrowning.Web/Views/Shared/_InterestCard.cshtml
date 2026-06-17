@@ -4,7 +4,6 @@
 @inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 @{
 	var icoClass = $"fa-solid {Model.IconCssClass} fa-2xl icon-accent";
-	var url = urlBuilder.GetDetailsUrl(Model.FeaturedPost!.Slug, "writing");
 }
 <article class="wb-card h-100">
 	<h3>@Model.Title</h3>
@@ -19,6 +18,7 @@
 
 	@if (Model.FeaturedPost is not null)
 	{
+		var url = urlBuilder.GetDetailsUrl(Model.FeaturedPost!.Slug, "writing");
 		<div class="mt-auto pt-3 pl-3">
 @* 			<p class="wb-kicker mb-2">
 				Featured writing
