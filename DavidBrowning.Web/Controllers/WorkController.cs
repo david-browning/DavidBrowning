@@ -82,7 +82,7 @@ public class WorkController : Controller
       CancellationToken cancellationToken)
    {
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/Work.json", cancellationToken);
+         "heros/work.json", cancellationToken);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);

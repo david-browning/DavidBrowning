@@ -15,13 +15,31 @@
          return;
       }
 
-      input.value = selectedIconCssClass;
-      preview.className = selectedIconCssClass;
+      input.value = selectedIconCssClass ?? "";
+
+      preview.replaceChildren();
+
+      if (selectedIconCssClass) {
+         const icon = document.createElement("i");
+         icon.className = selectedIconCssClass;
+         icon.setAttribute("aria-hidden", "true");
+         preview.appendChild(icon);
+
+         renderFontAwesomeIcon(preview);
+      }
 
       for (const option of options) {
          const isSelected = option.dataset.iconCss === selectedIconCssClass;
          option.classList.toggle("selected", isSelected);
          option.setAttribute("aria-selected", isSelected.toString());
+      }
+   }
+
+   function renderFontAwesomeIcon(root) {
+      const fontAwesome = window.FontAwesome;
+
+      if (fontAwesome?.dom?.i2svg instanceof Function) {
+         fontAwesome.dom.i2svg({ node: root });
       }
    }
 

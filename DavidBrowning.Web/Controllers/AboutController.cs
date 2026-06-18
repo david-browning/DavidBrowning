@@ -40,12 +40,12 @@ public class AboutController : Controller
       CancellationToken cancellationToken)
    {
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/About.json", cancellationToken);
+         "heros/about.json", cancellationToken);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);
       var profileImage = await _contentPipeline.GetRenderedContentAsync(
-         "Images/Me.jpg",
+         "images/me.jpg",
          new ContentRenderOptions()
          {
             AltText = "David Browning",
@@ -54,7 +54,7 @@ public class AboutController : Controller
          cancellationToken);
 
       var aboutMe = await _contentPipeline.GetRenderedContentAsync(
-         "Documents/About.txt", null, cancellationToken);
+         "documents/about.txt", null, cancellationToken);
 
       var interests = await _uncategorizedStore.GetInterestsAsync(
          cancellationToken);

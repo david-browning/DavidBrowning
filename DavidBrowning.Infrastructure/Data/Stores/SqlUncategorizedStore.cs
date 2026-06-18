@@ -16,6 +16,17 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
       _context = context;
    }
 
+   public async Task<IReadOnlyList<Interest>> GetAllInterestsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _context.Interests
+         .AsNoTracking()
+         .Include(interest => interest.FeaturedPost)
+         .OrderBy(interest => interest.SortOrder)
+         .ThenBy(interest => interest.DisplayName)
+         .ToListAsync(cancellationToken);
+   }
+
    public async Task<IReadOnlyList<Interest>> GetInterestsAsync(
       CancellationToken cancellationToken = default)
    {
@@ -24,6 +35,7 @@ public sealed class SqlUncategorizedStore : IUncategorizedStore
          .Include(interest => interest.FeaturedPost)
          .OrderBy(interest => interest.SortOrder)
          .ThenBy(interest => interest.DisplayName)
+         .Where(i => i.IsActive)
          .ToListAsync(cancellationToken);
    }
 

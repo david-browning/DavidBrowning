@@ -253,7 +253,7 @@ public sealed class AboutController : Controller
       CancellationToken cancellationToken)
    {
       IReadOnlyList<Interest> interests =
-         await _uncategorizedStore.GetInterestsAsync(cancellationToken);
+         await _uncategorizedStore.GetAllInterestsAsync(cancellationToken);
       return new InterestListViewModel()
       {
          ReorderList = new ReorderListViewModel
