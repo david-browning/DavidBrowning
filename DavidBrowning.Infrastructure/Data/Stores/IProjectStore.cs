@@ -14,6 +14,9 @@ public interface IProjectStore
       int pageSize,
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<ProjectLinkType>> GetProjectLinkTypesAsync(
+      CancellationToken cancellationToken = default);
+
    /// <summary>
    /// Get public projects that are marked with IsFeatued.
    /// </summary>

@@ -90,6 +90,16 @@ public sealed class SqlProjectStore : IProjectStore
       };
    }
 
+   public async Task<IReadOnlyList<ProjectLinkType>> GetProjectLinkTypesAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await _dbContext.ProjectLinkTypes
+         .AsNoTracking()
+         .OrderBy(type => type.SortOrder)
+         .ThenBy(type => type.DisplayName)
+         .ToListAsync(cancellationToken);
+   }
+
    public async Task<Project?> GetPublishedProjectBySlugAsync(
       string slug,
       CancellationToken cancellationToken = default)
@@ -360,6 +370,7 @@ public sealed class SqlProjectStore : IProjectStore
       var storedProject = await _dbContext.Projects
          .Include(project => project.TagLinks)
          .Include(project => project.StackTagLinks)
+         .Include(project => project.Links)
          .SingleOrDefaultAsync(
             existingProject => existingProject.Id == project.Id,
             cancellationToken);
@@ -385,6 +396,7 @@ public sealed class SqlProjectStore : IProjectStore
 
       ReplaceProjectTagLinks(storedProject, projectTags);
       ReplaceProjectStackTagLinks(storedProject, stackIds);
+      ReplaceProjectLinks(storedProject, project.Links);
 
       await _dbContext.SaveChangesAsync(cancellationToken);
       return true;
@@ -972,6 +984,27 @@ public sealed class SqlProjectStore : IProjectStore
             ReferenceKey = assetLink.ReferenceKey,
             Caption = assetLink.Caption,
             AltTextOverride = assetLink.AltTextOverride,
+            SortOrder = sortOrder++,
+         });
+      }
+   }
+
+   private static void ReplaceProjectLinks(
+      Project project,
+      IEnumerable<ProjectLink> links)
+   {
+      project.Links.Clear();
+      int sortOrder = 0;
+      foreach (var link in links
+         .Where(link => !string.IsNullOrWhiteSpace(link.Url))
+         .OrderBy(link => link.SortOrder))
+      {
+         project.Links.Add(new ProjectLink()
+         {
+            ProjectId = project.Id,
+            ProjectLinkTypeId = link.ProjectLinkTypeId,
+            Label = link.Label,
+            Url = link.Url,
             SortOrder = sortOrder++,
          });
       }

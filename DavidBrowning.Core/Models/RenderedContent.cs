@@ -16,4 +16,15 @@ public sealed class RenderedContent
    public required string OriginalContentType { get; init; }
 
    public required string Html { get; init; }
+
+   public static RenderedContent Empty { get
+      {
+         return new RenderedContent()
+         {
+            AssetKey = "empty-asset.txt",
+            Html = "<div></div>",
+            OriginalContentType = "text/plain"
+         };
+      }
+   }
 }

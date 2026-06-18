@@ -10,6 +10,9 @@ public sealed class StoredAsset
 {
    public required string AssetKey { get; init; }
 
+   /// <summary>
+   /// The MIME type.
+   /// </summary>
    public required string ContentType { get; init; }
 
    /// <summary>

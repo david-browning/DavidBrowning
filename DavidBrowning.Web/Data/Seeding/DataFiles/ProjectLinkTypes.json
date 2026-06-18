@@ -14,7 +14,8 @@
       "DisplayName": "Live Site",
       "Description": "Publicly hosted application or website.",
       "SortOrder": 20,
-      "IsActive": true
+      "IsActive": true,
+      "IconCssClass": "fa-solid fa-arrow-up-right-from-square"
    },
    {
       "Id": 3,

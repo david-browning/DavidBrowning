@@ -122,11 +122,11 @@ public class WritingController : Controller
          return NotFound();
       }
 
-      var revision = post.CurrentRevision ??
-         throw new InvalidOperationException(
-            "Published post is missing its current revision.");
-      var body = await _postRendered.RenderAsync(
-         revision, revision.AssetLinks.ToList(), cancellationToken);
+      PostRevision? revision = post.CurrentRevision;
+      RenderedContent body = revision is not null ?
+         await _postRendered.RenderAsync(
+            revision, revision.AssetLinks.ToList(), cancellationToken) :
+         RenderedContent.Empty;
       SeoMetadataViewModel seo = new()
       {
          Title = post.Title,
