@@ -47,7 +47,7 @@ public class HomeController : Controller
       CancellationToken cancellationToken)
    {
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/Home.json", cancellationToken);
+         "heros/home.json", cancellationToken);
       var interests = await _uncategorizedStore.GetInterestsAsync(
          cancellationToken);
       var index = DateOnly.FromDateTime(DateTime.UtcNow).DayNumber %

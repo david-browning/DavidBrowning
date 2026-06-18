@@ -14,7 +14,7 @@ namespace DavidBrowning.Admin.ViewModels;
 public sealed partial class FontAwesomeIconPickerViewModel
 {
    public const string DefaultAssetKey =
-      "Documents/fontawesome-icons.json";
+      "documents/fontawesome-icons.json";
 
    public required IReadOnlyList<string> SupportedIconCssClasses
    {

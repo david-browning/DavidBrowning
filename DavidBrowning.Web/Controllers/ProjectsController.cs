@@ -290,7 +290,7 @@ public class ProjectsController : Controller
       var all = await _projectStore.GetPublishedProjectsAsync(
          cancellationToken);
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/Projects.json", cancellationToken);
+         "heros/projects.json", cancellationToken);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);

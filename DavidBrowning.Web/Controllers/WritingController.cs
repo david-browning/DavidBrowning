@@ -165,7 +165,7 @@ public class WritingController : Controller
          Array.Empty<Post>();
 
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
-         "Heros/Writing.json", cancellationToken);
+         "heros/writing.json", cancellationToken);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);

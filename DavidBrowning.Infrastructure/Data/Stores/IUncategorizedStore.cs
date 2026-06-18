@@ -10,6 +10,9 @@ namespace DavidBrowning.Infrastructure.Data.Stores;
 /// </summary>
 public interface IUncategorizedStore
 {
+   Task<IReadOnlyList<Interest>> GetAllInterestsAsync(
+      CancellationToken cancellationToken = default);
+
    Task<IReadOnlyList<Interest>> GetInterestsAsync(
       CancellationToken cancellationToken = default);
 
