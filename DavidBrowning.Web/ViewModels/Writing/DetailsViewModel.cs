@@ -20,22 +20,17 @@ public class DetailsViewModel
       Subtitle = post.Subtitle;
       Summary = post.Summary;
       PostStyleDisplayName = post.PostStyle?.DisplayName ??
-         throw new InvalidOperationException(
-            "Post is missing its post style.");
+         throw new InvalidOperationException("Post is missing its post style.");
 
-      PublishedDateUtc = post.PublishedDateUtc;
-
-      var revision = post.CurrentRevision ??
-         throw new InvalidOperationException(
-            "Post is missing its current revision.");
-
-      CurrentRevisionId = revision.Id;
-      ContentFormat = revision.ContentFormat;
-      CreatedBy = revision.CreatedBy;
+      PublishedDateUtc = post.PublishedDateUtc ?? DateTime.MinValue;
       Body = body;
-
       TagLinks = post.Tags;
       Seo = seo;
+
+      ContentFormat = post.CurrentRevision is not null ?
+         post.CurrentRevision.ContentFormat : Models.ContentFormat.PlainText;
+      CreatedBy = post.CurrentRevision is not null ?
+         post.CurrentRevision.CreatedBy : "System";
    }
 
    public required string Title { get; set; }
@@ -48,8 +43,6 @@ public class DetailsViewModel
 
    public DateTimeOffset? PublishedDateUtc { get; set; }
 
-
-   public int? CurrentRevisionId { get; set; }
 
    public ContentFormat? ContentFormat { get; set; }
 

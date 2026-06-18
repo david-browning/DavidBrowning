@@ -13,7 +13,7 @@ namespace DavidBrowning.Admin.ViewModels.Asset;
 public sealed class ContentTypePickerViewModel
 {
    public const string DefaultAssetKey =
-      "Documents/content-types.json";
+      "documents/content-types.json";
 
    public required IReadOnlyList<ContentTypeOptionViewModel> Options
    {

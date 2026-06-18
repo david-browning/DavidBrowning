@@ -14,6 +14,7 @@ using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
 using Microsoft.AspNetCore.Mvc;
 
@@ -444,13 +445,14 @@ public partial class ProjectsController : Controller
       IReadOnlyList<AssetLinkInputViewModel> inputLinks,
       CancellationToken cancellationToken)
    {
-      var defaultAssetRoleId =
+      int? defaultAssetRoleId =
          await _projectStore.GetRequiredProjectAssetRoleIdAsync(
-            "inline-content", cancellationToken);
+            ProjectAssetRoleSlugs.DetailsContent, cancellationToken);
+
       if (defaultAssetRoleId is null)
       {
-         throw new ArgumentException(
-            "Could not find assets with \"inline-content\" role.");
+         throw new InvalidOperationException(
+            $"Required project asset role '{ProjectAssetRoleSlugs.DetailsContent}' was not found.");
       }
 
       var links = new List<ProjectAssetLink>();

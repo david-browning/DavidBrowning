@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ContentAssets\Documents\" />
+    <Folder Include="ContentAssets\documents\" />
   </ItemGroup>
 
   <ItemGroup>

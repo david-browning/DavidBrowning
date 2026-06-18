@@ -37,11 +37,9 @@ public sealed class MarkdownProjectContentRenderer
             "Project details content is missing its site asset.");
 
       var storedAsset = await _contentStore.GetAssetAsync(
-         contentAsset.AssetKey,
-         cancellationToken);
+         contentAsset.AssetKey, cancellationToken);
 
-      var contentType = AssetHelpers.GetMediaType(
-         storedAsset.ContentType);
+      var contentType = AssetHelpers.GetMediaType(storedAsset.ContentType);
 
       if (!contentType.EqualsOrdinalIgnoreCase(_markdownContentType))
       {
