@@ -137,7 +137,146 @@
 						<input asp-for="EndDate" type="date" class="form-control" />
 					</div>
 				</div>
-				<br/>
+
+				<br />
+
+				<div class="col-12" data-project-links-editor>
+					<hr />
+
+					<h3 class="h6 mb-2">
+						Project links
+					</h3>
+
+					<p class="text-secondary small mb-3">
+						Add external links for this project, such as a repository, live site, or documentation.
+					</p>
+
+					<div class="border rounded p-3 mb-3">
+						<div class="row g-3 align-items-end">
+							<div class="col-12 col-md-3">
+								<label class="form-label" for="project-link-type-input">
+									Type
+								</label>
+
+								<select class="form-select" id="project-link-type-input"
+										data-project-link-type-input>
+									<option value="">Select a type</option>
+									@foreach (var linkType in Model.LinkTypeOptions)
+									{
+										<option value="@linkType.Id">
+											@linkType.DisplayName
+										</option>
+									}
+								</select>
+							</div>
+
+							<div class="col-12 col-md-3">
+								<label class="form-label" for="project-link-label-input">
+									Label
+								</label>
+
+								<input class="form-control" id="project-link-label-input"
+									   type="text" autocomplete="off"
+									   placeholder="GitHub" data-project-link-label-input />
+							</div>
+
+							<div class="col-12 col-md-4">
+								<label class="form-label" for="project-link-url-input">
+									URL
+								</label>
+
+								<input class="form-control" id="project-link-url-input"
+									   type="url" autocomplete="off"
+									   placeholder="https://example.com" data-project-link-url-input />
+							</div>
+
+							<div class="col-12 col-md-2">
+								<button class="btn btn-outline-primary w-100"
+										type="button" data-project-link-add>
+									Add link
+								</button>
+							</div>
+						</div>
+
+						<div class="text-danger small mt-2 d-none"
+							 data-project-link-error>
+						</div>
+					</div>
+
+					<div class="list-group"
+						 data-project-link-list>
+						@for (int i = 0; i < Model.Links.Count; i++)
+						{
+							var link = Model.Links[i];
+							string linkTypeName = "Unknown";
+							foreach (var option in Model.LinkTypeOptions)
+							{
+								if (option.Id == link.ProjectLinkTypeId)
+								{
+									linkTypeName = option.DisplayName;
+									break;
+								}
+							}
+
+							<div class="list-group-item" data-project-link-item>
+								<input type="hidden" name="Links[@i].ProjectLinkTypeId"
+									   value="@link.ProjectLinkTypeId"
+									   data-project-link-field="ProjectLinkTypeId" />
+
+								<input type="hidden" name="Links[@i].Label"
+									   value="@link.Label" data-project-link-field="Label" />
+
+								<input type="hidden" name="Links[@i].Url"
+									   value="@link.Url" data-project-link-field="Url" />
+
+								<input type="hidden" name="Links[@i].SortOrder"
+									   value="@i" data-project-link-field="SortOrder" />
+
+								<div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+									<div class="min-width-0">
+										<div class="d-flex flex-wrap align-items-center gap-2">
+											<strong data-project-link-display-label>
+												@link.Label
+											</strong>
+
+											<span class="badge text-bg-secondary"
+												  data-project-link-display-type>
+												@linkTypeName
+											</span>
+										</div>
+
+										<div class="small text-break mt-1">
+											<a href="@link.Url" target="_blank"
+											   rel="noopener noreferrer" data-project-link-display-url>
+												@link.Url
+											</a>
+										</div>
+
+										<div class="mt-2">
+											@Html.ValidationMessage($"Links[{i}].ProjectLinkTypeId", "", new { @class = "text-danger d-block" })
+											@Html.ValidationMessage($"Links[{i}].Label", "", new { @class = "text-danger d-block" })
+											@Html.ValidationMessage($"Links[{i}].Url", "", new { @class = "text-danger d-block" })
+										</div>
+									</div>
+
+									<div class="flex-shrink-0">
+										<button class="btn btn-sm btn-outline-danger"
+												type="button" data-project-link-remove>
+											Remove
+										</button>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+
+					<p class="text-secondary small mt-3@(Model.Links.Count == 0 ? "" : " d-none")"
+					   data-project-link-empty>
+						No project links have been added.
+					</p>
+				</div>
+
+				<br />
 				<div class="row g-4">
 					<div class="col-12 col-lg-6 scrollable-list-panel">
 						<h3 class="h6 mb-3">
@@ -200,7 +339,7 @@
 						</div>
 					</div>
 				</div>
-				<hr/>
+				<hr />
 				<div class="mt-8">
 					<button class="btn btn-primary" type="submit">
 						Save metadata

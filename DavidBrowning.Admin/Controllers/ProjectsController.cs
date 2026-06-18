@@ -381,6 +381,7 @@ public partial class ProjectsController : Controller
          Visibilities = await GetVisibilityOptionsAsync(cancellationToken),
          Tags = await GetTagOptionsAsync(cancellationToken),
          StackTags = await GetStackTagOptionsAsync(cancellationToken),
+         LinkTypes = await GetLinkTypeOptionsAsync(cancellationToken),
       };
    }
 
@@ -794,6 +795,23 @@ public partial class ProjectsController : Controller
          IsActive = tag.IsActive,
          Id = tag.Id,
       }).ToList();
+   }
+
+   private async Task<IReadOnlyList<LookupOptionViewModel>> GetLinkTypeOptionsAsync(
+      CancellationToken cancellationToken)
+   {
+      var linkTypes = await _projectStore.GetProjectLinkTypesAsync(
+         cancellationToken);
+
+      return linkTypes
+         .Where(type => type.IsActive)
+         .Select(type => new LookupOptionViewModel()
+         {
+            Id = type.Id,
+            DisplayName = type.DisplayName,
+            IsActive = type.IsActive,
+         })
+         .ToList();
    }
 
    private static string CreateProjectDetailsAssetKey(string projectSlug)

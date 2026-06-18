@@ -25,4 +25,7 @@ public sealed class ProjectMetadataOptionsViewModel
 
    public IReadOnlyList<LookupOptionViewModel> StackTags { get; set; } =
       Array.Empty<LookupOptionViewModel>();
+
+   public IReadOnlyList<LookupOptionViewModel> LinkTypes { get; set; } =
+      Array.Empty<LookupOptionViewModel>();
 }

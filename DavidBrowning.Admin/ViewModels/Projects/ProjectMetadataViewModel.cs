@@ -111,6 +111,14 @@ public sealed class ProjectMetadataViewModel
    public IReadOnlyList<LookupOptionViewModel> StackTagOptions { get; set; } =
       Array.Empty<LookupOptionViewModel>();
 
+   [DisplayName("Project Links")]
+   public List<ProjectLinkInputViewModel> Links { get; set; } = new();
+
+   [ValidateNever]
+   [BindNever]
+   public IReadOnlyList<LookupOptionViewModel> LinkTypeOptions { get; set; } =
+      Array.Empty<LookupOptionViewModel>();
+
    public ProjectMetadataViewModel()
    {
    }
@@ -146,6 +154,12 @@ public sealed class ProjectMetadataViewModel
          .Order()
          .ToList();
 
+      Links = project.Links
+         .OrderBy(link => link.SortOrder)
+         .ThenBy(link => link.Label)
+         .Select(link => new ProjectLinkInputViewModel(link))
+         .ToList();
+
       SetOptions(options);
    }
 
@@ -157,6 +171,7 @@ public sealed class ProjectMetadataViewModel
       VisibilityOptions = options.Visibilities;
       TagOptions = options.Tags;
       StackTagOptions = options.StackTags;
+      LinkTypeOptions = options.LinkTypes;
    }
 
    public Project ToProject()
@@ -168,7 +183,7 @@ public sealed class ProjectMetadataViewModel
       ArgumentNullException.ThrowIfNull(ProjectOriginId);
       ArgumentNullException.ThrowIfNull(ProjectVisibilityId);
 
-      return new Project()
+      var project = new Project()
       {
          Id = Id ?? 0,
          Slug = Slug,
@@ -189,5 +204,15 @@ public sealed class ProjectMetadataViewModel
          CreatedAtUtc = default,
          UpdatedAtUtc = default,
       };
+
+      int sortOrder = 0;
+      foreach (var link in Links
+         .Where(link => !link.IsEmpty())
+         .OrderBy(link => link.SortOrder))
+      {
+         project.Links.Add(link.ToProjectLink(sortOrder++));
+      }
+
+      return project;
    }
 }
