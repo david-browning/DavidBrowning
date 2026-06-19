@@ -54,8 +54,6 @@ public sealed class ReorderListViewModel
 
    public bool Compact { get; set; }
 
-   public bool IconOnlyDelete { get; set; }
-
    public bool RenderCard { get; set; } = true;
 
    public string EmptyMessage { get; set; } = "No items.";

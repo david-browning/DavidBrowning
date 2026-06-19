@@ -127,6 +127,68 @@ public sealed class SqlWorkStore : IWorkStore
       await _dbContext.SaveChangesAsync(cancellationToken);
    }
 
+   public Task<ExperienceRoleBullet?> GetRoleBulletAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      return _dbContext.ExperienceRoleBullets
+         .AsNoTracking()
+         .SingleOrDefaultAsync(bullet => bullet.Id == id, cancellationToken);
+   }
+
+   public async Task InsertRoleBulletAsync(
+      ExperienceRoleBullet bullet,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(bullet);
+
+      int? lastSortOrder = await _dbContext.ExperienceRoleBullets
+         .Where(existingBullet =>
+            existingBullet.ExperienceRoleId == bullet.ExperienceRoleId)
+         .Select(existingBullet => (int?)existingBullet.SortOrder)
+         .MaxAsync(cancellationToken);
+
+      bullet.SortOrder = (lastSortOrder ?? -1) + 1;
+
+      _dbContext.ExperienceRoleBullets.Add(bullet);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+   }
+
+   public async Task<bool> UpdateRoleBulletAsync(
+      ExperienceRoleBullet bullet,
+      CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(bullet);
+      var stored = await _dbContext.ExperienceRoleBullets
+         .SingleOrDefaultAsync(storedBullet => storedBullet.Id == bullet.Id,
+            cancellationToken);
+      if (stored is null)
+      {
+         return false;
+      }
+
+      stored.Text = bullet.Text;
+      stored.IsActive = bullet.IsActive;
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
+   }
+
+   public async Task<bool> DeleteRoleBulletAsync(
+      int id,
+      CancellationToken cancellationToken = default)
+   {
+      var bullet = await _dbContext.ExperienceRoleBullets
+         .SingleOrDefaultAsync(bullet => bullet.Id == id, cancellationToken);
+      if (bullet is null)
+      {
+         return false;
+      }
+
+      _dbContext.ExperienceRoleBullets.Remove(bullet);
+      await _dbContext.SaveChangesAsync(cancellationToken);
+      return true;
+   }
+
    public async Task ReorderRoleBullets(
       int roleId,
       IReadOnlyList<int> idsInDisplayOrder,
@@ -135,10 +197,7 @@ public sealed class SqlWorkStore : IWorkStore
       int changeCount =
          await _dbContext
             .ApplySortOrderAsync<ExperienceRoleBullet>(
-               idsInDisplayOrder,
-               bullet =>
-                  bullet.ExperienceRoleId ==
-                  roleId,
+               idsInDisplayOrder, bullet => bullet.ExperienceRoleId == roleId,
                cancellationToken);
 
       if (changeCount == 0)

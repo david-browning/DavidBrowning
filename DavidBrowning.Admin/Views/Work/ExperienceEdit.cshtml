@@ -8,17 +8,17 @@
 @using DavidBrowning.Admin.ViewModels.Work
 @{
 	bool isEditMode = Model.EditMode == EditModes.Edit;
-	string formAction = isEditMode ? nameof(WorkController.ExperienceEdit) :
-		  nameof(WorkController.ExperienceCreate);
-	string htmxTarget = isEditMode ?
-			 AdminOffcanvasIds.BodySelector(WorkAdminIds.ExperienceEditOffcanvas) :
-			 $"#{WorkAdminIds.ExperienceCreateRegion}";
-	string overlaySelector = isEditMode ?
-			 AdminOffcanvasIds.OverlaySelector(WorkAdminIds.ExperienceEditOffcanvas) :
-			 $"#{WorkAdminIds.ExperienceCreateOverlay}";
+	string formAction = isEditMode
+	   ? nameof(WorkController.ExperienceEdit)
+	   : nameof(WorkController.ExperienceCreate);
 
-	string editorId = isEditMode ?
-		  $"experience-edit-{Model.Id}" : $"experience-create";
+	string? htmxTarget = isEditMode
+	   ? null
+	   : $"#{WorkAdminIds.ExperienceCreateRegion}";
+
+	string? overlaySelector = isEditMode
+	   ? null
+	   : $"#{WorkAdminIds.ExperienceCreateOverlay}";
 }
 
 <section class="card">
@@ -39,13 +39,14 @@
 			</p>
 		}
 		<div class="admin-form-region">
-			<form method="post" asp-controller="Work" asp-action="@formAction"
-				  data-experience-edit-form
-				  data-asset-edit-mode="@isEditMode.ToString().ToLowerInvariant()"
-				  hx-post="@Url.Action(formAction, "Work")" hx-target="@htmxTarget"
-				  hx-swap="innerHTML" hx-disabled-elt="find fieldset"
-				  hx-indicator="@overlaySelector"
-				  enctype="multipart/form-data" hx-encoding="multipart/form-data">
+			<form method="post"
+				  asp-controller="Work"
+				  asp-action="@formAction"
+				  hx-post="@(isEditMode ? null : Url.Action(formAction, "Work"))"
+				  hx-target="@htmxTarget"
+				  hx-swap="@(isEditMode ? null : "innerHTML")"
+				  hx-disabled-elt="@(isEditMode ? null : "find fieldset")"
+				  hx-indicator="@overlaySelector">
 				<fieldset data-experience-create-form>
 					<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
 					</div>
@@ -84,14 +85,7 @@
 								<button class="btn btn-primary" type="submit">
 									Submit
 								</button>
-								@if (isEditMode)
-								{
-									<button class="btn btn-outline-secondary"
-											type="button" data-bs-dismiss="offcanvas">
-										Close
-									</button>
-								}
-								else
+								@if (!isEditMode)
 								{
 									<a class="btn btn-outline-secondary"
 									   asp-controller="Work" asp-action="ExperienceIndex">

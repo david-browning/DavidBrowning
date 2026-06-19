@@ -39,6 +39,22 @@ public interface IWorkStore
       IReadOnlyList<int> idsInDisplayOrder,
       CancellationToken cancellationToken = default);
 
+   Task<ExperienceRoleBullet?> GetRoleBulletAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
+   Task InsertRoleBulletAsync(
+      ExperienceRoleBullet bullet,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> UpdateRoleBulletAsync(
+      ExperienceRoleBullet bullet,
+      CancellationToken cancellationToken = default);
+
+   Task<bool> DeleteRoleBulletAsync(
+      int id,
+      CancellationToken cancellationToken = default);
+
    Task ReorderRoleBullets(
       int roleId,
       IReadOnlyList<int> idsInDisplayOrder,
