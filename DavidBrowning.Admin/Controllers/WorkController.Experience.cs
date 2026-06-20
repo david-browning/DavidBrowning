@@ -231,9 +231,9 @@ public partial class WorkController
 
       return new ReorderListViewModel()
       {
-         Title = "Roles",
-         Description = "Arrange the display order for this company.",
-         RenderCard = true,
+         Title = "Existing roles",
+         Description = null,
+         RenderCard = false,
          Compact = true,
          ReoderParameters = new ReoderParameters()
          {

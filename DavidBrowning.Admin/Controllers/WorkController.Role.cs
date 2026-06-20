@@ -46,13 +46,13 @@ public partial class WorkController
       int id,
       CancellationToken cancellationToken)
    {
-      var role = await _workStore.GetRoleAsync(id, cancellationToken);
-      if (role is null)
+      var model = await GetRoleEditViewModelAsync(id, cancellationToken);
+      if (model is null)
       {
          return NotFound();
       }
 
-      return View(nameof(RoleEdit), new RoleEditViewModel(role));
+      return View(nameof(RoleEdit), model);
    }
 
    [HttpPost]

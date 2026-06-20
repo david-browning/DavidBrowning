@@ -30,4 +30,11 @@ public class WorkAdminIds
    public const string RoleListRegion = "role-list-region";
 
    public const string RoleCreateOverlay = "role-create-overlay";
+
+
+   public const string RoleBulletCreateRegion = "role-bullet-create-region";
+
+   public const string RoleBulletListRegion = "role-bullet-list-region";
+
+   public const string RoleBulletCreateOverlay = "role-bullet-create-overlay";
 }

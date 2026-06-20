@@ -195,10 +195,9 @@ public sealed class SqlWorkStore : IWorkStore
       CancellationToken cancellationToken = default)
    {
       int changeCount =
-         await _dbContext
-            .ApplySortOrderAsync<ExperienceRoleBullet>(
-               idsInDisplayOrder, bullet => bullet.ExperienceRoleId == roleId,
-               cancellationToken);
+         await _dbContext.ApplySortOrderAsync<ExperienceRoleBullet>(
+            idsInDisplayOrder, bullet => bullet.ExperienceRoleId == roleId,
+            cancellationToken);
 
       if (changeCount == 0)
       {

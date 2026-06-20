@@ -4,86 +4,131 @@
 *@
 @model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditViewModel
 @using DavidBrowning.Admin.Controllers
-@using DavidBrowning.Admin.ViewModels
 @using DavidBrowning.Admin.ViewModels.Work
+@using DavidBrowning.Admin.ViewModels.Work.Experience
+
 @{
-	string offcanvasBodySelector = AdminOffcanvasIds.BodySelector(
-		WorkAdminIds.ExperienceEditOffcanvas);
-	string offcanvasOverlaySelector = AdminOffcanvasIds.OverlaySelector(
-		WorkAdminIds.ExperienceEditOffcanvas);
+	ViewData["Title"] = "Edit role";
+
+	var bulletCreateModel = new RoleBulletEditViewModel()
+	{
+		ExperienceRoleId = Model.Id,
+	};
 }
 
-<section class="card">
-	<div class="card-body">
-		<h2>Edit role</h2>
-		<p class="card-text text-secondary">
-			Update the position details, then return to the work-experience editor.
-		</p>
+<div class="container py-4">
+	<header class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+		<div>
+			<h1>
+				Edit role
+			</h1>
 
-		<form method="post" asp-controller="Work" asp-action="RoleEdit">
-			<fieldset>
-				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+			<p class="text-secondary mb-0">
+				Update the role details and manage its bullets.
+			</p>
+		</div>
+
+		<div class="flex-shrink-0">
+			<a class="btn btn-outline-secondary" asp-controller="Work"
+			   asp-action="ExperienceEdit" asp-route-id="@Model.ExperienceId">
+				Back to experience
+			</a>
+		</div>
+	</header>
+
+	<div class="row g-4 align-items-start">
+		<div class="col-12 col-xl-5">
+			<section class="card">
+				<div class="card-body">
+					<h2 class="h4 card-title">
+						Role details
+					</h2>
+
+					<p class="card-text text-secondary">
+						Update the title, dates, description, and visibility for this role.
+					</p>
+
+					<form method="post"
+						  asp-controller="Work"
+						  asp-action="RoleEdit">
+						<fieldset>
+							<div asp-validation-summary="ModelOnly"
+								 class="alert alert-danger" role="alert">
+							</div>
+
+							<input asp-for="Id" type="hidden" />
+							<input asp-for="ExperienceId" type="hidden" />
+
+							<div class="row g-3">
+								<div class="col-12">
+									<label asp-for="Title" class="form-label"></label>
+									<input asp-for="Title" class="form-control" autocomplete="off" />
+									<span asp-validation-for="Title" class="text-danger"></span>
+								</div>
+
+								<div class="col-12">
+									<label asp-for="DateDisplayText" class="form-label"></label>
+									<input asp-for="DateDisplayText" class="form-control"
+										   autocomplete="off" placeholder="Example: 2019–2025" />
+									<span asp-validation-for="DateDisplayText" class="text-danger"></span>
+								</div>
+
+								<div class="col-12">
+									<label asp-for="Description" class="form-label"></label>
+									<textarea asp-for="Description" class="form-control" rows="3"></textarea>
+									<span asp-validation-for="Description" class="text-danger"></span>
+								</div>
+
+								<div class="col-12">
+									<div class="form-check">
+										<input asp-for="IsActive" class="form-check-input"
+											   type="checkbox" />
+										<label asp-for="IsActive" class="form-check-label">
+											Show on work page
+										</label>
+									</div>
+								</div>
+
+								<div class="col-12">
+									<div class="d-flex flex-wrap gap-2">
+										<button class="btn btn-primary" type="submit">
+											Save role
+										</button>
+
+										<a class="btn btn-outline-secondary"
+										   asp-controller="Work" asp-action="ExperienceEdit"
+										   asp-route-id="@Model.ExperienceId">
+											Back to experience
+										</a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</form>
 				</div>
-				<input asp-for="Id" type="hidden" />
-				<input asp-for="ExperienceId" type="hidden" />
+			</section>
+		</div>
 
-				<div class="row g-3">
-					<div class="col-12">
-						<label asp-for="Title" class="form-label">
-						</label>
+		<div class="col-12 col-xl-7">
+			<section class="card">
+				<div class="card-body">
+					<h2 class="h4 card-title">
+						Bullets
+					</h2>
 
-						<input asp-for="Title" class="form-control" autocomplete="off" />
+					<p class="card-text text-secondary">
+						Add résumé-style bullets for this role and remove bullets that no longer apply.
+					</p>
 
-						<span asp-validation-for="Title" class="text-danger">
-						</span>
+					<div id="@WorkAdminIds.RoleBulletCreateRegion">
+						<partial name="RoleBulletCreate" model="bulletCreateModel" />
 					</div>
 
-					<div class="col-12">
-						<label asp-for="DateDisplayText" class="form-label">
-						</label>
-
-						<input asp-for="DateDisplayText" class="form-control"
-							   autocomplete="off" placeholder="Example: 2019–2025" />
-
-						<span asp-validation-for="DateDisplayText" class="text-danger">
-						</span>
-					</div>
-
-					<div class="col-12">
-						<label asp-for="Description" class="form-label">
-						</label>
-
-						<textarea asp-for="Description" class="form-control" rows="3">
-                  </textarea>
-
-						<span asp-validation-for="Description" class="text-danger">
-						</span>
-					</div>
-
-					<div class="col-12">
-						<div class="form-check">
-							<input asp-for="IsActive" class="form-check-input" type="checkbox" />
-							<label asp-for="IsActive" class="form-check-label">
-								Show on work page
-							</label>
-						</div>
-					</div>
-
-					<div class="col-12">
-						<div class="d-flex gap-2">
-							<button class="btn btn-primary" type="submit">
-								Save role
-							</button>
-
-							<a class="btn btn-outline-secondary"
-							   asp-controller="Work" asp-action="ExperienceEdit"
-							   asp-route-id="@Model.ExperienceId">
-								Back to experience
-							</a>
-						</div>
+					<div id="@WorkAdminIds.RoleBulletListRegion" class="mt-4">
+						<partial name="RoleBulletList" model="Model" />
 					</div>
 				</div>
-			</fieldset>
-		</form>
+			</section>
+		</div>
 	</div>
-</section>
+</div>

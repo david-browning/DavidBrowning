@@ -1,5 +1,6 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -20,7 +21,10 @@ public sealed class RoleBulletEditViewModel
 
    [Required]
    [StringLength(DataConstants.MaxMetadataLength)]
+   [Display(Name = "Bullet text")]
    public string? Text { get; set; }
+
+   public int SortOrder { get; set; }
 
    public bool IsActive { get; set; } = true;
 
@@ -35,20 +39,21 @@ public sealed class RoleBulletEditViewModel
       Id = bullet.Id;
       ExperienceRoleId = bullet.ExperienceRoleId;
       Text = bullet.Text;
+      SortOrder = bullet.SortOrder;
       IsActive = bullet.IsActive;
    }
 
    public ExperienceRoleBullet ToBullet()
    {
-      ArgumentNullException.ThrowIfNull(Id);
       ArgumentNullException.ThrowIfNull(ExperienceRoleId);
-      ArgumentNullException.ThrowIfNullOrEmpty(Text);
+      ArgumentException.ThrowIfNullOrWhiteSpace(Text);
 
       return new()
       {
-         Id = Id.Value,
+         Id = Id ?? 0,
          ExperienceRoleId = ExperienceRoleId.Value,
          Text = Text,
+         SortOrder = SortOrder,
          IsActive = IsActive,
       };
    }

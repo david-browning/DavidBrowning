@@ -40,9 +40,10 @@
 			  content="Software engineering projects, writing, and professional experience from David Browning.">
 		<meta name="robots" content="noindex">
 	}
+
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/lib/prism/prism.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	@* <link rel="stylesheet" href="~/DavidBrowning.styles.css" asp-append-version="true" /> *@
 	<script src="https://kit.fontawesome.com/9800358062.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -179,6 +180,8 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/lib/prism/prism.js" asp-append-version="true"></script>
+	<script src="~/js/code-blocks.js" asp-append-version="true"></script>
 
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

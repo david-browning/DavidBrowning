@@ -8,10 +8,9 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - David Browning Admin</title>
-
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/lib/prism/prism.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/DavidBrowning.Admin.styles.css" asp-append-version="true" />
 	<script src="https://kit.fontawesome.com/9800358062.js" crossorigin="anonymous"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -119,6 +118,7 @@
 	<script src="~/js/reorder-list.js" asp-append-version="true"></script>
 	<script src="~/js/admin-slug.js" asp-append-version="true"></script>
 	<script src="~/js/admin-copy.js" asp-append-version="true"></script>
+	<script src="~/lib/prism/prism.js" asp-append-version="true"></script>
 
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

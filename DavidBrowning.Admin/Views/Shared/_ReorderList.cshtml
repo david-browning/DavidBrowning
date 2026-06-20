@@ -134,6 +134,7 @@
 									   asp-controller="@item.EditController"
 									   asp-action="@item.EditAction"
 									   asp-route-id="@item.Id"
+									   hx-boost="@(useEditOffcanvas ? null : "false")"
 									   hx-get="@(useEditOffcanvas? Url.Action(item.EditAction, item.EditController, new { id = item.Id }) : null)"
 									   hx-target="@editOffcanvasBodySelector"
 									   hx-swap="@(useEditOffcanvas ? "innerHTML" : null)"
