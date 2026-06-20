@@ -1,0 +1,63 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditViewModel
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels.Work
+
+@{
+	var bullets = Model.Bullets?
+	   .OrderBy(bullet => bullet.SortOrder)
+	   .ThenBy(bullet => bullet.Text)
+	   .ToList() ?? new List<DavidBrowning.Admin.ViewModels.Work.Experience.RoleBulletEditViewModel>();
+}
+
+@if (bullets.Count == 0)
+{
+	<div class="alert alert-secondary mb-0" role="status">
+		No bullets have been added.
+	</div>
+}
+else
+{
+	<ol class="list-group">
+		@foreach (var bullet in bullets)
+		{
+			<li class="list-group-item">
+				<div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+					<div>
+						<p class="mb-1">
+							@bullet.Text
+						</p>
+
+						@if (!bullet.IsActive)
+						{
+							<span class="badge text-bg-secondary">
+								Hidden
+							</span>
+						}
+					</div>
+
+					<div class="flex-shrink-0">
+						<form method="post" asp-controller="Work"
+							  asp-action="RoleBulletDelete"
+							  hx-post="@Url.Action(nameof(WorkController.RoleBulletDelete), "Work")"
+							  hx-target="#@WorkAdminIds.RoleBulletListRegion"
+							  hx-swap="innerHTML">
+							@Html.AntiForgeryToken()
+
+							<input type="hidden" name="id" value="@bullet.Id" />
+
+							<button class="btn btn-sm btn-outline-danger"
+									type="submit"
+									aria-label="Delete bullet">
+								<i class="fa-solid fa-trash" aria-hidden="true"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+			</li>
+		}
+	</ol>
+}

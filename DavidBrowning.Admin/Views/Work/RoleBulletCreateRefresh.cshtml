@@ -1,0 +1,21 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleEditViewModel
+@using DavidBrowning.Admin.ViewModels.Work
+@using DavidBrowning.Admin.ViewModels.Work.Experience
+
+@{
+	var createModel = new RoleBulletEditViewModel()
+	{
+		ExperienceRoleId = Model.Id,
+	};
+}
+
+<partial name="RoleBulletCreate" model="createModel" />
+
+<div id="@WorkAdminIds.RoleBulletListRegion"
+	 hx-swap-oob="innerHTML">
+	<partial name="RoleBulletList" model="Model" />
+</div>

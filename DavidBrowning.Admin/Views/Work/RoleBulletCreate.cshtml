@@ -1,0 +1,63 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.RoleBulletEditViewModel
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels.Work
+
+<div class="admin-form-region">
+	<form method="post"
+		  asp-controller="Work"
+		  asp-action="RoleBulletCreate"
+		  hx-post="@Url.Action(nameof(WorkController.RoleBulletCreate), "Work")"
+		  hx-target="#@WorkAdminIds.RoleBulletCreateRegion"
+		  hx-swap="innerHTML"
+		  hx-disabled-elt="find fieldset"
+		  hx-indicator="#@WorkAdminIds.RoleBulletCreateOverlay">
+		<fieldset>
+			<div asp-validation-summary="ModelOnly"
+				 class="alert alert-danger"
+				 role="alert">
+			</div>
+
+			<input asp-for="ExperienceRoleId" type="hidden" />
+
+			<div class="row g-3">
+				<div class="col-12">
+					<label asp-for="Text" class="form-label"></label>
+					<textarea asp-for="Text"
+							  class="form-control"
+							  rows="3"
+							  placeholder="Describe an outcome, responsibility, or measurable contribution."></textarea>
+					<span asp-validation-for="Text" class="text-danger"></span>
+				</div>
+
+				<div class="col-12">
+					<div class="form-check">
+						<input asp-for="IsActive"
+							   class="form-check-input"
+							   type="checkbox" />
+						<label asp-for="IsActive" class="form-check-label">
+							Show on work page
+						</label>
+					</div>
+				</div>
+
+				<div class="col-12">
+					<button class="btn btn-primary" type="submit">
+						Add bullet
+					</button>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+
+	<div id="@WorkAdminIds.RoleBulletCreateOverlay"
+		 class="admin-form-overlay htmx-indicator"
+		 role="status"
+		 aria-live="polite"
+		 aria-label="Saving bullet">
+		<partial name="_Waiting" />
+	</div>
+</div>

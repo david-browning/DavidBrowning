@@ -46,13 +46,13 @@ public partial class WorkController
       int id,
       CancellationToken cancellationToken)
    {
-      var role = await _workStore.GetRoleAsync(id, cancellationToken);
-      if (role is null)
+      var model = await GetRoleEditViewModelAsync(id, cancellationToken);
+      if (model is null)
       {
          return NotFound();
       }
 
-      return PartialView(nameof(RoleEdit), new RoleEditViewModel(role));
+      return View(nameof(RoleEdit), model);
    }
 
    [HttpPost]
@@ -61,10 +61,11 @@ public partial class WorkController
       RoleEditViewModel model,
       CancellationToken cancellationToken)
    {
+      model.EditMode = EditModes.Edit;
+
       if (!ModelState.IsValid)
       {
-         model.EditMode = EditModes.Edit;
-         return PartialView(nameof(RoleEdit), model);
+         return View(nameof(RoleEdit), model);
       }
 
       if (model.Id is null || model.ExperienceId is null)
@@ -91,15 +92,7 @@ public partial class WorkController
          return NotFound();
       }
 
-      ModelState.Clear();
-      var experienceModel = await GetExperienceEditViewModelAsync(
-         storedRole.ExperienceId, cancellationToken);
-      if (experienceModel is null)
-      {
-         return NotFound();
-      }
-
-      return PartialView(nameof(ExperienceEdit), experienceModel);
+      return RedirectToAction(nameof(RoleEdit), new { id = model.Id, });
    }
 
    [HttpPost]

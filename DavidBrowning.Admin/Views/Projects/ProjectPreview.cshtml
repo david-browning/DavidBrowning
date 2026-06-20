@@ -32,3 +32,10 @@
 		</div>
 	</div>
 </section>
+<script>
+	document.body.addEventListener("htmx:afterSwap", event => {
+	   if (window.Prism) {
+		  Prism.highlightAllUnder(event.target);
+	   }
+	});
+</script>

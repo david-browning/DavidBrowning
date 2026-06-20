@@ -134,6 +134,7 @@
 									   asp-controller="@item.EditController"
 									   asp-action="@item.EditAction"
 									   asp-route-id="@item.Id"
+									   hx-boost="@(useEditOffcanvas ? null : "false")"
 									   hx-get="@(useEditOffcanvas? Url.Action(item.EditAction, item.EditController, new { id = item.Id }) : null)"
 									   hx-target="@editOffcanvasBodySelector"
 									   hx-swap="@(useEditOffcanvas ? "innerHTML" : null)"
@@ -148,12 +149,6 @@
 											type="submit" form="delete-item-@item.Id"
 											data-delete-button aria-label="Delete @item.DisplayName">
 										<i class="fa-solid fa-trash" aria-hidden="true"></i>
-										@if (!Model.IconOnlyDelete)
-										{
-											<span class="ms-1">
-												Delete
-											</span>
-										}
 									</button>
 								</div>
 							</div>

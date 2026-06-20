@@ -54,21 +54,25 @@ public partial class WorkController
          return NotFound();
       }
 
-      return PartialView(nameof(ExperienceEdit), model);
+      return View(nameof(ExperienceEdit), model);
    }
 
    [HttpPost]
    [ValidateAntiForgeryToken]
    public async Task<IActionResult> ExperienceEdit(
-      EditViewModel model,
-      CancellationToken cancellationToken)
+   EditViewModel model,
+   CancellationToken cancellationToken)
    {
+      model.EditMode = EditModes.Edit;
       if (!ModelState.IsValid)
       {
-         model.EditMode = EditModes.Edit;
-         model.Roles = await GetRoleListViewModelAsync(
-            model.Id, cancellationToken);
-         return PartialView(nameof(ExperienceEdit), model);
+         if (model.Id is not null)
+         {
+            model.Roles = await GetRoleListViewModelAsync(
+               model.Id.Value, cancellationToken);
+         }
+
+         return View(nameof(ExperienceEdit), model);
       }
 
       var experience = model.ToExperience();
@@ -79,14 +83,7 @@ public partial class WorkController
          return NotFound();
       }
 
-      Response.TriggerAdminOffcanvasClose(
-         ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas);
-
-      return PartialView(
-         "ExperienceListRefresh",
-         GetExperienceListViewModel(
-            await _workStore.GetExperienceAsync(cancellationToken),
-            cancellationToken));
+      return RedirectToAction(nameof(ExperienceEdit), new { id = model.Id, });
    }
 
    [HttpPost]
@@ -203,7 +200,6 @@ public partial class WorkController
                ReorderController = "Work",
                ReorderAction = nameof(ExperienceReorder),
             },
-            EditOffcanvasId = ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas,
             Items = items,
          }
       };
@@ -235,12 +231,10 @@ public partial class WorkController
 
       return new ReorderListViewModel()
       {
-         Title = "Roles",
-         Description = "Arrange the display order for this company.",
-         RenderCard = true,
+         Title = "Existing roles",
+         Description = null,
+         RenderCard = false,
          Compact = true,
-         IconOnlyDelete = true,
-         EditOffcanvasId = ViewModels.Work.WorkAdminIds.ExperienceEditOffcanvas,
          ReoderParameters = new ReoderParameters()
          {
             ReorderController = "Work",

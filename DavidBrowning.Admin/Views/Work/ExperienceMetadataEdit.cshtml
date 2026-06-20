@@ -1,0 +1,123 @@
+﻿@*
+   Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted.
+*@
+@model DavidBrowning.Admin.ViewModels.Work.Experience.EditViewModel
+@using DavidBrowning.Admin.Controllers
+@using DavidBrowning.Admin.ViewModels
+@using DavidBrowning.Admin.ViewModels.Work
+
+@{
+	bool isEditMode = Model.EditMode == EditModes.Edit;
+	string formAction = isEditMode
+	   ? nameof(WorkController.ExperienceEdit)
+	   : nameof(WorkController.ExperienceCreate);
+
+	string? htmxTarget = isEditMode
+	   ? null
+	   : $"#{WorkAdminIds.ExperienceCreateRegion}";
+
+	string? overlaySelector = isEditMode
+	   ? null
+	   : $"#{WorkAdminIds.ExperienceCreateOverlay}";
+}
+
+<section class="card">
+	<div class="card-body">
+		<h2 class="h4 card-title">
+			@(isEditMode ? "Experience details" : "Create work experience")
+		</h2>
+
+		<p class="card-text text-secondary">
+			@(isEditMode ? "Update the company-level work experience details." : "Add a company or organization to your work history.")
+		</p>
+
+		<div class="admin-form-region">
+			<form method="post"
+				  asp-controller="Work"
+				  asp-action="@formAction"
+				  hx-post="@(isEditMode ? null : Url.Action(formAction, "Work"))"
+				  hx-target="@htmxTarget"
+				  hx-swap="@(isEditMode ? null : "innerHTML")"
+				  hx-disabled-elt="@(isEditMode ? null : "find fieldset")"
+				  hx-indicator="@overlaySelector">
+				<fieldset>
+					<div asp-validation-summary="ModelOnly"
+						 class="alert alert-danger"
+						 role="alert">
+					</div>
+
+					@if (isEditMode)
+					{
+						<input asp-for="Id" type="hidden" />
+					}
+
+					<div class="row g-3">
+						<div class="col-12">
+							<label asp-for="CompanyName" class="form-label"></label>
+							<input asp-for="CompanyName"
+								   class="form-control"
+								   autocomplete="off" />
+							<span asp-validation-for="CompanyName" class="text-danger"></span>
+						</div>
+
+						<div class="col-12">
+							<label asp-for="LocationDisplayText" class="form-label"></label>
+							<input asp-for="LocationDisplayText"
+								   class="form-control"
+								   autocomplete="off" />
+							<span asp-validation-for="LocationDisplayText" class="text-danger"></span>
+						</div>
+
+						<div class="col-12">
+							<div class="form-check">
+								<input asp-for="IsActive"
+									   class="form-check-input"
+									   type="checkbox" />
+								<label asp-for="IsActive" class="form-check-label">
+									Show on work page
+								</label>
+							</div>
+						</div>
+
+						<div class="col-12">
+							<div class="d-flex flex-wrap gap-2">
+								<button class="btn btn-primary" type="submit">
+									@(isEditMode ? "Save experience" : "Add experience")
+								</button>
+
+								@if (isEditMode)
+								{
+									<a class="btn btn-outline-secondary"
+									   asp-controller="Work"
+									   asp-action="ExperienceIndex">
+										Back to work experience
+									</a>
+								}
+								else
+								{
+									<a class="btn btn-outline-secondary"
+									   asp-controller="Work"
+									   asp-action="ExperienceIndex">
+										Reset
+									</a>
+								}
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+
+			@if (!isEditMode)
+			{
+				<div id="@WorkAdminIds.ExperienceCreateOverlay"
+					 class="admin-form-overlay htmx-indicator"
+					 role="status"
+					 aria-live="polite"
+					 aria-label="Saving work experience">
+					<partial name="_Waiting" />
+				</div>
+			}
+		</div>
+	</div>
+</section>

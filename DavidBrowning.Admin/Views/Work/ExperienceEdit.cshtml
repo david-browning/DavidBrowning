@@ -3,124 +3,49 @@
    Source-available for viewing only. No license granted.
 *@
 @model DavidBrowning.Admin.ViewModels.Work.Experience.EditViewModel
-@using DavidBrowning.Admin.Controllers
 @using DavidBrowning.Admin.ViewModels
-@using DavidBrowning.Admin.ViewModels.Work
 @{
 	bool isEditMode = Model.EditMode == EditModes.Edit;
-	string formAction = isEditMode ? nameof(WorkController.ExperienceEdit) :
-		  nameof(WorkController.ExperienceCreate);
-	string htmxTarget = isEditMode ?
-			 AdminOffcanvasIds.BodySelector(WorkAdminIds.ExperienceEditOffcanvas) :
-			 $"#{WorkAdminIds.ExperienceCreateRegion}";
-	string overlaySelector = isEditMode ?
-			 AdminOffcanvasIds.OverlaySelector(WorkAdminIds.ExperienceEditOffcanvas) :
-			 $"#{WorkAdminIds.ExperienceCreateOverlay}";
 
-	string editorId = isEditMode ?
-		  $"experience-edit-{Model.Id}" : $"experience-create";
+	ViewData["Title"] = isEditMode
+	   ? "Edit work experience"
+	   : "Create work experience";
 }
 
-<section class="card">
-	<div class="card-body">
-		<h2>
-			@(isEditMode ? "Edit work experience" : "Create work experience")
-		</h2>
-		@if (isEditMode)
-		{
-			<p class="card-text text-secondary">
-				Edit @Model.CompanyName work experience
-			</p>
-		}
-		else
-		{
-			<p class="card-text text-secondary">
-				New work experience
-			</p>
-		}
-		<div class="admin-form-region">
-			<form method="post" asp-controller="Work" asp-action="@formAction"
-				  data-experience-edit-form
-				  data-asset-edit-mode="@isEditMode.ToString().ToLowerInvariant()"
-				  hx-post="@Url.Action(formAction, "Work")" hx-target="@htmxTarget"
-				  hx-swap="innerHTML" hx-disabled-elt="find fieldset"
-				  hx-indicator="@overlaySelector"
-				  enctype="multipart/form-data" hx-encoding="multipart/form-data">
-				<fieldset data-experience-create-form>
-					<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
-					</div>
-
-					@if (isEditMode)
-					{
-						<input asp-for="Id" type="hidden" />
-					}
-
-					<div class="row mb-3">
-						<div class="col-12">
-							<label asp-for="CompanyName" class="form-label"></label>
-							<input asp-for="CompanyName" class="form-control" autocomplete="off" />
-							<span asp-validation-for="CompanyName" class="text-danger"></span>
-						</div>
-					</div>
-
-					<div class="row mb-3">
-						<div class="col-12">
-							<label asp-for="LocationDisplayText" class="form-label"></label>
-							<input asp-for="LocationDisplayText" class="form-control" autocomplete="off" />
-							<span asp-validation-for="LocationDisplayText" class="text-danger"></span>
-						</div>
-					</div>
-
-					<div class="form-check mb-3">
-						<input asp-for="IsActive" class="form-check-input" type="checkbox" />
-						<label asp-for="IsActive" class="form-check-label">
-							Show on work page
-						</label>
-					</div>
-
-					<div class="row mb-3">
-						<div class="col-12">
-							<div class="d-flex gap-2">
-								<button class="btn btn-primary" type="submit">
-									Submit
-								</button>
-								@if (isEditMode)
-								{
-									<button class="btn btn-outline-secondary"
-											type="button" data-bs-dismiss="offcanvas">
-										Close
-									</button>
-								}
-								else
-								{
-									<a class="btn btn-outline-secondary"
-									   asp-controller="Work" asp-action="ExperienceIndex">
-										Reset
-									</a>
-								}
-							</div>
-						</div>
-					</div>
-				</fieldset>
-			</form>
-			@if (!isEditMode)
-			{
-				<div id="@WorkAdminIds.ExperienceCreateOverlay"
-					 class="admin-form-overlay htmx-indicator"
-					 role="status" aria-live="polite" aria-label="Saving work experience">
-					<partial name="_Waiting" />
-				</div>
-			}
-		</div>
-		@if (isEditMode)
-		{
-			<partial name="RoleEditList" model="Model.Roles" />
-		}
-		else
-		{
-			<div class="alert alert-secondary mt-4 mb-0">
-				Save the work experience before adding roles.
+@if (isEditMode)
+{
+	<div class="container py-4">
+		<header class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+			<div>
+				<h1>
+					Edit work experience
+				</h1>
+				<p class="text-secondary mb-0">
+					Edit @Model.CompanyName work experience.
+				</p>
 			</div>
-		}
+
+			<div class="flex-shrink-0">
+				<a class="btn btn-outline-secondary"
+				   asp-controller="Work"
+				   asp-action="ExperienceIndex">
+					Back to work experience
+				</a>
+			</div>
+		</header>
+
+		<div class="row g-4 align-items-start">
+			<div class="col-12 col-xl-5">
+				<partial name="ExperienceMetadataEdit" model="Model" />
+			</div>
+
+			<div class="col-12 col-xl-7">
+				<partial name="RoleEditList" model="Model.Roles" />
+			</div>
+		</div>
 	</div>
-</section>
+}
+else
+{
+	<partial name="ExperienceMetadataEdit" model="Model" />
+}
