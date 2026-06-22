@@ -330,35 +330,83 @@ During early development, `db_datareader` and `db_datawriter` are acceptable. If
 
 Do not commit real passwords to `appsettings.json` or `appsettings.Development.json`.
 
-Set the connection string through user secrets.
+The applications support multiple named SQL Server connection strings. The active SQL connection string is selected by:
+
+    Database:ConnectionName
+
+The currently expected connection string names are:
+
+    LocalSiteDatabase
+        Local or LAN SQL Server used for development.
+
+    AzureSiteDatabase
+        Azure SQL Database used for production-like testing or Azure deployment.
+
+By default, Development uses:
+
+    Database:ConnectionName = LocalSiteDatabase
+
+Production-style settings use:
+
+    Database:ConnectionName = AzureSiteDatabase
+
+### Public website secrets
 
 From the repository root:
 
-```powershell
-dotnet user-secrets set `
-   --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
-   "ConnectionStrings:SiteDatabase" `
-   "Server=localhost,1433;Database=WebsiteDev;User Id=DavidBrowningApp;Password=replace-with-password;TrustServerCertificate=True;"
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "ConnectionStrings:LocalSiteDatabase" `
+       "Server=<LAN IP OR HOSTNAME>,1433;Database=DavidBrowning;User Id=DavidBrowningApp;Password=<PASSWORD>;TrustServerCertificate=True;"
 
-dotnet user-secrets set `
-   --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
-   "ConnectionStrings:SiteDatabase" `
-   "Server=localhost,1433;Database=WebsiteDev;User Id=DavidBrowningApp;Password=replace-with-password;TrustServerCertificate=True;"
-```
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "ConnectionStrings:AzureSiteDatabase" `
+       "Server=tcp:<SQL SERVER>.database.windows.net,1433;Initial Catalog=DavidBrowning;Persist Security Info=False;User ID=DavidBrowningApp;Password=<PASSWORD>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
-For a SQL Server on a LAN server, use the server IP or DNS name:
+### Admin site secrets
 
-```text
-Server=192.168.1.50,1433;Database=WebsiteDev;User Id=DavidBrowningApp;Password=replace-with-password;TrustServerCertificate=True;
-```
+The admin site normally uses a more privileged database account because it edits content and may perform setup or maintenance tasks.
 
-or:
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "ConnectionStrings:LocalSiteDatabase" `
+       "Server=<LAN IP OR HOSTNAME>,1433;Database=DavidBrowning;User Id=DavidBrowningAdmin;Password=<PASSWORD>;TrustServerCertificate=True;"
 
-```text
-Server=sql-dev.lan,1433;Database=WebsiteDev;User Id=DavidBrowningApp;Password=replace-with-password;TrustServerCertificate=True;
-```
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "ConnectionStrings:AzureSiteDatabase" `
+       "Server=tcp:<SQL SERVER>.database.windows.net,1433;Initial Catalog=DavidBrowning;Persist Security Info=False;User ID=DavidBrowningAdmin;Password=<PASSWORD>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
-Prefer a stable DNS name if the LAN supports it.
+### Switching databases during development
+
+To temporarily run the public website against Azure SQL while still using the Development environment:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "Database:ConnectionName" `
+       "AzureSiteDatabase"
+
+To switch back to the local or LAN SQL Server:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "Database:ConnectionName" `
+       "LocalSiteDatabase"
+
+Use the same pattern for the admin project:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "Database:ConnectionName" `
+       "AzureSiteDatabase"
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "Database:ConnectionName" `
+       "LocalSiteDatabase"
+
+User secrets are per project. Setting a secret for `DavidBrowning.Web` does not set it for `DavidBrowning.Admin`.
 
 ## Windows, Linux hostnames, DNS, and shares
 

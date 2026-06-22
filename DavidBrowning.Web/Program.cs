@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Azure.Identity;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;

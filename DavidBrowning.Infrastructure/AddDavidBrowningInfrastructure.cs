@@ -199,25 +199,29 @@ public static class ServiceCollectionExtensions
       {
          if (databaseProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
          {
+            string siteDatabaseConnectionName =
+                configuration[ConfigurationHelpers.DatabaseConnectionNameKey] ??
+                ConfigurationHelpers.DefaultSiteDatabaseConnectionName;
+
             string? siteDatabaseConnectionString =
-               configuration.GetConnectionString(
-                  ConfigurationHelpers.SiteDatabaseConnectionName);
+                configuration.GetConnectionString(siteDatabaseConnectionName);
 
             if (string.IsNullOrWhiteSpace(siteDatabaseConnectionString))
             {
                throw new InvalidOperationException(
-                  "Missing connection string: ConnectionStrings:SiteDatabase");
+                   $"Missing connection string: ConnectionStrings:{siteDatabaseConnectionName}. " +
+                   $"Set {ConfigurationHelpers.DatabaseConnectionNameKey} to the name of a configured connection string.");
             }
 
             options.UseSqlServer(
-               siteDatabaseConnectionString,
-               sqlOptions =>
-               {
-                  sqlOptions.EnableRetryOnFailure(
+                siteDatabaseConnectionString,
+                sqlOptions =>
+                {
+                   sqlOptions.EnableRetryOnFailure(
                      maxRetryCount: 5,
                      maxRetryDelay: TimeSpan.FromSeconds(10),
                      errorNumbersToAdd: null);
-               });
+                });
          }
          else if (databaseProvider.EqualsOrdinalIgnoreCase(
             ConfigurationHelpers.InMemoryProviderName))
