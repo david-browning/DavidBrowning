@@ -1,4 +1,7 @@
-﻿using DavidBrowning.Diagnostics;
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+
+using DavidBrowning.Diagnostics;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Cache;
@@ -17,15 +20,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Infrastructure;
+
 public static class ServiceCollectionExtensions
 {
    public static IServiceCollection AddDavidBrowningInfrastructure(
-      this IServiceCollection services,
-      IConfiguration configuration,
-      IHostEnvironment environment)
+       this IServiceCollection services,
+       IConfiguration configuration,
+       IHostEnvironment environment)
    {
       services.AddDavidBrowningCommonOptions(configuration);
-      services.AddDavidBrowningCommonServices(configuration);
+      services.AddDavidBrowningCommonServices();
       services.AddDavidBrowningDatabases(configuration, environment);
       services.AddDavidBrowningStores(configuration);
       services.AddDavidBrowningLookupServices(configuration);
@@ -34,8 +38,8 @@ public static class ServiceCollectionExtensions
    }
 
    public static WebApplication ConfigureErrorHandling(
-      this WebApplication app,
-      IConfiguration configuration)
+       this WebApplication app,
+       IConfiguration configuration)
    {
       if (app.Environment.IsDevelopment())
       {
@@ -57,143 +61,57 @@ public static class ServiceCollectionExtensions
    }
 
    private static IServiceCollection AddDavidBrowningCommonOptions(
-      this IServiceCollection services,
-      IConfiguration configuration)
+       this IServiceCollection services,
+       IConfiguration configuration)
    {
       services.Configure<DiagnosticsOptions>(
-         configuration.GetSection(ConfigurationHelpers.DiagnosticsSectionName));
+          configuration.GetSection(ConfigurationHelpers.DiagnosticsSectionName));
 
       services.Configure<JsonCacheOptions>(
-         configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:JsonCache"));
+          configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:JsonCache"));
 
       services.Configure<RenderedContentCacheOptions>(
-         configuration.GetSection(
-            $"{ConfigurationHelpers.CacheSectionName}:RenderedContentCache"));
+          configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:RenderedContentCache"));
 
       services.Configure<SlugCacheOptions>(
-         configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:SlugCache"));
+          configuration.GetSection($"{ConfigurationHelpers.CacheSectionName}:SlugCache"));
 
       services.Configure<DateTimeDisplayOptions>(
-         configuration.GetSection("DateTimeDisplayOptions"));
+          configuration.GetSection("DateTimeDisplayOptions"));
 
       services.Configure<SiteMetadataOptions>(
-         configuration.GetSection("MetadataOptions"));
-
-      services.Configure<AzureBlobContentStoreOptions>(
-         configuration.GetSection(
-            $"{ConfigurationHelpers.StoresSectionName}:" +
-            $"{ConfigurationHelpers.ContentStoreName}:" +
-            $"{ConfigurationHelpers.AzureStorageBlobsProviderName}"));
+          configuration.GetSection("MetadataOptions"));
 
       return services;
-
    }
 
    private static IServiceCollection AddDavidBrowningCommonServices(
-      this IServiceCollection services,
-      IConfiguration configuration)
+       this IServiceCollection services)
    {
-      // Basic Services
       services.AddMemoryCache();
       services.AddSingleton<UrlBuilder>();
       services.AddSingleton<TimezoneConverter>();
       services.AddSingleton<StructuredDataBuilder>();
       services.AddSingleton<ISlugService, BasicSlugService>();
 
-      // These services are used to estimate the size of objects for use in
-      // caching.
-      services.AddSingleton(typeof(ICacheSizeEstimator<>), typeof(DefaultCacheSizeEstimator<>));
-      services.AddSingleton(typeof(ICacheSizeEstimator<string>), typeof(StringSizeEstimator));
-      services.AddSingleton<ICacheSizeEstimator<byte[]>, ByteArraySizeEstimator>();
-      services.AddSingleton<ICacheSizeEstimator<RenderedContent>, RenderedContentSizeEstimator>();
-      services.AddSingleton<ICacheSizeEstimator<object>, SingleObjectSizeEstimator<object>>();
-
-      // Add specialized caching services
-      services.AddSingleton<JsonCache>();
-      services.AddSingleton<JsonMemoryCache>();
-      services.AddSingleton<RenderedContentMemoryCache>();
-      services.AddSingleton(typeof(SlugMemoryCache<>));
-
-      // Configure how to get content
-      string contentStoreProvider = GetConfiguredStoreProvider(
-         configuration, ConfigurationHelpers.ContentStoreName, ConfigurationHelpers.DummyProviderName);
-      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
-      {
-         services.AddSingleton<IContentStore, LocalContentStore>();
-      }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureStorageBlobsProviderName))
-      {
-         services.AddSingleton<IContentStore, AzureBlobContentStore>();
-      }
-      else
-      {
-         throw new InvalidOperationException(
-            $"Unknown content store provider: {contentStoreProvider}");
-      }
-
-      // Add the basic renderer.
-      services.AddSingleton<IContentRenderer, BasicContentRenderer>();
-
-      // Configure the rendering pipeline depending on whether caching is 
-      // enabled.
-      var enableCache = configuration.GetValue<bool>($"{ConfigurationHelpers.CacheSectionName}:EnableContentCache");
-      if (enableCache)
-      {
-         services.AddSingleton<BasicContentPipeline>();
-         services.AddSingleton<IContentPipeline>(serviceProvider =>
-         {
-            IContentPipeline innerPipeline =
-               serviceProvider.GetRequiredService<BasicContentPipeline>();
-
-            var memoryCache =
-               serviceProvider.GetRequiredService<RenderedContentMemoryCache>();
-
-            return new CachedContentPipeline(
-               innerPipeline,
-               memoryCache);
-         });
-      }
-      else
-      {
-         services.AddSingleton<IContentPipeline, BasicContentPipeline>();
-      }
-
-      services.AddSingleton<MarkdownDocumentRenderer>();
-      services.AddSingleton(serviceProvider =>
-         {
-            IMarkdownDocumentRenderer innerRenderer =
-               serviceProvider.GetRequiredService<
-                  MarkdownDocumentRenderer>();
-
-            if (!enableCache)
-            {
-               return innerRenderer;
-            }
-
-            return new CachedMarkdownDocumentRenderer(
-               innerRenderer,
-               serviceProvider.GetRequiredService<
-                  RenderedContentMemoryCache>());
-         });
-
-      services.AddSingleton<MarkdownPostContentRenderer>();
-      services.AddSingleton<MarkdownProjectContentRenderer>();
       return services;
    }
 
    private static IServiceCollection AddDavidBrowningDatabases(
-      this IServiceCollection services,
-      IConfiguration configuration,
-      IHostEnvironment environment)
+       this IServiceCollection services,
+       IConfiguration configuration,
+       IHostEnvironment environment)
    {
       string databaseProvider =
-         configuration[ConfigurationHelpers.DatabaseProviderKey] ?? ConfigurationHelpers.SqlServerProviderName;
+          configuration[ConfigurationHelpers.DatabaseProviderKey] ??
+          ConfigurationHelpers.SqlServerProviderName;
+
       bool enableSensitiveDataLogging =
-         configuration.GetValue<bool>(ConfigurationHelpers.EnableSensitiveDataLoggingKey);
+          configuration.GetValue<bool>(ConfigurationHelpers.EnableSensitiveDataLoggingKey);
       bool enableDetailedErrors =
-         configuration.GetValue<bool>(ConfigurationHelpers.EnableDetailedErrorsKey);
+          configuration.GetValue<bool>(ConfigurationHelpers.EnableDetailedErrorsKey);
       bool enableSqlCommandLogging =
-         configuration.GetValue<bool>(ConfigurationHelpers.EnableSqlCommandLoggingKey);
+          configuration.GetValue<bool>(ConfigurationHelpers.EnableSqlCommandLoggingKey);
 
       services.AddDbContext<SiteDbContext>(options =>
       {
@@ -218,40 +136,43 @@ public static class ServiceCollectionExtensions
                 sqlOptions =>
                 {
                    sqlOptions.EnableRetryOnFailure(
-                     maxRetryCount: 5,
-                     maxRetryDelay: TimeSpan.FromSeconds(10),
-                     errorNumbersToAdd: null);
+                           maxRetryCount: 5,
+                           maxRetryDelay: TimeSpan.FromSeconds(10),
+                           errorNumbersToAdd: null);
                 });
          }
          else if (databaseProvider.EqualsOrdinalIgnoreCase(
             ConfigurationHelpers.InMemoryProviderName))
          {
-            string databaseName = configuration[ConfigurationHelpers.InMemoryDatabaseNameKey] ?? ConfigurationHelpers.DefaultInMemoryDatabaseName;
+            string databaseName =
+                configuration[ConfigurationHelpers.InMemoryDatabaseNameKey] ??
+                ConfigurationHelpers.DefaultInMemoryDatabaseName;
 
             options.UseInMemoryDatabase(databaseName);
          }
          else
          {
             throw new InvalidOperationException(
-               $"Unsupported database provider: {databaseProvider}");
+                $"Unsupported database provider: {databaseProvider}");
          }
 
          ConfigureEntityFrameworkDiagnostics(
-            environment,
-            options,
-            enableSensitiveDataLogging,
-            enableDetailedErrors,
-            enableSqlCommandLogging);
+             environment,
+             options,
+             enableSensitiveDataLogging,
+             enableDetailedErrors,
+             enableSqlCommandLogging);
       });
+
       return services;
    }
 
    private static void ConfigureEntityFrameworkDiagnostics(
-      IHostEnvironment environment,
-      DbContextOptionsBuilder options,
-      bool enableSensitiveDataLogging,
-      bool enableDetailedErrors,
-      bool enableSqlCommandLogging)
+       IHostEnvironment environment,
+       DbContextOptionsBuilder options,
+       bool enableSensitiveDataLogging,
+       bool enableDetailedErrors,
+       bool enableSqlCommandLogging)
    {
       if (environment.IsDevelopment())
       {
@@ -268,9 +189,9 @@ public static class ServiceCollectionExtensions
          if (enableSqlCommandLogging)
          {
             options.LogTo(
-               Console.WriteLine,
-               new[] { DbLoggerCategory.Database.Command.Name },
-               LogLevel.Information);
+                Console.WriteLine,
+                new[] { DbLoggerCategory.Database.Command.Name },
+                LogLevel.Information);
          }
 
          return;
@@ -279,14 +200,13 @@ public static class ServiceCollectionExtensions
       if (enableSensitiveDataLogging)
       {
          throw new InvalidOperationException(
-            "EnableSensitiveDataLogging must not be enabled outside " +
-            "Development.");
+             "EnableSensitiveDataLogging must not be enabled outside Development.");
       }
 
       if (enableSqlCommandLogging)
       {
          throw new InvalidOperationException(
-            "EnableSqlCommandLogging must not be enabled outside Development.");
+             "EnableSqlCommandLogging must not be enabled outside Development.");
       }
 
       if (enableDetailedErrors)
@@ -295,12 +215,63 @@ public static class ServiceCollectionExtensions
       }
    }
 
+   private static IServiceCollection AddDavidBrowningStores(
+       this IServiceCollection services,
+       IConfiguration configuration)
+   {
+      services.AddConfiguredScopedStore<IErrorStore, SqlErrorStore>(
+          configuration,
+          ConfigurationHelpers.ErrorStoreName,
+          ConfigurationHelpers.SqlServerProviderName);
+
+      services.AddConfiguredScopedStore<IWritingStore, SqlWritingStore>(
+          configuration,
+          ConfigurationHelpers.WritingStoreName,
+          ConfigurationHelpers.SqlServerProviderName);
+
+      services.AddConfiguredScopedStore<IProjectStore, SqlProjectStore>(
+          configuration,
+          ConfigurationHelpers.ProjectStoreName,
+          ConfigurationHelpers.SqlServerProviderName);
+
+      services.AddScoped<IWorkStore, SqlWorkStore>();
+      services.AddScoped<IUncategorizedStore, SqlUncategorizedStore>();
+
+      return services;
+   }
+
+   private static IServiceCollection AddConfiguredScopedStore<TService, TImplementation>(
+       this IServiceCollection services,
+       IConfiguration configuration,
+       string storeName,
+       string supportedProviderName)
+       where TService : class
+       where TImplementation : class, TService
+   {
+      string provider = GetConfiguredStoreProvider(
+          configuration,
+          storeName,
+          ConfigurationHelpers.DummyProviderName);
+
+      if (!provider.EqualsOrdinalIgnoreCase(supportedProviderName))
+      {
+         throw new InvalidOperationException(
+             $"Unknown {storeName} provider: {provider}");
+      }
+
+      services.AddScoped<TService, TImplementation>();
+
+      return services;
+   }
+
    private static IServiceCollection AddDavidBrowningLookupServices(
-      this IServiceCollection services,
-      IConfiguration configuration)
+       this IServiceCollection services,
+       IConfiguration configuration)
    {
       string lookupProvider = GetConfiguredStoreProvider(
-         configuration, ConfigurationHelpers.LookupStoreName, ConfigurationHelpers.DummyProviderName);
+          configuration,
+          ConfigurationHelpers.LookupStoreName,
+          ConfigurationHelpers.DummyProviderName);
 
       if (lookupProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
       {
@@ -309,179 +280,205 @@ public static class ServiceCollectionExtensions
       }
 
       throw new InvalidOperationException(
-         $"Unknown lookup store provider: {lookupProvider}");
-   }
-
-   private static IServiceCollection AddDavidBrowningStores(
-      this IServiceCollection services,
-      IConfiguration configuration)
-   {
-      services.ConfigureErrorStore(configuration);
-      services.ConfigureWritingStore(configuration);
-      services.ConfigureProjectStore(configuration);
-      services.ConfigureWorkStore(configuration);
-      services.ConfigureUncategorizedStore(configuration);
-      return services;
-   }
-
-   private static IServiceCollection ConfigureErrorStore(
-      this IServiceCollection services,
-      IConfiguration configuration)
-   {
-      string provider = GetConfiguredStoreProvider(
-         configuration,
-         ConfigurationHelpers.ErrorStoreName,
-         ConfigurationHelpers.DummyProviderName);
-      if (provider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
-      {
-         services.AddScoped<IErrorStore, SqlErrorStore>();
-         return services;
-      }
-
-      throw new InvalidOperationException(
-         $"Unknown error store provider: {provider}");
-   }
-
-   private static IServiceCollection ConfigureWritingStore(
-      this IServiceCollection services,
-      IConfiguration configuration)
-   {
-      string provider = GetConfiguredStoreProvider(
-         configuration,
-         ConfigurationHelpers.WritingStoreName,
-         ConfigurationHelpers.DummyProviderName);
-      if (provider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
-      {
-         services.AddScoped<IWritingStore, SqlWritingStore>();
-         return services;
-      }
-
-      throw new InvalidOperationException(
-         $"Unknown writing store provider: {provider}");
-   }
-
-   private static IServiceCollection ConfigureProjectStore(
-      this IServiceCollection services,
-      IConfiguration configuration)
-   {
-      string provider = GetConfiguredStoreProvider(
-         configuration,
-         ConfigurationHelpers.ProjectStoreName,
-         ConfigurationHelpers.DummyProviderName);
-      if (provider.EqualsOrdinalIgnoreCase(
-         ConfigurationHelpers.SqlServerProviderName))
-      {
-         services.AddScoped<IProjectStore, SqlProjectStore>();
-         return services;
-      }
-
-      throw new InvalidOperationException(
-         $"Unknown project store provider: {provider}");
-   }
-
-   private static IServiceCollection ConfigureWorkStore(
-      this IServiceCollection services,
-      IConfiguration configuration)
-   {
-      services.AddScoped<IWorkStore, SqlWorkStore>();
-      return services;
-   }
-
-   private static IServiceCollection ConfigureUncategorizedStore(
-      this IServiceCollection services,
-      IConfiguration configuration)
-   {
-      services.AddScoped<IUncategorizedStore, SqlUncategorizedStore>();
-      return services;
+          $"Unknown lookup store provider: {lookupProvider}");
    }
 
    private static IServiceCollection AddDavidBrowningContent(
-      this IServiceCollection services,
-      IConfiguration configuration)
+       this IServiceCollection services,
+       IConfiguration configuration)
    {
-      // These services are used to estimate the size of objects for use in
-      // caching.
+      services.AddContentCacheServices();
+      services.AddContentStore(configuration);
+      services.AddContentRenderingServices(configuration);
+
+      return services;
+   }
+
+   private static IServiceCollection AddContentCacheServices(
+       this IServiceCollection services)
+   {
       services.AddSingleton(typeof(ICacheSizeEstimator<>), typeof(DefaultCacheSizeEstimator<>));
-      services.AddSingleton(typeof(ICacheSizeEstimator<string>), typeof(StringSizeEstimator));
+      services.AddSingleton<ICacheSizeEstimator<string>, StringSizeEstimator>();
       services.AddSingleton<ICacheSizeEstimator<byte[]>, ByteArraySizeEstimator>();
       services.AddSingleton<ICacheSizeEstimator<RenderedContent>, RenderedContentSizeEstimator>();
-
       services.AddSingleton<ICacheSizeEstimator<object>, SingleObjectSizeEstimator<object>>();
 
-      // Add specialized caching services
       services.AddSingleton<JsonCache>();
       services.AddSingleton<JsonMemoryCache>();
       services.AddSingleton<RenderedContentMemoryCache>();
       services.AddSingleton(typeof(SlugMemoryCache<>));
 
-      // Configure how to get content
+      return services;
+   }
+
+   private static IServiceCollection AddContentStore(
+       this IServiceCollection services,
+       IConfiguration configuration)
+   {
       string contentStoreProvider = GetConfiguredStoreProvider(
-         configuration, ConfigurationHelpers.ContentStoreName, ConfigurationHelpers.DummyProviderName);
+          configuration,
+          ConfigurationHelpers.ContentStoreName,
+          ConfigurationHelpers.DummyProviderName);
+
       if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
       {
          services.AddSingleton<IContentStore, LocalContentStore>();
+         return services;
       }
-      else if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureStorageBlobsProviderName))
+
+      if (contentStoreProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureStorageBlobsProviderName))
       {
+         services.ConfigureAzureBlobContentStoreOptions(configuration);
          services.AddSingleton<IContentStore, AzureBlobContentStore>();
-      }
-      else
-      {
-         throw new InvalidOperationException(
-            $"Unknown content store provider: {contentStoreProvider}");
+         return services;
       }
 
-      // Add the basic renderer.
-      services.AddSingleton<IContentRenderer, BasicContentRenderer>();
+      throw new InvalidOperationException(
+          $"Unknown content store provider: {contentStoreProvider}");
+   }
 
-      // Configure the rendering pipeline depending on whether caching is 
-      // enabled.
-      var enableCache = configuration.GetValue<bool>(
-         $"{ConfigurationHelpers.CacheSectionName}:EnableContentCache");
-      if (enableCache)
+   private static IServiceCollection ConfigureAzureBlobContentStoreOptions(
+       this IServiceCollection services,
+       IConfiguration configuration)
+   {
+      services.Configure<AzureBlobContentStoreOptions>(options =>
       {
-         services.AddSingleton<BasicContentPipeline>();
-         services.AddSingleton<IContentPipeline>(serviceProvider =>
+         IConfigurationSection section = configuration.GetSection(
+             $"{ConfigurationHelpers.StoresSectionName}:" +
+             $"{ConfigurationHelpers.ContentStoreName}:" +
+             $"{ConfigurationHelpers.AzureStorageBlobsProviderName}");
+
+         section.Bind(options);
+
+         string? connectionName = options.ConnectionName;
+
+         if (string.IsNullOrWhiteSpace(connectionName) &&
+             !string.IsNullOrWhiteSpace(options.ConnectionString))
          {
-            IContentPipeline innerPipeline =
-               serviceProvider.GetRequiredService<BasicContentPipeline>();
+            string? legacyNamedConnectionString =
+                configuration.GetConnectionString(options.ConnectionString);
 
-            var memoryCache =
-               serviceProvider.GetRequiredService<RenderedContentMemoryCache>();
+            if (!string.IsNullOrWhiteSpace(legacyNamedConnectionString))
+            {
+               connectionName = options.ConnectionString;
+               options.ConnectionString = legacyNamedConnectionString;
+            }
+         }
 
-            return new CachedContentPipeline(
-               innerPipeline,
-               memoryCache);
-         });
-      }
-      else
+         if (string.IsNullOrWhiteSpace(connectionName) &&
+             string.IsNullOrWhiteSpace(options.ConnectionString))
+         {
+            connectionName = ConfigurationHelpers.DefaultContentStorageConnectionName;
+         }
+
+         if (!string.IsNullOrWhiteSpace(connectionName))
+         {
+            string? namedConnectionString = configuration.GetConnectionString(connectionName);
+
+            if (!string.IsNullOrWhiteSpace(namedConnectionString))
+            {
+               options.ConnectionString = namedConnectionString;
+            }
+         }
+
+         if (string.IsNullOrWhiteSpace(options.ConnectionString))
+         {
+            string configuredConnectionName =
+                string.IsNullOrWhiteSpace(connectionName)
+                    ? ConfigurationHelpers.DefaultContentStorageConnectionName
+                    : connectionName;
+
+            throw new InvalidOperationException(
+                $"Missing content storage connection string. Set " +
+                $"ConnectionStrings:{configuredConnectionName}, or set " +
+                $"{ConfigurationHelpers.ContentStorageConnectionNameKey} to a configured connection string name.");
+         }
+
+         if (string.IsNullOrWhiteSpace(options.ContainerName))
+         {
+            throw new InvalidOperationException(
+                "Missing Azure Blob content container name: " +
+                "Stores:ContentStore:AzureStorageBlobs:ContainerName.");
+         }
+      });
+
+      return services;
+   }
+
+   private static IServiceCollection AddContentRenderingServices(
+       this IServiceCollection services,
+       IConfiguration configuration)
+   {
+      services.AddSingleton<IContentRenderer, BasicContentRenderer>();
+      services.AddContentPipeline(configuration);
+      services.AddMarkdownRenderers(configuration);
+
+      return services;
+   }
+
+   private static IServiceCollection AddContentPipeline(
+       this IServiceCollection services,
+       IConfiguration configuration)
+   {
+      bool enableCache =
+          configuration.GetValue<bool>($"{ConfigurationHelpers.CacheSectionName}:EnableContentCache");
+
+      if (!enableCache)
       {
          services.AddSingleton<IContentPipeline, BasicContentPipeline>();
+         return services;
       }
 
-      services.AddSingleton<MarkdownDocumentRenderer>();
-      services.AddSingleton(
-         serviceProvider =>
-         {
-            IMarkdownDocumentRenderer innerRenderer = serviceProvider.GetRequiredService<MarkdownDocumentRenderer>();
-            if (!enableCache)
-            {
-               return innerRenderer;
-            }
+      services.AddSingleton<BasicContentPipeline>();
 
-            return new CachedMarkdownDocumentRenderer(
-               innerRenderer, serviceProvider.GetRequiredService<RenderedContentMemoryCache>());
-         });
+      services.AddSingleton<IContentPipeline>(serviceProvider =>
+      {
+         IContentPipeline innerPipeline =
+             serviceProvider.GetRequiredService<BasicContentPipeline>();
+
+         RenderedContentMemoryCache memoryCache =
+             serviceProvider.GetRequiredService<RenderedContentMemoryCache>();
+
+         return new CachedContentPipeline(innerPipeline, memoryCache);
+      });
+
+      return services;
+   }
+
+   private static IServiceCollection AddMarkdownRenderers(
+       this IServiceCollection services,
+       IConfiguration configuration)
+   {
+      bool enableCache =
+          configuration.GetValue<bool>($"{ConfigurationHelpers.CacheSectionName}:EnableContentCache");
+
+      services.AddSingleton<MarkdownDocumentRenderer>();
+
+      services.AddSingleton<IMarkdownDocumentRenderer>(serviceProvider =>
+      {
+         IMarkdownDocumentRenderer innerRenderer =
+             serviceProvider.GetRequiredService<MarkdownDocumentRenderer>();
+
+         if (!enableCache)
+         {
+            return innerRenderer;
+         }
+
+         return new CachedMarkdownDocumentRenderer(
+             innerRenderer,
+             serviceProvider.GetRequiredService<RenderedContentMemoryCache>());
+      });
 
       services.AddSingleton<MarkdownPostContentRenderer>();
       services.AddSingleton<MarkdownProjectContentRenderer>();
+
       return services;
    }
 
    private static string GetConfiguredStoreProvider(
-      IConfiguration configuration,
-      string storeName,
-      string defaultProviderName)
+       IConfiguration configuration,
+       string storeName,
+       string defaultProviderName)
    {
       string key = GetStoreProviderKey(storeName);
       return configuration[key] ?? defaultProviderName;

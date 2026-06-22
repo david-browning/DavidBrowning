@@ -28,6 +28,10 @@ public class ConfigurationHelpers
    public const string AzureSiteDatabaseConnectionName = "AzureSiteDatabase";
    public const string DefaultSiteDatabaseConnectionName = LocalSiteDatabaseConnectionName;
 
+   public const string LocalContentStorageConnectionName = "LocalContentStorage";
+   public const string AzureContentStorageConnectionName = "AzureContentStorage";
+   public const string DefaultContentStorageConnectionName = LocalContentStorageConnectionName;
+
    public const string SqlServerProviderName = "SqlServer";
    public const string StartupLoggerName = "Startup";
    public const string StoresSectionName = "Stores";
@@ -36,6 +40,7 @@ public class ConfigurationHelpers
 
    public const string DatabaseConnectionNameKey = "Database:ConnectionName";
    public const string DatabaseProviderKey = "Database:Provider";
+   public const string ContentStorageConnectionNameKey = "Stores:ContentStore:AzureStorageBlobs:ConnectionName";
 
    public const string EnableCustomErrorsKey = "Diagnostics:EnableCustomErrors";
    public const string EnableDetailedErrorsKey = "Diagnostics:EntityFrameworkOptions:EnableDetailedErrors";

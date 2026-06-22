@@ -11,16 +11,14 @@ namespace DavidBrowning.Infrastructure.Assets;
 
 public sealed class AzureBlobContentStore : IContentStore
 {
-   public AzureBlobContentStore(
-      IOptions<AzureBlobContentStoreOptions> options)
+   public AzureBlobContentStore(IOptions<AzureBlobContentStoreOptions> options)
    {
       ArgumentNullException.ThrowIfNull(options);
-
       var storeOptions = options.Value;
       ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ConnectionString);
       ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ContainerName);
       _containerClient = new BlobContainerClient(
-         storeOptions.ConnectionString, storeOptions.ContainerName);
+          storeOptions.ConnectionString, storeOptions.ContainerName);
    }
 
    public async Task<StoredAsset> GetAssetAsync(
