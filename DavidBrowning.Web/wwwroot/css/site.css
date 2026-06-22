@@ -750,6 +750,8 @@ div.code-toolbar > pre[class*="language-"] {
    align-items: center;
    justify-content: space-between;
    gap: 1.5rem;
+   margin-right: 2em;
+   margin-left: 2em;
 }
 
 .wb-footer-identity {
@@ -854,6 +856,7 @@ div.code-toolbar > pre[class*="language-"] {
    .wb-footer-inner {
       align-items: flex-start;
       flex-direction: column;
+      margin: 0px;
    }
 
    .wb-footer-nav {
