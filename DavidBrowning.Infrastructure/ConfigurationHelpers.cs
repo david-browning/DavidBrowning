@@ -20,7 +20,7 @@ public class ConfigurationHelpers
    public const string ProjectStoreName = "ProjectStore";
    public const string ProviderSectionName = "Provider";
    public const string SeedFolderName = "Seed";
-   public const string SiteDatabaseConnectionName = "SiteDatabase";
+   public const string SiteDatabaseConnectionName = "LocalSiteDatabase";
    public const string SqlServerProviderName = "SqlServer";
    public const string StartupLoggerName = "Startup";
    public const string StoresSectionName = "Stores";
