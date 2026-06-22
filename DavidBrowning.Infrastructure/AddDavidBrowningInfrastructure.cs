@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
       services.AddDavidBrowningStores(configuration);
       services.AddDavidBrowningLookupServices(configuration);
       services.AddDavidBrowningContent(configuration);
+      services.AddDavidBrowningAzureStorage(configuration);
       return services;
    }
 
@@ -475,6 +476,42 @@ public static class ServiceCollectionExtensions
 
       services.AddSingleton<MarkdownPostContentRenderer>();
       services.AddSingleton<MarkdownProjectContentRenderer>();
+      return services;
+   }
+
+   private static IServiceCollection AddDavidBrowningAzureStorage(
+      this IServiceCollection services,
+      IConfiguration configuration)
+   {
+      services.Configure<AzureBlobContentStoreOptions>(options =>
+      {
+         string connectionName = string.IsNullOrWhiteSpace(options.ConnectionName)
+             ? ConfigurationHelpers.DefaultContentStorageConnectionName
+             : options.ConnectionName;
+
+         string? namedConnectionString = configuration.GetConnectionString(connectionName);
+
+         if (!string.IsNullOrWhiteSpace(namedConnectionString))
+         {
+            options.ConnectionString = namedConnectionString;
+         }
+
+         if (string.IsNullOrWhiteSpace(options.ConnectionString))
+         {
+            throw new InvalidOperationException(
+                $"Missing content storage connection string. Set " +
+                $"ConnectionStrings:{connectionName}, or set " +
+                $"{ConfigurationHelpers.ContentStorageConnectionNameKey} to a configured connection string name.");
+         }
+
+         if (string.IsNullOrWhiteSpace(options.ContainerName))
+         {
+            throw new InvalidOperationException(
+                "Missing Azure Blob content container name: " +
+                "Stores:ContentStore:AzureStorageBlobs:ContainerName.");
+         }
+      });
+
       return services;
    }
 

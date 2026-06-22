@@ -284,45 +284,7 @@ DavidBrowningApp
 
 Use `sa` only for setup. The applications should connect as `DavidBrowningApp`.
 
-Connect as `sa`, then run:
-
-```sql
-USE [master];
-GO
-
-IF NOT EXISTS
-(
-   SELECT 1
-   FROM sys.sql_logins
-   WHERE name = N'DavidBrowningApp'
-)
-BEGIN
-   CREATE LOGIN [DavidBrowningApp]
-   WITH PASSWORD = N'replace-with-a-long-strong-password',
-        CHECK_POLICY = ON,
-        CHECK_EXPIRATION = OFF;
-END
-GO
-
-USE [WebsiteDev];
-GO
-
-IF NOT EXISTS
-(
-   SELECT 1
-   FROM sys.database_principals
-   WHERE name = N'DavidBrowningApp'
-)
-BEGIN
-   CREATE USER [DavidBrowningApp]
-   FOR LOGIN [DavidBrowningApp];
-END
-GO
-
-ALTER ROLE db_datareader ADD MEMBER [DavidBrowningApp];
-ALTER ROLE db_datawriter ADD MEMBER [DavidBrowningApp];
-GO
-```
+Connect as `sa`, then run the SQL code in DavidBrowning.Web/SQL/AzureSetup/001_CreateUsers.sql_
 
 During early development, `db_datareader` and `db_datawriter` are acceptable. If the application needs to create/drop tables during setup, use the `sa` setup connection for that operation instead of giving the app account permanent DDL permissions.
 
@@ -357,7 +319,7 @@ From the repository root:
     dotnet user-secrets set `
        --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
        "ConnectionStrings:LocalSiteDatabase" `
-       "Server=<LAN IP OR HOSTNAME>,1433;Database=DavidBrowning;User Id=DavidBrowningApp;Password=<PASSWORD>;TrustServerCertificate=True;"
+       "Server=<IP OR HOSTNAME>,1433;Database=DavidBrowning;User Id=DavidBrowningApp;Password=<PASSWORD>;TrustServerCertificate=True;"
 
     dotnet user-secrets set `
        --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
@@ -371,7 +333,7 @@ The admin site normally uses a more privileged database account because it edits
     dotnet user-secrets set `
        --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
        "ConnectionStrings:LocalSiteDatabase" `
-       "Server=<LAN IP OR HOSTNAME>,1433;Database=DavidBrowning;User Id=DavidBrowningAdmin;Password=<PASSWORD>;TrustServerCertificate=True;"
+       "Server=<IP OR HOSTNAME>,1433;Database=DavidBrowning;User Id=DavidBrowningAdmin;Password=<PASSWORD>;TrustServerCertificate=True;"
 
     dotnet user-secrets set `
        --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
@@ -407,6 +369,102 @@ Use the same pattern for the admin project:
        "LocalSiteDatabase"
 
 User secrets are per project. Setting a secret for `DavidBrowning.Web` does not set it for `DavidBrowning.Admin`.
+
+## Content storage connection strings
+
+The content store can use either local files or an Azure Blob-compatible store. For production parity, development can use Azurite while production uses Azure Blob Storage.
+
+The active blob connection string is selected by:
+
+    Stores:ContentStore:AzureStorageBlobs:ConnectionName
+
+Expected connection string names:
+
+    LocalContentStorage
+        LAN or local Azurite.
+
+    AzureContentStorage
+        Real Azure Storage Account.
+
+Development defaults to:
+
+    Stores:ContentStore:AzureStorageBlobs:ConnectionName = LocalContentStorage
+
+Production-style settings use:
+
+    Stores:ContentStore:AzureStorageBlobs:ConnectionName = AzureContentStorage
+
+Both environments should use the same logical asset keys and usually the same container name:
+
+    content
+
+Asset keys should remain provider-neutral:
+
+    images/profile.jpg
+    documents/resume.pdf
+    writing/four-fs.md
+
+Do not store blob URLs or machine-specific paths in database records.
+
+### Local or LAN Azurite secrets
+
+If Azurite is running on the LAN server:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "ConnectionStrings:LocalContentStorage" `
+       "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=<ACCOUNT KEY>;BlobEndpoint=http://<IP OR HOSTNAME>:10000/devstoreaccount1;"
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "ConnectionStrings:LocalContentStorage" `
+       "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=<ACCOUNT KEY>;BlobEndpoint=http://<IP OR HOSTNAME>:10000/devstoreaccount1;"
+
+The account key for devstoreaccount1 is public knowledge. Look it up.       
+
+If Azurite is running on the development PC, `UseDevelopmentStorage=true` may be enough:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "ConnectionStrings:LocalContentStorage" `
+       "UseDevelopmentStorage=true"
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "ConnectionStrings:LocalContentStorage" `
+       "UseDevelopmentStorage=true"
+
+### Azure Storage secrets
+
+After the Azure Storage Account is created, store the production-like connection string as:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "ConnectionStrings:AzureContentStorage" `
+       "DefaultEndpointsProtocol=https;AccountName=<ACCOUNT NAME>;AccountKey=<KEY>;EndpointSuffix=core.windows.net"
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Admin\DavidBrowning.Admin.csproj `
+       "ConnectionStrings:AzureContentStorage" `
+       "DefaultEndpointsProtocol=https;AccountName=<ACCOUNT NAME>;AccountKey=<KEY>;EndpointSuffix=core.windows.net"
+
+User secrets are per project. Setting a storage secret for `DavidBrowning.Web` does not set it for `DavidBrowning.Admin`.
+
+### Switching blob storage during development
+
+To temporarily use real Azure Blob Storage while running locally:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "Stores:ContentStore:AzureStorageBlobs:ConnectionName" `
+       "AzureContentStorage"
+
+To switch back to Azurite:
+
+    dotnet user-secrets set `
+       --project .\DavidBrowning.Web\DavidBrowning.Web.csproj `
+       "Stores:ContentStore:AzureStorageBlobs:ConnectionName" `
+       "LocalContentStorage"
 
 ## Windows, Linux hostnames, DNS, and shares
 
