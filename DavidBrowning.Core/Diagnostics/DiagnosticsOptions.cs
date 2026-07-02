@@ -6,5 +6,7 @@ public class DiagnosticsOptions
 {
    public bool EnableDebugEndpoints { get; set; } = false;
 
+   public WarmupOptions Warmup { get; set; } = new();
+
    public EntityFrameworkOptions EntityFrameworkOptions { get; set; } = new();
 }

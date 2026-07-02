@@ -1,0 +1,50 @@
+﻿// Copyright © 2026 David Browning. All rights reserved.
+// Source-available for viewing only. No license granted.
+using System;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+
+namespace DavidBrowning.Helpers;
+public static class SqlHelpers
+{
+   /// <summary>
+   /// Returns true if the exception or any of its child exceptions is a 
+   /// timeout exception or the database is resuming error.
+   /// </summary>
+   /// <param name="exception"></param>
+   /// <returns></returns>
+   public static bool IsWarmupRetryException(Exception exception)
+   {
+      // Recursively go through the inner exceptions looking for a timeout
+      // or transient error.
+      for (Exception? cur = exception.InnerException;
+         cur != null;
+         cur = cur.InnerException)
+      {
+         if (cur is TimeoutException)
+         {
+            return true;
+         }
+
+         if (cur is SqlException sqlEx)
+         {
+            foreach (SqlError error in sqlEx.Errors)
+            {
+               if (IsTransientWarmupSqlError(error.Number))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+
+      return false;
+   }
+
+   public static bool IsTransientWarmupSqlError(int errorNumber)
+   {
+      return errorNumber is
+         40613 or // Database is not currently available / resuming.
+         -2;      // SQL command timeout.
+   }
+}

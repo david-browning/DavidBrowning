@@ -26,6 +26,7 @@ public class ConfigurationHelpers
 
    public const string LocalSiteDatabaseConnectionName = "LocalSiteDatabase";
    public const string AzureSiteDatabaseConnectionName = "AzureSiteDatabase";
+   public const string AzureAdminSiteDatabaseConnectionName = "AzureAdminSiteDatabase";
    public const string DefaultSiteDatabaseConnectionName = LocalSiteDatabaseConnectionName;
 
    public const string LocalContentStorageConnectionName = "LocalContentStorage";
