@@ -1,9 +1,11 @@
 ﻿using System;
+using Azure.Identity;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Admin;
@@ -68,12 +70,21 @@ public static class Program
          if (string.IsNullOrWhiteSpace(keyVaultUriText))
          {
             throw new InvalidOperationException(
-               "Secrets:Provider is KeyVault, but KeyVault:Uri is missing.");
+                "Secrets:Provider is KeyVault, but KeyVault:Uri is missing.");
          }
 
-         //builder.Configuration.AddAzureKeyVault(
-         //   new Uri(keyVaultUriText),
-         //   new DefaultAzureCredential());
+         Uri keyVaultUri = new(keyVaultUriText);
+         if (builder.Environment.IsProduction())
+         {
+            builder.Configuration.AddAzureKeyVault(
+                keyVaultUri, new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned));
+         }
+         else
+         {
+            builder.Configuration.AddAzureKeyVault(
+                keyVaultUri, new DefaultAzureCredential());
+         }
+
          return;
       }
 
