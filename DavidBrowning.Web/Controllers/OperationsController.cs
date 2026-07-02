@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -68,8 +69,7 @@ public class OperationsController : ControllerBase
             return NoContent();
          }
 
-         await _siteDbContext.Database.ExecuteSqlRawAsync(
-            "SELECT 1;", cancellationToken);
+         await WarmupDatabaseAsync(cancellationToken);
 
          _memoryCache.Set(
             cacheKey, DateTimeOffset.UtcNow, _warmupOptions.MinimumInterval);
@@ -95,6 +95,39 @@ public class OperationsController : ControllerBase
       }
 
       return token.Equals(stored, StringComparison.Ordinal);
+   }
+
+   private async Task WarmupDatabaseAsync(CancellationToken cancellationToken)
+   {
+      using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(
+         cancellationToken);
+
+      timeoutSource.CancelAfter(_warmupOptions.MaximumWaitTime);
+      var timeoutToken = timeoutSource.Token;
+
+      while (true)
+      {
+         try
+         {
+            // Try to access the database
+            await _siteDbContext.Database.ExecuteSqlRawAsync(
+               "SELECT 1;", cancellationToken);
+
+            // Break out of the loop if successful.
+            return;
+         }
+         catch (Exception ex) 
+         when (SqlHelpers.IsWarmupRetryException(ex) && 
+            !timeoutToken.IsCancellationRequested)
+         {
+            _logger.LogInformation(
+               ex, "Warmup attempt failed. The database may still be resuming.");
+
+            // Force close the connection and retry on the next loop.
+            await _siteDbContext.Database.CloseConnectionAsync();
+            await Task.Delay(_warmupOptions.RetryDelay, timeoutToken);
+         }
+      }
    }
 
    private static readonly SemaphoreSlim _warmupSemaphore = new(1, 1);

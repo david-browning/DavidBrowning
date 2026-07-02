@@ -26,8 +26,8 @@ public sealed class ContentController : Controller
 
    [HttpGet("{**assetKey}", Name = "GetContentAsset")]
    public async Task<IActionResult> GetAsync(
-   string assetKey,
-   CancellationToken cancellationToken)
+      string assetKey,
+      CancellationToken cancellationToken)
    {
       try
       {

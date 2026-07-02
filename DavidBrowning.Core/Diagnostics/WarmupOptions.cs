@@ -5,10 +5,13 @@ using System;
 namespace DavidBrowning.Diagnostics;
 public class WarmupOptions
 {
-
    public bool Enabled { get; set; } = false;
 
    public string? Token { get; set; }
 
    public TimeSpan MinimumInterval { get; set; } = TimeSpan.FromMinutes(30);
+
+   public TimeSpan MaximumWaitTime { get; set; } = TimeSpan.FromMinutes(2);
+
+   public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(5);
 }
