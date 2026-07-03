@@ -47,6 +47,12 @@ public class ConfigurationHelpers
    public const string EnableDetailedErrorsKey = "Diagnostics:EntityFrameworkOptions:EnableDetailedErrors";
    public const string EnableSensitiveDataLoggingKey = "Diagnostics:EntityFrameworkOptions:EnableSensitiveDataLogging";
    public const string EnableSqlCommandLoggingKey = "Diagnostics:EntityFrameworkOptions:EnableSqlCommandLogging";
+   
+   public const string SqlConnectTimeoutSeconds = "Database:ConnectTimeoutSeconds";
+   public const string SqlCommandTimeoutSeconds = "Database:CommandTimeoutSeconds";
+   public const string SqlConnectRetryDelay = "Database:MaxRetryDelaySeconds";
+   public const string SqlConnectMaxRetry = "Database:RetryCount";
+
    public const string InMemoryDatabaseNameKey = "Database:InMemoryDatabaseName";
    public const string InternalServerErrorPath = "/Error/StatusCode/500";
    public const string KeyVaultUriKey = "KeyVault:Uri";

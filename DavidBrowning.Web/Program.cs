@@ -9,6 +9,7 @@ using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Seo;
 using DavidBrowning.Web.Data.Seeding;
+using DavidBrowning.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +45,7 @@ public static partial class Program
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();
+      app.UseMiddleware<DatabaseWarmupRedirectMiddleware>();
       app.UseRouting();
       app.UseAuthentication();
       app.UseAuthorization();
