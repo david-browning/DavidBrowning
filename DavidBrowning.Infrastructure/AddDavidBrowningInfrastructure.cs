@@ -13,6 +13,7 @@ using DavidBrowning.Infrastructure.Options;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -113,6 +114,15 @@ public static class ServiceCollectionExtensions
       bool enableSqlCommandLogging =
           configuration.GetValue<bool>(ConfigurationHelpers.EnableSqlCommandLoggingKey);
 
+      var connectTimeoutSeconds =
+         configuration.GetValue<int?>(ConfigurationHelpers.SqlConnectTimeoutSeconds) ?? 15;
+      var connectRetryDelaySeconds =
+         configuration.GetValue<int?>(ConfigurationHelpers.SqlConnectRetryDelay) ?? 5;
+      var retryCount =
+         configuration.GetValue<int?>(ConfigurationHelpers.SqlConnectMaxRetry) ?? 5;
+      var commandTimeoutSeconds = 
+         configuration.GetValue<int?>(ConfigurationHelpers.SqlCommandTimeoutSeconds) ?? 30;
+
       services.AddDbContext<SiteDbContext>(options =>
       {
          if (databaseProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.SqlServerProviderName))
@@ -131,15 +141,26 @@ public static class ServiceCollectionExtensions
                    $"Set {ConfigurationHelpers.DatabaseConnectionNameKey} to the name of a configured connection string.");
             }
 
+            SqlConnectionStringBuilder connectionStringBuilder = new(
+               siteDatabaseConnectionString)
+            {
+               ConnectTimeout = connectTimeoutSeconds,
+            };
+
             options.UseSqlServer(
-                siteDatabaseConnectionString,
-                sqlOptions =>
-                {
-                   sqlOptions.EnableRetryOnFailure(
-                           maxRetryCount: 5,
-                           maxRetryDelay: TimeSpan.FromSeconds(10),
-                           errorNumbersToAdd: null);
-                });
+               connectionStringBuilder.ConnectionString,
+               sqlOptions =>
+               {
+                  sqlOptions.CommandTimeout(commandTimeoutSeconds);
+
+                  if (retryCount > 0)
+                  {
+                     sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: retryCount,
+                        maxRetryDelay: TimeSpan.FromSeconds(connectRetryDelaySeconds),
+                        errorNumbersToAdd: null);
+                  }
+               });
          }
          else if (databaseProvider.EqualsOrdinalIgnoreCase(
             ConfigurationHelpers.InMemoryProviderName))

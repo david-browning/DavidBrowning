@@ -17,7 +17,7 @@ public static class SqlHelpers
    {
       // Recursively go through the inner exceptions looking for a timeout
       // or transient error.
-      for (Exception? cur = exception.InnerException;
+      for (Exception? cur = exception;
          cur != null;
          cur = cur.InnerException)
       {
@@ -44,7 +44,12 @@ public static class SqlHelpers
    public static bool IsTransientWarmupSqlError(int errorNumber)
    {
       return errorNumber is
+         -2 or    // SQL timeout.
          40613 or // Database is not currently available / resuming.
-         -2;      // SQL command timeout.
+         40197 or // Service encountered an error processing the request.
+         40501 or // Service is busy.
+         4060 or  // Cannot open database requested by the login.
+         10928 or // Resource limit reached.
+         10929;   // Resource limit reached.
    }
 }
