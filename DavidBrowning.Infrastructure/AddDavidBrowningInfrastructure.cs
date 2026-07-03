@@ -1,6 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using Azure.Identity;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Assets;
@@ -17,8 +18,9 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace DavidBrowning.Infrastructure;
 
@@ -26,10 +28,11 @@ public static class ServiceCollectionExtensions
 {
    public static IServiceCollection AddDavidBrowningInfrastructure(
        this IServiceCollection services,
-       IConfiguration configuration,
+       ConfigurationManager configuration,
        IHostEnvironment environment)
    {
       services.AddDavidBrowningCommonOptions(configuration);
+      services.AddDavidBrowningSecrets(configuration, environment);
       services.AddDavidBrowningCommonServices();
       services.AddDavidBrowningDatabases(configuration, environment);
       services.AddDavidBrowningStores(configuration);
@@ -82,6 +85,9 @@ public static class ServiceCollectionExtensions
 
       services.Configure<SiteMetadataOptions>(
           configuration.GetSection("MetadataOptions"));
+
+      services.Configure<WarmupOptions>(
+         configuration.GetSection("Diagnostics:Warmup"));
 
       return services;
    }
@@ -424,6 +430,65 @@ public static class ServiceCollectionExtensions
       });
 
       return services;
+   }
+
+   private static IServiceCollection AddDavidBrowningSecrets(
+      this IServiceCollection services,
+      ConfigurationManager configuration,
+      IHostEnvironment environment)
+   {
+      string secretsProvider =
+         configuration[ConfigurationHelpers.SecretsProviderKey] ?? ConfigurationHelpers.LocalProviderName;
+
+      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
+      {
+         // Do nothing.
+         //
+         // In Development, WebApplication.CreateBuilder already loads
+         // User Secrets
+         // when the project has a UserSecretsId.
+         //
+         // For local non-Development environments, prefer environment variables
+         // or a machine-local file that is not committed.
+         return services;
+      }
+
+      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureKeyVaultProviderName))
+      {
+         string? keyVaultUriText = configuration[ConfigurationHelpers.KeyVaultUriKey];
+         if (string.IsNullOrWhiteSpace(keyVaultUriText))
+         {
+            throw new InvalidOperationException(
+                "Secrets:Provider is KeyVault, but KeyVault:Uri is missing.");
+         }
+
+         Uri keyVaultUri = new(keyVaultUriText);
+         AzureKeyVaultConfigurationOptions opts = new()
+         {
+            ReloadInterval = TimeSpan.FromMinutes(60)
+         };
+
+         if (environment.IsProduction())
+         {
+            // Managed identity token credential discovered when running in Azure environments
+            configuration.AddAzureKeyVault(
+                keyVaultUri,
+                new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned),
+                opts);
+         }
+         else
+         {
+            configuration.AddAzureKeyVault(
+                keyVaultUri,
+                new DefaultAzureCredential(),
+                opts);
+         }
+
+         return services;
+      }
+
+      throw new InvalidOperationException(
+         $"Unknown secrets provider: {secretsProvider}");
    }
 
    private static IServiceCollection AddContentRenderingServices(
