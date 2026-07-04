@@ -1,6 +1,9 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using Azure;
+using Azure.Core;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Helpers;
@@ -14,13 +17,16 @@ using DavidBrowning.Infrastructure.Options;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+// Azure also has a DiagnosticsOptions. Use ours.
+using DiagnosticsOptions = DavidBrowning.Diagnostics.DiagnosticsOptions;
 
 namespace DavidBrowning.Infrastructure;
 
@@ -438,7 +444,8 @@ public static class ServiceCollectionExtensions
       IHostEnvironment environment)
    {
       string secretsProvider =
-         configuration[ConfigurationHelpers.SecretsProviderKey] ?? ConfigurationHelpers.LocalProviderName;
+         configuration[ConfigurationHelpers.SecretsProviderKey] ?? 
+         ConfigurationHelpers.LocalProviderName;
 
       if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
       {
@@ -455,34 +462,7 @@ public static class ServiceCollectionExtensions
 
       if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureKeyVaultProviderName))
       {
-         string? keyVaultUriText = configuration[ConfigurationHelpers.KeyVaultUriKey];
-         if (string.IsNullOrWhiteSpace(keyVaultUriText))
-         {
-            throw new InvalidOperationException(
-                "Secrets:Provider is KeyVault, but KeyVault:Uri is missing.");
-         }
-
-         Uri keyVaultUri = new(keyVaultUriText);
-         AzureKeyVaultConfigurationOptions opts = new()
-         {
-            ReloadInterval = TimeSpan.FromMinutes(60)
-         };
-
-         if (environment.IsProduction())
-         {
-            // Managed identity token credential discovered when running in Azure environments
-            configuration.AddAzureKeyVault(
-                keyVaultUri,
-                new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned),
-                opts);
-         }
-         else
-         {
-            configuration.AddAzureKeyVault(
-                keyVaultUri,
-                new DefaultAzureCredential(),
-                opts);
-         }
+         AddWebsiteKeyVault(configuration, environment);
 
          return services;
       }
@@ -529,6 +509,84 @@ public static class ServiceCollectionExtensions
       });
 
       return services;
+   }
+
+   private static void AddWebsiteKeyVault(
+      ConfigurationManager configuration,
+      IHostEnvironment environment)
+   {
+      string? keyVaultUriText = configuration["KeyVault:VaultUri"];
+
+      if (string.IsNullOrWhiteSpace(keyVaultUriText))
+      {
+         throw new InvalidOperationException(
+            "Secrets:Provider is AzureKeyVault, but KeyVault:VaultUri is missing.");
+      }
+
+      if (!Uri.TryCreate(keyVaultUriText, UriKind.Absolute, out Uri? keyVaultUri))
+      {
+         throw new InvalidOperationException(
+            $"Secrets:Provider is AzureKeyVault, but KeyVault:VaultUri is not a valid absolute URI: '{keyVaultUriText}'.");
+      }
+
+      try
+      {
+         AzureKeyVaultConfigurationOptions options = new()
+         {
+            ReloadInterval = TimeSpan.FromMinutes(60)
+         };
+
+         configuration.AddAzureKeyVault(
+            keyVaultUri,
+            CreateKeyVaultCredential(environment),
+            options);
+      }
+      catch (CredentialUnavailableException exception)
+      {
+         throw new InvalidOperationException(
+            "Azure Key Vault authentication is unavailable. For local development, sign in with Azure CLI using 'az login' or sign in through Visual Studio.",
+            exception);
+      }
+      catch (AuthenticationFailedException exception)
+      {
+         throw new InvalidOperationException(
+            "Azure Key Vault authentication failed. Check that your local Azure account is signed in, using the correct tenant, and has access to the configured vault.",
+            exception);
+      }
+      catch (RequestFailedException exception) when (exception.Status == 403)
+      {
+         throw new InvalidOperationException(
+            "Azure Key Vault rejected the request with 403 Forbidden. The signed-in identity probably lacks secret read/list permissions, or the vault firewall is blocking this machine.",
+            exception);
+      }
+      catch (RequestFailedException exception) when (exception.Status == 404)
+      {
+         throw new InvalidOperationException(
+            $"Azure Key Vault returned 404 Not Found. Check the vault URI: '{keyVaultUri}'.",
+            exception);
+      }
+      catch (RequestFailedException exception)
+      {
+         throw new InvalidOperationException(
+            $"Azure Key Vault could not be loaded. Status={exception.Status}, ErrorCode={exception.ErrorCode}, Message={exception.Message}",
+            exception);
+      }
+   }
+
+   private static TokenCredential CreateKeyVaultCredential(
+      IHostEnvironment environment)
+   {
+      if(environment.IsProduction())
+      {
+         return new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned);
+      }
+      
+      return new DefaultAzureCredential(new DefaultAzureCredentialOptions()
+      {
+         ExcludeEnvironmentCredential = true,
+         ExcludeWorkloadIdentityCredential = true,
+         ExcludeManagedIdentityCredential = true,
+      });
    }
 
    private static IServiceCollection AddMarkdownRenderers(

@@ -55,7 +55,7 @@ public class ConfigurationHelpers
 
    public const string InMemoryDatabaseNameKey = "Database:InMemoryDatabaseName";
    public const string InternalServerErrorPath = "/Error/StatusCode/500";
-   public const string KeyVaultUriKey = "KeyVault:Uri";
+   public const string KeyVaultUriKey = "KeyVault:VaultUri";
    public const string SecretsProviderKey = "Secrets:Provider";
    public const string SeedEnabledKey = "Database:Seed:Enabled";
    public const string SeedRootFolderKey = "Database:Seed:RootFolder";

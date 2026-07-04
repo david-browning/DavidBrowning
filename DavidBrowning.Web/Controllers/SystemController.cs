@@ -19,7 +19,7 @@ public sealed class SystemController : Controller
    public const string WarmupTokenHeaderName = "X-Warmup-Token";
 
    public SystemController(
-      ILogger<OperationsController> logger,
+      ILogger<SystemController> logger,
       IOptionsMonitor<WarmupOptions> options,
       IMemoryCache memoryCache,
       DatabaseWarmupService warmup)
@@ -123,7 +123,7 @@ public sealed class SystemController : Controller
    }
 
    private static readonly SemaphoreSlim _warmupSemaphore = new(1, 1);
-   private readonly ILogger<OperationsController> _logger;
+   private readonly ILogger<SystemController> _logger;
    private readonly IMemoryCache _memoryCache;
    private readonly DatabaseWarmupService _databaseWarmupService;
    private IOptionsMonitor<WarmupOptions> _warmupOptions;
