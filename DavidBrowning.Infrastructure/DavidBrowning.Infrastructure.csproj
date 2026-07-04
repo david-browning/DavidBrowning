@@ -1,21 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+   <PropertyGroup>
+      <TargetFramework>net8.0</TargetFramework>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
+   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
-    <PackageReference Include="Markdig" Version="1.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.27" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.27" />
-  </ItemGroup>
+   <ItemGroup>
+      <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
+      <PackageReference Include="Azure.Identity" Version="1.21.0" />
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
+      <PackageReference Include="Markdig" Version="1.2.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.27" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.27" />
+   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DavidBrowning.Core\DavidBrowning.Core.csproj" />
-  </ItemGroup>
+   <ItemGroup>
+      <ProjectReference Include="..\DavidBrowning.Core\DavidBrowning.Core.csproj" />
+   </ItemGroup>
 
    <ItemGroup>
       <FrameworkReference Include="Microsoft.AspNetCore.App" />

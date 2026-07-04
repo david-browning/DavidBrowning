@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		AppServiceAllowListing.md = AppServiceAllowListing.md
 		COPYRIGHT = COPYRIGHT
 		README.md = README.md
+		SecretProviderSwitching.md = SecretProviderSwitching.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DavidBrowning.Core", "DavidBrowning.Core\DavidBrowning.Core.csproj", "{8806D34B-CA2B-CB4C-5CF8-E631136BEDF1}"

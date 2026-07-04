@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 
 using Azure;
+using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using DavidBrowning.Infrastructure.Options;
@@ -11,14 +12,23 @@ namespace DavidBrowning.Infrastructure.Assets;
 
 public sealed class AzureBlobContentStore : IContentStore
 {
-   public AzureBlobContentStore(IOptions<AzureBlobContentStoreOptions> options)
+   public AzureBlobContentStore(
+      IOptions<AzureBlobContentStoreOptions> options,
+      TokenCredential tokenCredential)
    {
       ArgumentNullException.ThrowIfNull(options);
-      var storeOptions = options.Value;
-      ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ConnectionString);
+      ArgumentNullException.ThrowIfNull(tokenCredential);
+
+      AzureBlobContentStoreOptions storeOptions = options.Value;
+
+      ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ServiceUri);
       ArgumentException.ThrowIfNullOrWhiteSpace(storeOptions.ContainerName);
-      _containerClient = new BlobContainerClient(
-          storeOptions.ConnectionString, storeOptions.ContainerName);
+
+      BlobServiceClient serviceClient = new(
+         new Uri(storeOptions.ServiceUri), tokenCredential);
+
+      _containerClient = serviceClient.GetBlobContainerClient(
+         storeOptions.ContainerName);
    }
 
    public async Task<StoredAsset> GetAssetAsync(

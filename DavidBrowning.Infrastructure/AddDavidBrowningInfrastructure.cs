@@ -1,6 +1,11 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
+using System;
+using Azure;
+using Azure.Core;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Assets;
@@ -13,6 +18,7 @@ using DavidBrowning.Infrastructure.Options;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,21 +26,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+// Azure also has a DiagnosticsOptions. Use ours.
+using DiagnosticsOptions = DavidBrowning.Diagnostics.DiagnosticsOptions;
+
 namespace DavidBrowning.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
    public static IServiceCollection AddDavidBrowningInfrastructure(
        this IServiceCollection services,
-       IConfiguration configuration,
+       ConfigurationManager configuration,
        IHostEnvironment environment)
    {
       services.AddDavidBrowningCommonOptions(configuration);
-      services.AddDavidBrowningCommonServices();
+      services.AddDavidBrowningSecrets(configuration, environment);
+      services.AddDavidBrowningCommonServices(environment);
       services.AddDavidBrowningDatabases(configuration, environment);
       services.AddDavidBrowningStores(configuration);
-      services.AddDavidBrowningLookupServices(configuration);
-      services.AddDavidBrowningContent(configuration);
+      services.AddDavidBrowningLookupServices(configuration, environment);
+      services.AddDavidBrowningContent(configuration,environment);
       return services;
    }
 
@@ -83,17 +93,22 @@ public static class ServiceCollectionExtensions
       services.Configure<SiteMetadataOptions>(
           configuration.GetSection("MetadataOptions"));
 
+      services.Configure<WarmupOptions>(
+         configuration.GetSection("Diagnostics:Warmup"));
+
       return services;
    }
 
    private static IServiceCollection AddDavidBrowningCommonServices(
-       this IServiceCollection services)
+       this IServiceCollection services,
+       IHostEnvironment environment)
    {
       services.AddMemoryCache();
       services.AddSingleton<UrlBuilder>();
       services.AddSingleton<TimezoneConverter>();
       services.AddSingleton<StructuredDataBuilder>();
       services.AddSingleton<ISlugService, BasicSlugService>();
+      services.AddSingleton(_ => CreateAzureCredential(environment));
 
       return services;
    }
@@ -120,7 +135,7 @@ public static class ServiceCollectionExtensions
          configuration.GetValue<int?>(ConfigurationHelpers.SqlConnectRetryDelay) ?? 5;
       var retryCount =
          configuration.GetValue<int?>(ConfigurationHelpers.SqlConnectMaxRetry) ?? 5;
-      var commandTimeoutSeconds = 
+      var commandTimeoutSeconds =
          configuration.GetValue<int?>(ConfigurationHelpers.SqlCommandTimeoutSeconds) ?? 30;
 
       services.AddDbContext<SiteDbContext>(options =>
@@ -287,7 +302,8 @@ public static class ServiceCollectionExtensions
 
    private static IServiceCollection AddDavidBrowningLookupServices(
        this IServiceCollection services,
-       IConfiguration configuration)
+       IConfiguration configuration,
+       IHostEnvironment environment)
    {
       string lookupProvider = GetConfiguredStoreProvider(
           configuration,
@@ -306,17 +322,19 @@ public static class ServiceCollectionExtensions
 
    private static IServiceCollection AddDavidBrowningContent(
        this IServiceCollection services,
-       IConfiguration configuration)
+       IConfiguration configuration,
+       IHostEnvironment environment)
    {
-      services.AddContentCacheServices();
-      services.AddContentStore(configuration);
+      services.AddContentCacheServices(environment);
+      services.AddContentStore(configuration, environment);
       services.AddContentRenderingServices(configuration);
 
       return services;
    }
 
    private static IServiceCollection AddContentCacheServices(
-       this IServiceCollection services)
+       this IServiceCollection services,
+       IHostEnvironment environment)
    {
       services.AddSingleton(typeof(ICacheSizeEstimator<>), typeof(DefaultCacheSizeEstimator<>));
       services.AddSingleton<ICacheSizeEstimator<string>, StringSizeEstimator>();
@@ -334,7 +352,8 @@ public static class ServiceCollectionExtensions
 
    private static IServiceCollection AddContentStore(
        this IServiceCollection services,
-       IConfiguration configuration)
+       IConfiguration configuration,
+       IHostEnvironment environment)
    {
       string contentStoreProvider = GetConfiguredStoreProvider(
           configuration,
@@ -365,65 +384,68 @@ public static class ServiceCollectionExtensions
       services.Configure<AzureBlobContentStoreOptions>(options =>
       {
          IConfigurationSection section = configuration.GetSection(
-             $"{ConfigurationHelpers.StoresSectionName}:" +
-             $"{ConfigurationHelpers.ContentStoreName}:" +
-             $"{ConfigurationHelpers.AzureStorageBlobsProviderName}");
+            $"{ConfigurationHelpers.StoresSectionName}:" +
+            $"{ConfigurationHelpers.ContentStoreName}:" +
+            $"{ConfigurationHelpers.AzureStorageBlobsProviderName}");
 
          section.Bind(options);
 
-         string? connectionName = options.ConnectionName;
-
-         if (string.IsNullOrWhiteSpace(connectionName) &&
-             !string.IsNullOrWhiteSpace(options.ConnectionString))
+         if (string.IsNullOrWhiteSpace(options.ServiceUri))
          {
-            string? legacyNamedConnectionString =
-                configuration.GetConnectionString(options.ConnectionString);
-
-            if (!string.IsNullOrWhiteSpace(legacyNamedConnectionString))
-            {
-               connectionName = options.ConnectionString;
-               options.ConnectionString = legacyNamedConnectionString;
-            }
-         }
-
-         if (string.IsNullOrWhiteSpace(connectionName) &&
-             string.IsNullOrWhiteSpace(options.ConnectionString))
-         {
-            connectionName = ConfigurationHelpers.DefaultContentStorageConnectionName;
-         }
-
-         if (!string.IsNullOrWhiteSpace(connectionName))
-         {
-            string? namedConnectionString = configuration.GetConnectionString(connectionName);
-
-            if (!string.IsNullOrWhiteSpace(namedConnectionString))
-            {
-               options.ConnectionString = namedConnectionString;
-            }
-         }
-
-         if (string.IsNullOrWhiteSpace(options.ConnectionString))
-         {
-            string configuredConnectionName =
-                string.IsNullOrWhiteSpace(connectionName)
-                    ? ConfigurationHelpers.DefaultContentStorageConnectionName
-                    : connectionName;
-
             throw new InvalidOperationException(
-                $"Missing content storage connection string. Set " +
-                $"ConnectionStrings:{configuredConnectionName}, or set " +
-                $"{ConfigurationHelpers.ContentStorageConnectionNameKey} to a configured connection string name.");
+               "Missing Azure Blob service URI. Set " +
+               "Stores:ContentStore:AzureStorageBlobs:ServiceUri.");
+         }
+
+         if (!Uri.TryCreate(options.ServiceUri, UriKind.Absolute, out _))
+         {
+            throw new InvalidOperationException(
+               "Azure Blob service URI must be a valid absolute URI. Set " +
+               "Stores:ContentStore:AzureStorageBlobs:ServiceUri.");
          }
 
          if (string.IsNullOrWhiteSpace(options.ContainerName))
          {
             throw new InvalidOperationException(
-                "Missing Azure Blob content container name: " +
-                "Stores:ContentStore:AzureStorageBlobs:ContainerName.");
+               "Missing Azure Blob container name. Set " +
+               "Stores:ContentStore:AzureStorageBlobs:ContainerName.");
          }
       });
 
       return services;
+   }
+
+   private static IServiceCollection AddDavidBrowningSecrets(
+      this IServiceCollection services,
+      ConfigurationManager configuration,
+      IHostEnvironment environment)
+   {
+      string secretsProvider =
+         configuration[ConfigurationHelpers.SecretsProviderKey] ??
+         ConfigurationHelpers.LocalProviderName;
+
+      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
+      {
+         // Do nothing.
+         //
+         // In Development, WebApplication.CreateBuilder already loads
+         // User Secrets
+         // when the project has a UserSecretsId.
+         //
+         // For local non-Development environments, prefer environment variables
+         // or a machine-local file that is not committed.
+         return services;
+      }
+
+      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureKeyVaultProviderName))
+      {
+         AddWebsiteKeyVault(configuration, environment);
+
+         return services;
+      }
+
+      throw new InvalidOperationException(
+         $"Unknown secrets provider: {secretsProvider}");
    }
 
    private static IServiceCollection AddContentRenderingServices(
@@ -464,6 +486,82 @@ public static class ServiceCollectionExtensions
       });
 
       return services;
+   }
+
+   private static void AddWebsiteKeyVault(
+      ConfigurationManager configuration,
+      IHostEnvironment environment)
+   {
+      string? keyVaultUriText = configuration["KeyVault:VaultUri"];
+
+      if (string.IsNullOrWhiteSpace(keyVaultUriText))
+      {
+         throw new InvalidOperationException(
+            "Secrets:Provider is AzureKeyVault, but KeyVault:VaultUri is missing.");
+      }
+
+      if (!Uri.TryCreate(keyVaultUriText, UriKind.Absolute, out Uri? keyVaultUri))
+      {
+         throw new InvalidOperationException(
+            $"Secrets:Provider is AzureKeyVault, but KeyVault:VaultUri is not a valid absolute URI: '{keyVaultUriText}'.");
+      }
+
+      try
+      {
+         AzureKeyVaultConfigurationOptions options = new()
+         {
+            ReloadInterval = TimeSpan.FromMinutes(60)
+         };
+
+         configuration.AddAzureKeyVault(
+            keyVaultUri, CreateAzureCredential(environment), options);
+      }
+      catch (CredentialUnavailableException exception)
+      {
+         throw new InvalidOperationException(
+            "Azure Key Vault authentication is unavailable. For local development, sign in with Azure CLI using 'az login' or sign in through Visual Studio.",
+            exception);
+      }
+      catch (AuthenticationFailedException exception)
+      {
+         throw new InvalidOperationException(
+            "Azure Key Vault authentication failed. Check that your local Azure account is signed in, using the correct tenant, and has access to the configured vault.",
+            exception);
+      }
+      catch (RequestFailedException exception) when (exception.Status == 403)
+      {
+         throw new InvalidOperationException(
+            "Azure Key Vault rejected the request with 403 Forbidden. The signed-in identity probably lacks secret read/list permissions, or the vault firewall is blocking this machine.",
+            exception);
+      }
+      catch (RequestFailedException exception) when (exception.Status == 404)
+      {
+         throw new InvalidOperationException(
+            $"Azure Key Vault returned 404 Not Found. Check the vault URI: '{keyVaultUri}'.",
+            exception);
+      }
+      catch (RequestFailedException exception)
+      {
+         throw new InvalidOperationException(
+            $"Azure Key Vault could not be loaded. Status={exception.Status}, ErrorCode={exception.ErrorCode}, Message={exception.Message}",
+            exception);
+      }
+   }
+
+   private static TokenCredential CreateAzureCredential(
+      IHostEnvironment environment)
+   {
+      if (environment.IsProduction())
+      {
+         return new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned);
+      }
+
+      return new DefaultAzureCredential(new DefaultAzureCredentialOptions()
+      {
+         ExcludeEnvironmentCredential = true,
+         ExcludeWorkloadIdentityCredential = true,
+         ExcludeManagedIdentityCredential = true,
+      });
    }
 
    private static IServiceCollection AddMarkdownRenderers(

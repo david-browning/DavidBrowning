@@ -3,18 +3,17 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Azure.Identity;
-using DavidBrowning.Helpers;
+using DavidBrowning.Diagnostics;
 using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Seo;
+using DavidBrowning.Web.Data;
 using DavidBrowning.Web.Data.Seeding;
 using DavidBrowning.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Web;
@@ -29,11 +28,14 @@ public static partial class Program
       builder.Logging.AddConsole();
       builder.Logging.AddDebug();
 
-      ConfigureSecrets(builder);
-
       builder.Services.AddDavidBrowningInfrastructure(
          builder.Configuration,
          builder.Environment);
+
+      builder.Services.Configure<WarmupOptions>(
+         builder.Configuration.GetSection("Diagnostics:Warmup"));
+
+      builder.Services.AddScoped<DatabaseWarmupService>();
 
       builder.Services.AddSingleton<SitemapBuilder>();
       //builder.Services.AddAdminAuthoringServices();
@@ -57,53 +59,6 @@ public static partial class Program
       await SeedDatabaseAsync(app);
 
       app.Run();
-   }
-
-   private static void ConfigureSecrets(WebApplicationBuilder builder)
-   {
-      string secretsProvider =
-         builder.Configuration[ConfigurationHelpers.SecretsProviderKey] ?? ConfigurationHelpers.LocalProviderName;
-
-      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.LocalProviderName))
-      {
-         // Do nothing.
-         //
-         // In Development, WebApplication.CreateBuilder already loads
-         // User Secrets
-         // when the project has a UserSecretsId.
-         //
-         // For local non-Development environments, prefer environment variables
-         // or a machine-local file that is not committed.
-         return;
-      }
-
-      if (secretsProvider.EqualsOrdinalIgnoreCase(ConfigurationHelpers.AzureKeyVaultProviderName))
-      {
-         string? keyVaultUriText = builder.Configuration[ConfigurationHelpers.KeyVaultUriKey];
-         if (string.IsNullOrWhiteSpace(keyVaultUriText))
-         {
-            throw new InvalidOperationException(
-                "Secrets:Provider is KeyVault, but KeyVault:Uri is missing.");
-         }
-
-         Uri keyVaultUri = new(keyVaultUriText);
-         if (builder.Environment.IsProduction())
-         {
-            // Managed identity token credential discovered when running in Azure environments
-            builder.Configuration.AddAzureKeyVault(
-                keyVaultUri, new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned));
-         }
-         else
-         {
-            builder.Configuration.AddAzureKeyVault(
-                keyVaultUri, new DefaultAzureCredential());
-         }
-
-         return;
-      }
-
-      throw new InvalidOperationException(
-         $"Unknown secrets provider: {secretsProvider}");
    }
 
    private static async Task SeedDatabaseAsync(WebApplication app)

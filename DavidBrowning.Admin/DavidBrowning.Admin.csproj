@@ -1,32 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <SignAssembly>False</SignAssembly>
-    <UserSecretsId>f785867b-dfec-477b-8f91-0ff2f1f1ab4a</UserSecretsId>
-  </PropertyGroup>
+   <PropertyGroup>
+      <TargetFramework>net8.0</TargetFramework>
+      <Nullable>enable</Nullable>
+      <ImplicitUsings>disable</ImplicitUsings>
+      <SignAssembly>False</SignAssembly>
+      <UserSecretsId>f785867b-dfec-477b-8f91-0ff2f1f1ab4a</UserSecretsId>
+   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
-    <PackageReference Include="Azure.Identity" Version="1.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.27" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
-  </ItemGroup>
+   <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.27" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DavidBrowning.Core\DavidBrowning.Core.csproj" />
-    <ProjectReference Include="..\DavidBrowning.Infrastructure\DavidBrowning.Infrastructure.csproj" />
-  </ItemGroup>
+   <ItemGroup>
+      <ProjectReference Include="..\DavidBrowning.Core\DavidBrowning.Core.csproj" />
+      <ProjectReference Include="..\DavidBrowning.Infrastructure\DavidBrowning.Infrastructure.csproj" />
+   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ContentAssets\documents\" />
-  </ItemGroup>
+   <ItemGroup>
+      <Folder Include="ContentAssets\documents\" />
+   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="ViewModels\Work\Credentials\IndexViewModel.cs" />
-  </ItemGroup>
+   <ItemGroup>
+      <None Include="ViewModels\Work\Credentials\IndexViewModel.cs" />
+   </ItemGroup>
 
 </Project>
