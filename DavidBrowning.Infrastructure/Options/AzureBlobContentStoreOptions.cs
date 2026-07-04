@@ -3,11 +3,13 @@
 
 namespace DavidBrowning.Infrastructure.Options;
 
-public class AzureBlobContentStoreOptions
+public sealed class AzureBlobContentStoreOptions
 {
-   public string? ConnectionName { get; set; }
-
-   public string? ConnectionString { get; set; }
+   /// <summary>
+   /// This is either the connection string or the managed identity service
+   /// url.
+   /// </summary>
+   public string? ServiceUri { get; set; }
 
    public string ContainerName { get; set; } = "content";
 }

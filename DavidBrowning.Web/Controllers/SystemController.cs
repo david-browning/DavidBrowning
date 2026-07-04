@@ -30,12 +30,18 @@ public sealed class SystemController : Controller
       _databaseWarmupService = warmup;
    }
 
+   [HttpGet("/api/coffee")]
+   [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+   public IActionResult Coffee()
+   {
+      return StatusCode(StatusCodes.Status418ImATeapot);
+   }
+
    [HttpGet("/system/warming-up")]
    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
    public IActionResult WarmingUp([FromQuery] string? returnUrl)
    {
-      if (string.IsNullOrWhiteSpace(returnUrl) ||
-         !Url.IsLocalUrl(returnUrl))
+      if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
       {
          returnUrl = "/";
       }
@@ -106,7 +112,7 @@ public sealed class SystemController : Controller
          return false;
       }
 
-      string submittedApiKey = Request.Headers["X-Warmup-Token"].ToString();
+      string submittedApiKey = Request.Headers[WarmupTokenHeaderName].ToString();
       if (string.IsNullOrWhiteSpace(submittedApiKey))
       {
          return false;
