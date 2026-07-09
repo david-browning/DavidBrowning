@@ -43,8 +43,7 @@ public sealed class AzureBlobContentStore : IContentStore
          BlobProperties properties = await blobClient.GetPropertiesAsync(
             cancellationToken: cancellationToken);
 
-         string contentType = string.IsNullOrWhiteSpace(properties.ContentType) ?
-            AssetHelpers.GetContentType(assetKey) : properties.ContentType;
+         string contentType = ResolveContentType(assetKey, properties.ContentType);
 
          string? text = null;
          if (AssetHelpers.IsTextContentType(contentType))
@@ -165,6 +164,32 @@ public sealed class AzureBlobContentStore : IContentStore
          throw new ArgumentException(
             "Asset keys must not be rooted file paths.", nameof(assetKey));
       }
+   }
+
+   private static string ResolveContentType(
+      string assetKey,
+      string? blobContentType)
+   {
+      string inferredContentType = AssetHelpers.GetContentType(assetKey);
+
+      if (!IsFallbackContentType(inferredContentType))
+      {
+         return inferredContentType;
+      }
+
+      if (!string.IsNullOrWhiteSpace(blobContentType))
+      {
+         return blobContentType;
+      }
+
+      return inferredContentType;
+   }
+
+   private static bool IsFallbackContentType(string contentType)
+   {
+      return contentType.Equals(
+         "application/octet-stream",
+         StringComparison.OrdinalIgnoreCase);
    }
 
    private readonly BlobContainerClient _containerClient;
