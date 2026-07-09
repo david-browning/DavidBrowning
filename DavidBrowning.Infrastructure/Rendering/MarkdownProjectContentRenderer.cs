@@ -41,7 +41,8 @@ public sealed class MarkdownProjectContentRenderer
 
       var contentType = AssetHelpers.GetMediaType(storedAsset.ContentType);
 
-      if (!contentType.EqualsOrdinalIgnoreCase(_markdownContentType))
+      if (!contentType.EqualsOrdinalIgnoreCase(_markdownContentType) &&
+         !contentType.EqualsOrdinalIgnoreCase("text/plain"))
       {
          throw new InvalidOperationException(
             $"Project details asset '{contentAsset.AssetKey}' must use " +
