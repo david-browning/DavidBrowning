@@ -74,6 +74,7 @@ public partial class WritingController
 
       try
       {
+         model.PublishedDateUtc = DateTime.UtcNow;
          var result = await _writingStore.UpdatePostAsync(
             model.ToPost(), model.WritingTagIds, cancellationToken);
          if (!result)

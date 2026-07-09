@@ -294,7 +294,7 @@ h3 {
 .wb-post-body ul,
 .wb-post-body ol,
 .wb-post-body blockquote {
-   max-width: 52rem;
+   /*max-width: 52rem;*/
 }
 
 .wb-post-body figure,
@@ -464,7 +464,7 @@ a {
 }
 
 .wb-section {
-   padding: clamp(2rem, 6vw, 4rem) 0;
+   padding: clamp(2rem, 4vw, 2rem) 0;
 }
 
 .wb-section-header {
