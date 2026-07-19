@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 
 namespace DavidBrowning.Helpers;
+
 public static class SqlHelpers
 {
    /// <summary>
@@ -51,5 +52,40 @@ public static class SqlHelpers
          4060 or  // Cannot open database requested by the login.
          10928 or // Resource limit reached.
          10929;   // Resource limit reached.
+   }
+
+   public static bool IsFreeAllowanceException(Exception exception)
+   {
+      for (Exception? current = exception; 
+         current is not null;
+         current = current.InnerException)
+      {
+         if (current is SqlException sqlException &&
+             ContainsFreeAllowancePauseMessage(sqlException))
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   private static bool ContainsFreeAllowancePauseMessage(SqlException exception)
+   {
+      foreach (SqlError error in exception.Errors)
+      {
+         if (IsFreeAllowancePauseMessage(error.Message))
+         {
+            return true;
+         }
+      }
+
+      return IsFreeAllowancePauseMessage(exception.Message);
+   }
+
+   private static bool IsFreeAllowancePauseMessage(string message)
+   {
+      return message.Contains("monthly free amount allowance", StringComparison.OrdinalIgnoreCase) &&
+             message.Contains("paused for the remainder of the month", StringComparison.OrdinalIgnoreCase);
    }
 }

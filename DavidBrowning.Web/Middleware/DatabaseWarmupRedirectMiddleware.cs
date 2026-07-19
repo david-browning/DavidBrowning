@@ -27,18 +27,13 @@ public class DatabaseWarmupRedirectMiddleware
       }
       catch (Exception ex) when (ShouldRedirectToWarmup(context, ex))
       {
-         _logger.LogInformation(
-            ex, "Database appears unavailable or resuming. Redirecting to warming page.");
-
-         var returnUrl =
-            $"{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
-
-         var warmingUrl =
-            $"/system/warming-up?returnUrl={Uri.EscapeDataString(returnUrl)}";
-
-         context.Response.Clear();
-         context.Response.Headers["X-DavidBrowning-Warming-Up"] = "1";
-         context.Response.Redirect(warmingUrl);
+         _logger.LogInformation(ex, "Database appears unavailable or resuming. Redirecting to warming page.");
+         WriteDatabaseWarmingupResponse(context);
+      }
+      catch (Exception ex) when (SqlHelpers.IsFreeAllowanceException(ex))
+      {
+         _logger.LogWarning(ex, "Azure SQL Database is paused because the monthly free allowance has been exhausted.");
+         await WriteDatabaseAllowancePausedResponse(context);
       }
    }
 
@@ -87,6 +82,52 @@ public class DatabaseWarmupRedirectMiddleware
       }
 
       return path.Length == prefix.Length || path[prefix.Length] == '/';
+   }
+
+   private static void WriteDatabaseWarmingupResponse(HttpContext context)
+   {
+      var returnUrl =
+         $"{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
+
+      var warmingUrl =
+         $"/system/warming-up?returnUrl={Uri.EscapeDataString(returnUrl)}";
+
+      context.Response.Clear();
+      context.Response.Headers["X-DavidBrowning-Warming-Up"] = "1";
+      context.Response.Redirect(warmingUrl);
+   }
+
+   private static async Task WriteDatabaseAllowancePausedResponse(
+      HttpContext context)
+   {
+      if (context.Response.HasStarted)
+      {
+         throw new InvalidOperationException(
+             "Cannot write database unavailable response because the HTTP response has already started.");
+      }
+
+      context.Response.Clear();
+      context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+      context.Response.ContentType = "text/html; charset=utf-8";
+      context.Response.Headers.CacheControl = "no-store";
+      context.Response.Headers["X-Robots-Tag"] = "noindex";
+
+      await context.Response.WriteAsync("""
+            <!doctype html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>Site temporarily unavailable</title>
+            </head>
+            <body>
+                <main>
+                    <h1>Site temporarily unavailable</h1>
+                    <p>The site database is temporarily unavailable. Please try again later.</p>
+                </main>
+            </body>
+            </html>
+            """);
    }
 
    private readonly RequestDelegate _next;

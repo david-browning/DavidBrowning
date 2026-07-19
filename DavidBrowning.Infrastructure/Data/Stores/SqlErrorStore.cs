@@ -37,8 +37,7 @@ public sealed class SqlErrorStore : IErrorStore
          .AsNoTracking()
          .OrderByDescending(error => error.OccurredAtUtc);
 
-      var totalCount =
-         await query.CountAsync(cancellationToken);
+      var totalCount = await query.CountAsync(cancellationToken);
 
       var errors = await query
          .Skip((page - 1) * pageSize)
