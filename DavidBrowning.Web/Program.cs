@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;
+using DavidBrowning.Infrastructure.Middleware;
 using DavidBrowning.Infrastructure.Seo;
 using DavidBrowning.Web.Data;
 using DavidBrowning.Web.Data.Seeding;
@@ -42,6 +43,7 @@ public static partial class Program
       builder.Services.AddControllersWithViews();
 
       var app = builder.Build();
+      app.UseLivenessEndpoint();
 
       app.ConfigureErrorHandling(builder.Configuration);
 
