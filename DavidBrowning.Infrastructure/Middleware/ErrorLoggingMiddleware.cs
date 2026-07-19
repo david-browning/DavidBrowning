@@ -1,6 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System.Text.Json;
+using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models.Error;
 using Microsoft.AspNetCore.Hosting;
@@ -20,13 +21,20 @@ public sealed class ErrorLoggingMiddleware
    }
 
    public async Task InvokeAsync(
-     HttpContext context,
-     IErrorStore errorStore,
-     IWebHostEnvironment environment)
+      HttpContext context,
+      IErrorStore errorStore,
+      IWebHostEnvironment environment)
    {
       try
       {
          await _next(context);
+      }
+      catch (Exception exception) when (SqlHelpers.IsFreeAllowanceException(exception))
+      {
+         _logger.LogWarning(
+            exception, "Skipping database-backed error logging because Azure SQL free allowance is exhausted.");
+
+         throw;
       }
       catch (Exception exception)
       {
