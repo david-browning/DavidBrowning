@@ -10,9 +10,12 @@ using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Seo;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Hosting;
 
 namespace DavidBrowning.Web.Controllers;
+
+[OutputCache(PolicyName = PolicyNames.SiteMap)]
 public class SitemapController : Controller
 {
    public SitemapController(

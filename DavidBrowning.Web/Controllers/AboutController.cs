@@ -13,10 +13,12 @@ using DavidBrowning.Models;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.About;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace DavidBrowning.Web.Controllers;
 
 [Route("about")]
+[OutputCache(PolicyName = PolicyNames.PublicPage)]
 public class AboutController : Controller
 {
    public AboutController(

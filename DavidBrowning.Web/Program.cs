@@ -33,6 +33,19 @@ public static partial class Program
          builder.Configuration,
          builder.Environment);
 
+      builder.Services.AddOutputCache(options =>
+      {
+         options.AddPolicy(PolicyNames.PublicPage,
+            p => p
+            .Expire(TimeSpan.FromMinutes(builder.Configuration.GetValue<int>(ConfigurationHelpers.OutputCacheDurationName)))
+            .Tag("public-site"));
+
+         options.AddPolicy(PolicyNames.SiteMap,
+            p => p
+            .Expire(TimeSpan.FromMinutes(builder.Configuration.GetValue<int>(ConfigurationHelpers.SitemapCacheDurationName)))
+            .Tag("sitemap"));
+      });
+
       builder.Services.Configure<WarmupOptions>(
          builder.Configuration.GetSection("Diagnostics:Warmup"));
 
@@ -53,12 +66,18 @@ public static partial class Program
       app.UseRouting();
       app.UseAuthentication();
       app.UseAuthorization();
+      app.UseOutputCache();
 
       app.MapControllerRoute(
          name: ConfigurationHelpers.DefaultRouteName,
          pattern: ConfigurationHelpers.DefaultRoutePattern);
 
-      await SeedDatabaseAsync(app);
+      bool seedEnabled = builder.Configuration.GetValue<bool>(
+         ConfigurationHelpers.SeedEnabledKey);
+      if (seedEnabled)
+      {
+         await SeedDatabaseAsync(app);
+      }
 
       app.Run();
    }
@@ -74,14 +93,6 @@ public static partial class Program
       var loggerFactory =
          scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
       var logger = loggerFactory.CreateLogger(ConfigurationHelpers.StartupLoggerName);
-
-      bool seedEnabled = configuration.GetValue<bool>(ConfigurationHelpers.SeedEnabledKey);
-
-      if (!seedEnabled)
-      {
-         logger.LogInformation("Database seeding is disabled.");
-         return;
-      }
 
       string? seedRootFolder = configuration[ConfigurationHelpers.SeedRootFolderKey];
       var environment =

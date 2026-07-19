@@ -13,10 +13,12 @@ using DavidBrowning.Models.Projects;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.Projects;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace DavidBrowning.Web.Controllers;
 
 [Route("projects")]
+[OutputCache(PolicyName = PolicyNames.PublicPage)]
 public class ProjectsController : Controller
 {
    public ProjectsController(
