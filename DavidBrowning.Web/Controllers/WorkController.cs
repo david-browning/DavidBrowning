@@ -10,10 +10,12 @@ using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
 using DavidBrowning.Web.ViewModels.Work;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace DavidBrowning.Web.Controllers;
 
 [Route("work")]
+[OutputCache(PolicyName = PolicyNames.PublicPage)]
 public class WorkController : Controller
 {
    public WorkController(

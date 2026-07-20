@@ -15,11 +15,13 @@ using DavidBrowning.ViewModels;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.Writing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 
 namespace DavidBrowning.Web.Controllers;
 
 [Route("writing")]
+[OutputCache(PolicyName = PolicyNames.PublicPage)]
 public class WritingController : Controller
 {
    public WritingController(

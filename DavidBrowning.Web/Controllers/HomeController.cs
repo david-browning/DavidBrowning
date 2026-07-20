@@ -11,10 +11,12 @@ using DavidBrowning.Models;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 
 namespace DavidBrowning.Web.Controllers;
 
+[OutputCache(PolicyName = PolicyNames.PublicPage)]
 public class HomeController : Controller
 {
    public HomeController(

@@ -1,4 +1,4 @@
-// Copyright © 2026 David Browning. All rights reserved.
+// Copyright Â© 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System;
 using System.IO;
@@ -33,6 +33,25 @@ public static partial class Program
          builder.Configuration,
          builder.Environment);
 
+      builder.Services.AddOutputCache(options =>
+      {
+         options.AddPolicy(
+            PolicyNames.PublicPage,
+            policy => policy
+               .Expire(
+                  builder.Configuration.GetValue<TimeSpan>(
+                     ConfigurationHelpers.OutputCacheDurationKey))
+               .Tag("public-site"));
+
+         options.AddPolicy(
+            PolicyNames.Sitemap,
+            policy => policy
+               .Expire(
+                  builder.Configuration.GetValue<TimeSpan>(
+                     ConfigurationHelpers.SitemapCacheDurationKey))
+               .Tag("sitemap"));
+      });
+
       builder.Services.Configure<WarmupOptions>(
          builder.Configuration.GetSection("Diagnostics:Warmup"));
 
@@ -53,12 +72,18 @@ public static partial class Program
       app.UseRouting();
       app.UseAuthentication();
       app.UseAuthorization();
+      app.UseOutputCache();
 
       app.MapControllerRoute(
          name: ConfigurationHelpers.DefaultRouteName,
          pattern: ConfigurationHelpers.DefaultRoutePattern);
 
-      await SeedDatabaseAsync(app);
+      bool seedEnabled = builder.Configuration.GetValue<bool>(
+         ConfigurationHelpers.SeedEnabledKey);
+      if (seedEnabled)
+      {
+         await SeedDatabaseAsync(app);
+      }
 
       app.Run();
    }
@@ -74,14 +99,6 @@ public static partial class Program
       var loggerFactory =
          scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
       var logger = loggerFactory.CreateLogger(ConfigurationHelpers.StartupLoggerName);
-
-      bool seedEnabled = configuration.GetValue<bool>(ConfigurationHelpers.SeedEnabledKey);
-
-      if (!seedEnabled)
-      {
-         logger.LogInformation("Database seeding is disabled.");
-         return;
-      }
 
       string? seedRootFolder = configuration[ConfigurationHelpers.SeedRootFolderKey];
       var environment =
