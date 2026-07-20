@@ -1,4 +1,4 @@
-﻿// Copyright © 2026 David Browning. All rights reserved.
+// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace DavidBrowning.Web.Controllers;
 
-[OutputCache(PolicyName = PolicyNames.SiteMap)]
+[OutputCache(PolicyName = PolicyNames.Sitemap)]
 public class SitemapController : Controller
 {
    public SitemapController(
@@ -51,7 +51,7 @@ public class SitemapController : Controller
          await _jsonCache.GetJsonFileContentAsync<List<SitemapEntry>>(
             "PublicPages.json");
 
-      // Duplicate the entries because a reference to the stored pages is 
+      // Duplicate the entries because a reference to the stored pages is
       // returned
       var entries = publicPages.ToList();
 

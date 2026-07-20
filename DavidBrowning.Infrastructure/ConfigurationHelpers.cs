@@ -1,4 +1,4 @@
-﻿// Copyright © 2026 David Browning. All rights reserved.
+// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 
 namespace DavidBrowning.Infrastructure;
@@ -12,11 +12,11 @@ public class ConfigurationHelpers
    public const string DefaultRouteName = "default";
    public const string DefaultRoutePattern = "{controller=Home}/{action=Index}/{id?}";
    public const string DefaultTablePrefix = "db_";
-   
+
    public const string DiagnosticsSectionName = "Diagnostics";
    public const string CacheSectionName = "Cache";
-   public const string OutputCacheDurationName = "Cache:OutputCacheMinutes";
-   public const string SitemapCacheDurationName = "Cache:SitemapCacheMinutes";
+   public const string OutputCacheDurationKey = "Cache:OutputCacheDuration";
+   public const string SitemapCacheDurationKey = "Cache:SitemapCacheDuration";
    public const string DummyProviderName = "Dummy";
    public const string ErrorStoreName = "ErrorStore";
    public const string InMemoryProviderName = "InMemory";
@@ -50,7 +50,7 @@ public class ConfigurationHelpers
    public const string EnableDetailedErrorsKey = "Diagnostics:EntityFrameworkOptions:EnableDetailedErrors";
    public const string EnableSensitiveDataLoggingKey = "Diagnostics:EntityFrameworkOptions:EnableSensitiveDataLogging";
    public const string EnableSqlCommandLoggingKey = "Diagnostics:EntityFrameworkOptions:EnableSqlCommandLogging";
-   
+
    public const string SqlConnectTimeoutSeconds = "Database:ConnectTimeoutSeconds";
    public const string SqlCommandTimeoutSeconds = "Database:CommandTimeoutSeconds";
    public const string SqlConnectRetryDelay = "Database:MaxRetryDelaySeconds";
