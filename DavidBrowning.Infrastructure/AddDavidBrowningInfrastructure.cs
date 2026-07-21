@@ -15,6 +15,7 @@ using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Middleware;
 using DavidBrowning.Infrastructure.Options;
+using DavidBrowning.Infrastructure.Publishing;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
 using Microsoft.AspNetCore.Builder;
@@ -96,6 +97,9 @@ public static class ServiceCollectionExtensions
       services.Configure<WarmupOptions>(
          configuration.GetSection("Diagnostics:Warmup"));
 
+      services.Configure<PublicSitePublicationOptions>(
+         configuration.GetSection("Publication"));
+
       return services;
    }
 
@@ -104,6 +108,7 @@ public static class ServiceCollectionExtensions
        IHostEnvironment environment)
    {
       services.AddMemoryCache();
+      services.AddSingleton(TimeProvider.System);
       services.AddSingleton<UrlBuilder>();
       services.AddSingleton<TimezoneConverter>();
       services.AddSingleton<StructuredDataBuilder>();

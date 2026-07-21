@@ -6,21 +6,15 @@ using DavidBrowning.Models.Work;
 
 namespace DavidBrowning.Models.Published;
 
-public sealed record PublishedExperience
+public sealed class PublishedExperience
 {
-   public required string Organization { get; init; }
+   public required string CompanyName { get; set; }
 
-   public string? Location { get; init; }
+   public string? LocationDisplayText { get; set; }
 
-   public DateOnly? StartDate { get; init; }
+   public int SortOrder { get; set; }
 
-   public DateOnly? EndDate { get; init; }
-
-   public string? DateDisplayText { get; init; }
-
-   public int SortOrder { get; init; }
-
-   public IReadOnlyList<PublishedExperienceRole> Roles { get; init; } =
+   public IReadOnlyList<PublishedExperienceRole> Roles { get; set; } =
       Array.Empty<PublishedExperienceRole>();
 
    public PublishedExperience()
@@ -29,20 +23,52 @@ public sealed record PublishedExperience
    }
 
    [SetsRequiredMembers]
-   public PublishedExperience(Experience e)
+   public PublishedExperience(Experience experience)
    {
-      
+      ArgumentNullException.ThrowIfNull(experience);
+
+      CompanyName = experience.CompanyName;
+      LocationDisplayText = experience.LocationDisplayText;
+      SortOrder = experience.SortOrder;
+      Roles = experience.Roles
+         .Where(role => role.IsActive)
+         .OrderBy(role => role.SortOrder)
+         .Select(role => new PublishedExperienceRole(role))
+         .ToArray();
    }
 }
 
-public sealed record PublishedExperienceRole
+public sealed class PublishedExperienceRole
 {
-   public required string Title { get; init; }
+   public string? DateDisplayText { get; set; }
 
-   public string? Summary { get; init; }
+   public required string Title { get; set; }
 
-   public int SortOrder { get; init; }
+   public string? Description { get; set; }
 
-   public IReadOnlyList<string> Bullets { get; init; } =
+   public int SortOrder { get; set; }
+
+   public IReadOnlyList<string> Bullets { get; set; } =
       Array.Empty<string>();
+
+   public PublishedExperienceRole()
+   {
+
+   }
+
+   [SetsRequiredMembers]
+   public PublishedExperienceRole(ExperienceRole role)
+   {
+      ArgumentNullException.ThrowIfNull(role);
+
+      DateDisplayText = role.DateDisplayText;
+      Title = role.Title;
+      Description = role.Description;
+      SortOrder = role.SortOrder;
+      Bullets = role.Bullets
+         .Where(bullet => bullet.IsActive)
+         .OrderBy(bullet => bullet.SortOrder)
+         .Select(bullet => bullet.Text)
+         .ToArray();
+   }
 }

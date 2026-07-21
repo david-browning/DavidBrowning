@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System;
 using DavidBrowning.Infrastructure;
+using DavidBrowning.Infrastructure.Publishing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,8 +20,10 @@ public static class Program
       builder.Logging.AddDebug();
 
       builder.Services.AddDavidBrowningInfrastructure(
-         builder.Configuration,
-         builder.Environment);
+         builder.Configuration, builder.Environment);
+      builder.Services.AddScoped<
+         IPublicSiteSnapshotBuilder, PublicSiteSnapshotBuilder>();
+      builder.Services.AddScoped<IPublicSitePublisher, PublicSitePublisher>();
 
       //builder.Services.AddAdminAuthoringServices();
       builder.Services.AddControllersWithViews();

@@ -54,13 +54,16 @@ public sealed class PublicSiteSnapshotBuilder : IPublicSiteSnapshotBuilder
    private async Task<IReadOnlyList<PublishedProject>> BuildProjectsAsync(
       CancellationToken cancellationToken)
    {
-
+      var values = await _projectStore.GetPublishedProjectsAsync(
+         cancellationToken);
+      return values.Select(p => new PublishedProject(p)).ToList();
    }
 
    private async Task<IReadOnlyList<PublishedWriting>> BuildWritingsAsync(
       CancellationToken cancellationToken)
    {
-
+      var values = await _writingStore.GetPublishedPostsAsync(cancellationToken);
+      return values.Select(w => new PublishedWriting(w)).ToList();
    }
 
    private async Task<IReadOnlyList<PublishedExperience>> BuildExperienceAsync(

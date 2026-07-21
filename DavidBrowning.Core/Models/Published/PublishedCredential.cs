@@ -6,17 +6,21 @@ using DavidBrowning.Models.Work;
 
 namespace DavidBrowning.Models.Published;
 
-public sealed record PublishedCredential
+public sealed class PublishedCredential
 {
-   public required string Name { get; init; }
+   public required string IssuingOrganization { get; set; }
 
-   public required string Issuer { get; init; }
+   public required string Name { get; set; }
 
-   public string? Description { get; init; }
+   public string? Type { get; set; }
 
-   public string? Url { get; init; }
+   public string? DateDisplayText { get; set; }
 
-   public int SortOrder { get; init; }
+   public string? Description { get; set; }
+
+   public string? CredentialUrl { get; set; }
+
+   public int SortOrder { get; set; }
 
    public PublishedCredential()
    {
@@ -24,12 +28,16 @@ public sealed record PublishedCredential
    }
 
    [SetsRequiredMembers]
-   public PublishedCredential(Credential c)
+   public PublishedCredential(Credential credential)
    {
-      Name = c.Name;
-      Issuer = c.IssuingOrganization;
-      Description = c.Description;
-      Url = c.CredentialUrl;
-      SortOrder = c.SortOrder;
+      ArgumentNullException.ThrowIfNull(credential);
+
+      IssuingOrganization = credential.IssuingOrganization;
+      Name = credential.Name;
+      Type = credential.Type;
+      DateDisplayText = credential.DateDisplayText;
+      Description = credential.Description;
+      CredentialUrl = credential.CredentialUrl;
+      SortOrder = credential.SortOrder;
    }
 }
