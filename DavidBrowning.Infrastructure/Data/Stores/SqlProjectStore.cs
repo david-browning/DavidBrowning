@@ -34,6 +34,17 @@ public sealed class SqlProjectStore : IProjectStore
          .ToListAsync(cancellationToken);
    }
 
+   public async Task<IReadOnlyList<Project>> GetPublishedProjectsWithDetailsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      var query = await BuildPublishedProjectDetailQueryAsync(cancellationToken);
+
+      return await query
+         .OrderBy(project => project.SortOrder)
+         .ThenBy(project => project.Name)
+         .ToListAsync(cancellationToken);
+   }
+
    public async Task<IReadOnlyList<Project>> GetFeaturedWorkProjectsAsync(
       CancellationToken cancellationToken = default)
    {
@@ -105,36 +116,13 @@ public sealed class SqlProjectStore : IProjectStore
       CancellationToken cancellationToken = default)
    {
       ArgumentException.ThrowIfNullOrWhiteSpace(slug);
-      var publicId = await _visibilityLookup.GetIdBySlugAsync(
-        "public", cancellationToken);
 
-      return await _dbContext.Projects
-         .AsNoTracking()
-         .AsSplitQuery()
-         .Where(project => project.Slug == slug)
-         .Where(project => project.ProjectVisibilityId == publicId)
-         .Include(project => project.ProjectStatus)
-         .Include(project => project.ProjectVisibility)
-         .Include(project => project.ProjectOrigin)
-         .Include(project => project.ProjectType)
-         .Include(project => project.AssetLinks.OrderBy(link => link.SortOrder))
-            .ThenInclude(link => link.SiteAsset)
-         .Include(project => project.AssetLinks)
-            .ThenInclude(link => link.ProjectAssetRole)
-         .Include(project => project.TagLinks)
-            .ThenInclude(link => link.ProjectTag)
-         .Include(project => project.StackTagLinks)
-            .ThenInclude(link => link.ProjectStackTag)
-         .Include(project => project.Links.OrderBy(link => link.SortOrder))
-            .ThenInclude(link => link.ProjectLinkType)
-         .Include(project => project.RelatedPosts.OrderBy(post => post.SortOrder))
-            .ThenInclude(project => project.Post)
-               .ThenInclude(post => post!.Tags)
-                  .ThenInclude(tag => tag.WritingTag)
-         .Include(project => project.RelatedPosts)
-            .ThenInclude(project => project.Post)
-               .ThenInclude(post => post!.PostStyle)
-         .SingleOrDefaultAsync(cancellationToken);
+      var query = await BuildPublishedProjectDetailQueryAsync(
+         cancellationToken);
+
+      return await query.SingleOrDefaultAsync(
+         project => project.Slug == slug,
+         cancellationToken);
    }
 
    public async Task<IReadOnlyList<Project>> GetFeaturedProjectsAsync(
@@ -904,6 +892,35 @@ public sealed class SqlProjectStore : IProjectStore
             .ThenInclude(link => link.ProjectTag)
          .Include(project => project.StackTagLinks)
             .ThenInclude(link => link.ProjectStackTag);
+   }
+
+   private async Task<IQueryable<Project>>
+      BuildPublishedProjectDetailQueryAsync(
+         CancellationToken cancellationToken)
+   {
+      var query = await BuildPublishedProjectQueryAsync(
+         cancellationToken);
+
+      return query
+         .AsSplitQuery()
+         .Include(project =>
+            project.AssetLinks.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.SiteAsset)
+         .Include(project =>
+            project.AssetLinks.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.ProjectAssetRole)
+         .Include(project =>
+            project.Links.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.ProjectLinkType)
+         .Include(project =>
+            project.RelatedPosts.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.Post)
+               .ThenInclude(post => post!.Tags)
+                  .ThenInclude(tag => tag.WritingTag)
+         .Include(project =>
+            project.RelatedPosts.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.Post)
+               .ThenInclude(post => post!.PostStyle);
    }
 
    private static void ReplaceProjectTagLinks(

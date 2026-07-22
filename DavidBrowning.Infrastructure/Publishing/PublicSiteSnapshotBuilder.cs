@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
+using DavidBrowning.Models;
 using DavidBrowning.Models.Published;
 
 namespace DavidBrowning.Infrastructure.Publishing;
@@ -25,15 +26,15 @@ public sealed class PublicSiteSnapshotBuilder : IPublicSiteSnapshotBuilder
    }
 
    public async Task<PublishedSiteSnapshot> BuildAsync(
-      string version, 
-      DateTimeOffset publishedAtUtc, 
+      string version,
+      DateTimeOffset publishedAtUtc,
       CancellationToken cancellationToken = default)
    {
       ArgumentException.ThrowIfNullOrWhiteSpace(version);
 
       // Keep SQL operations sequential. These stores normally share one
       // scoped DbContext, which must not execute concurrent operations.
-      var projects = await BuildProjectsAsync(cancellationToken);
+      var projects = await BuildProjectsAsync(version, cancellationToken);
       var writings = await BuildWritingsAsync(cancellationToken);
       var experience = await BuildExperienceAsync(cancellationToken);
       var credentials = await BuildCredentialsAsync(cancellationToken);
@@ -52,17 +53,64 @@ public sealed class PublicSiteSnapshotBuilder : IPublicSiteSnapshotBuilder
    }
 
    private async Task<IReadOnlyList<PublishedProject>> BuildProjectsAsync(
+      string version,
       CancellationToken cancellationToken)
    {
-      var values = await _projectStore.GetPublishedProjectsAsync(
+      var projects = await _projectStore.GetPublishedProjectsWithDetailsAsync(
          cancellationToken);
-      return values.Select(p => new PublishedProject(p)).ToList();
+      List<PublishedProject> publishedProjects = new(projects.Count);
+
+      foreach (var project in projects)
+      {
+         var publishedProject = new PublishedProject(project);
+         var contentLink = project.AssetLinks.SingleOrDefault(link =>
+            string.Equals(
+               link.ProjectAssetRole?.Slug,
+               ProjectAssetRoleSlugs.DetailsContent,
+               StringComparison.OrdinalIgnoreCase));
+
+         if (contentLink is not null)
+         {
+            var contentAsset = contentLink.SiteAsset ??
+               throw new InvalidOperationException(
+                  $"Project '{project.Slug}' has a details-content link " +
+                  "without a loaded site asset.");
+
+            var storedAsset = await _contentStore.GetAssetAsync(
+               contentAsset.AssetKey, cancellationToken);
+
+            var mediaType = AssetHelpers.GetMediaType(storedAsset.ContentType);
+
+            if (!string.Equals(
+                  mediaType, "text/markdown", StringComparison.OrdinalIgnoreCase) &&
+               !string.Equals(
+                  mediaType, "text/plain", StringComparison.OrdinalIgnoreCase))
+            {
+               throw new InvalidOperationException(
+                  $"Project details asset '{contentAsset.AssetKey}' " +
+                  "must contain Markdown.");
+            }
+
+            string content = storedAsset.Text ??
+               throw new InvalidOperationException(
+                  $"Project details asset '{contentAsset.AssetKey}' " +
+                  "does not contain text.");
+
+            publishedProject.Content = new PublishedTextContent(
+               project, content, version);
+         }
+
+         publishedProjects.Add(publishedProject);
+      }
+
+      return publishedProjects;
    }
 
    private async Task<IReadOnlyList<PublishedWriting>> BuildWritingsAsync(
       CancellationToken cancellationToken)
    {
-      var values = await _writingStore.GetPublishedPostsAsync(cancellationToken);
+      var values = await _writingStore.GetPublishedPostsWithDetailsAsync(
+         cancellationToken);
       return values.Select(w => new PublishedWriting(w)).ToList();
    }
 

@@ -58,11 +58,7 @@ public sealed class JsonCache
       }
 
       var model = JsonSerializer.Deserialize<T>(
-         asset.Text,
-         new JsonSerializerOptions()
-         {
-            PropertyNameCaseInsensitive = true,
-         });
+         asset.Text, PublishedJsonSerializer.Options);
 
       if (model is null)
       {

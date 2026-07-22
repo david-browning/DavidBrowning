@@ -10,6 +10,9 @@ public interface IWritingStore
    Task<IReadOnlyList<Post>> GetPublishedPostsAsync(
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<Post>> GetPublishedPostsWithDetailsAsync(
+      CancellationToken cancellationToken = default);
+
    Task<PagedResult<Post>> GetPagedPublishedPostsAsync(
       int page,
       int pageSize,

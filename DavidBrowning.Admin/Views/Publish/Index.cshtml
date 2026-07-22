@@ -1,0 +1,30 @@
+﻿@* Copyright © 2026 David Browning. All rights reserved.
+   Source-available for viewing only. No license granted. *@
+@model DavidBrowning.Admin.ViewModels.Publish.IndexViewModel
+@{
+	ViewData["Title"] = "Publish";
+}
+
+<div class="container py-4">
+	<header class="mb-4">
+		<h1>Publishing</h1>
+		<p clasas="text-secondary">
+			Publish site content from the database to blob storage.
+		</p>
+	</header>
+
+	<div class="row g-4">
+		<div class="col-12 col-xl-5">
+
+
+			<form asp-controller="Publish" asp-action="Publish" method="post">
+				<button type="submit" class="btn btn-primary">
+					Publish site
+				</button>
+			</form>
+		</div>
+		<div class="col-12 col-xl-7">
+			Statistics will eventually go here.
+		</div>
+	</div>
+</div>

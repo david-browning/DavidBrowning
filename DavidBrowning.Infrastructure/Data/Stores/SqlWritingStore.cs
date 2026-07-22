@@ -26,6 +26,14 @@ public partial class SqlWritingStore : IWritingStore
       return posts;
    }
 
+   public async Task<IReadOnlyList<Post>> GetPublishedPostsWithDetailsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      return await CreatePublishedPostsDetailsQuery()
+         .AsSplitQuery()
+         .ToListAsync(cancellationToken);
+   }
+
    public async Task<PagedResult<Post>> GetPagedPublishedPostsAsync(
       int page,
       int pageSize,
@@ -87,7 +95,7 @@ public partial class SqlWritingStore : IWritingStore
       CancellationToken cancellationToken = default)
    {
       ArgumentException.ThrowIfNullOrWhiteSpace(slug);
-      return await CreatePublishedPostDetailQuery()
+      return await CreatePublishedPostsDetailsQuery()
          .SingleOrDefaultAsync(post => post.Slug == slug, cancellationToken);
    }
 
@@ -479,7 +487,7 @@ public partial class SqlWritingStore : IWritingStore
          .ThenByDescending(post => post.Id);
    }
 
-   private IQueryable<Post> CreatePublishedPostDetailQuery()
+   private IQueryable<Post> CreatePublishedPostsDetailsQuery()
    {
       return _dbContext.Posts
          .AsNoTracking()

@@ -86,21 +86,18 @@ public sealed class PublishedProject
       UpdatedAtUtc = project.UpdatedAtUtc;
 
       TagLinks = project.TagLinks
-         .Where(link => link.ProjectTag?.IsActive == true)
          .OrderBy(link => link.ProjectTag!.SortOrder)
          .ThenBy(link => link.ProjectTag!.DisplayName)
          .Select(link => new PublishedProjectTagLink(link))
          .ToArray();
 
       StackTagLinks = project.StackTagLinks
-         .Where(link => link.ProjectStackTag?.IsActive == true)
          .OrderBy(link => link.ProjectStackTag!.SortOrder)
          .ThenBy(link => link.ProjectStackTag!.DisplayName)
          .Select(link => new PublishedProjectStackTagLink(link))
          .ToArray();
 
       Links = project.Links
-         .Where(link => link.ProjectLinkType?.IsActive == true)
          .OrderBy(link => link.SortOrder)
          .ThenBy(link => link.Label)
          .Select(link => new PublishedProjectLink(link))

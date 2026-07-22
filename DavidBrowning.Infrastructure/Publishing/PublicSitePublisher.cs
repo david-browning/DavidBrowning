@@ -73,22 +73,11 @@ public sealed class PublicSitePublisher : IPublicSitePublisher
 
       await using MemoryStream stream = new();
       await JsonSerializer.SerializeAsync(
-         stream, value, _serializerOptions, cancellationToken);
+         stream, value, PublishedJsonSerializer.Options, cancellationToken);
       stream.Position = 0;
       return await _contentStore.WriteAsync(
          assetKey, stream, cancellationToken);
    }
-
-   private static readonly JsonSerializerOptions _serializerOptions = new()
-   {
-      PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-      DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-      WriteIndented = false,
-      Converters =
-      {
-         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
-      },
-   };
 
    private readonly IPublicSiteSnapshotBuilder _snapshotBuilder;
    private readonly PublicSitePublicationOptions _options;

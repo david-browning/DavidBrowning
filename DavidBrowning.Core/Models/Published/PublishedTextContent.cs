@@ -406,14 +406,21 @@ public sealed class PublishedTextContent
    [SetsRequiredMembers]
    public PublishedTextContent(
       Project project,
-      string? content)
+      string content,
+      string publicationVersion)
    {
       ArgumentNullException.ThrowIfNull(project);
+      ArgumentNullException.ThrowIfNull(content);
+      ArgumentException.ThrowIfNullOrWhiteSpace(
+         publicationVersion);
 
-      CacheKey = $"project:{project.Slug}:{project.UpdatedAtUtc.Ticks}";
+      CacheKey =
+         $"published:{publicationVersion}:project:{project.Slug}";
+
       ContentFormat = DavidBrowning.Models.ContentFormat.Markdown;
       CreatedBy = null;
       Content = content;
+
       AssetLinks = project.AssetLinks
          .Where(link =>
             !string.IsNullOrWhiteSpace(link.ReferenceKey) &&
