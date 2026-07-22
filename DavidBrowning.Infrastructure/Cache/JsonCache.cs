@@ -58,7 +58,7 @@ public sealed class JsonCache
       }
 
       var model = JsonSerializer.Deserialize<T>(
-         asset.Text, PublishedJsonSerializer.Options);
+         asset.Text, SiteJsonSerializer.Options);
 
       if (model is null)
       {

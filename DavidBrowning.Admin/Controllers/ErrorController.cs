@@ -10,6 +10,7 @@ using DavidBrowning.Diagnostics;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.ViewModels;
 using DavidBrowning.ViewModels.Error;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Admin.Controllers;
+
+[Authorize]
 public class ErrorController : Controller
 {
    public ErrorController(

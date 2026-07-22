@@ -43,12 +43,7 @@ public sealed class PublicSitePublisher : IPublicSitePublisher
       // complete before updating the "current" snapshot.
       var writeResult = await WriteToStoreAsync(
          snapshotKey, snapshot, cancellationToken);
-      PublishedSiteManifest manifest = new()
-      {
-         Version = version,
-         SnapshotKey = snapshotKey,
-         PublishedAtUtc = publishedAtUtc,
-      };
+      PublishedSiteManifest manifest = new(snapshot, snapshotKey);
 
       var commitPointResult = await WriteToStoreAsync(
          _options.ManifestKey, manifest, cancellationToken);
@@ -73,7 +68,7 @@ public sealed class PublicSitePublisher : IPublicSitePublisher
 
       await using MemoryStream stream = new();
       await JsonSerializer.SerializeAsync(
-         stream, value, PublishedJsonSerializer.Options, cancellationToken);
+         stream, value, SiteJsonSerializer.Options, cancellationToken);
       stream.Position = 0;
       return await _contentStore.WriteAsync(
          assetKey, stream, cancellationToken);

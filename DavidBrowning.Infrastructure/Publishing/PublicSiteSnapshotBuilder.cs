@@ -87,8 +87,8 @@ public sealed class PublicSiteSnapshotBuilder : IPublicSiteSnapshotBuilder
                   mediaType, "text/plain", StringComparison.OrdinalIgnoreCase))
             {
                throw new InvalidOperationException(
-                  $"Project details asset '{contentAsset.AssetKey}' " +
-                  "must contain Markdown.");
+                  $"Project details asset '{contentAsset.AssetKey}' must use " +
+                  "'text/markdown' or legacy 'text/plain' content.");
             }
 
             string content = storedAsset.Text ??

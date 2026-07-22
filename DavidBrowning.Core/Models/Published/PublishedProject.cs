@@ -107,7 +107,7 @@ public sealed class PublishedProject
          .Where(link =>
             link.ProjectAssetRole is not null &&
             !link.ProjectAssetRole.Slug.Equals(
-               _detailsContentRoleSlug,
+               ProjectAssetRoleSlugs.DetailsContent,
                StringComparison.OrdinalIgnoreCase))
          .OrderBy(link => link.ProjectAssetRole!.SortOrder)
          .ThenBy(link => link.SortOrder)
@@ -129,6 +129,4 @@ public sealed class PublishedProject
          $"Project '{project.Slug}' is missing required navigation " +
          $"property '{navigationName}'.");
    }
-
-   private const string _detailsContentRoleSlug = "details-content";
 }

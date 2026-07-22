@@ -11,11 +11,13 @@ using DavidBrowning.Admin.ViewModels.Asset;
 using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
+[Authorize]
 public class AssetController : Controller
 {
    public AssetController(

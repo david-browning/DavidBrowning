@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace DavidBrowning.Infrastructure;
 
-public static class PublishedJsonSerializer
+public static class SiteJsonSerializer
 {
    public static JsonSerializerOptions Options { get; } = new()
    {

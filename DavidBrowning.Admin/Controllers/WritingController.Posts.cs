@@ -11,10 +11,12 @@ using DavidBrowning.Admin.ViewModels.Writing.Posts;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
+[Authorize]
 public partial class WritingController
 {
    [HttpGet]

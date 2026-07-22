@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using DavidBrowning.Admin.ViewModels.Work;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
+[Authorize]
 public partial class WorkController : Controller
 {
    public WorkController(

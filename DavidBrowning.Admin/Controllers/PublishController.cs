@@ -3,14 +3,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Infrastructure.Publishing;
 using DavidBrowning.Admin.ViewModels.Publish;
+using DavidBrowning.Infrastructure.Publishing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Admin.Controllers;
 
-public class PublishController : Controller
+[Authorize]
+public sealed class PublishController : Controller
 {
    public PublishController(
       IPublicSitePublisher publisher,
@@ -23,7 +25,21 @@ public class PublishController : Controller
    [HttpGet]
    public IActionResult Index()
    {
-      return View(new IndexViewModel());
+      var model = new IndexViewModel()
+      {
+         ResultMessage = TempData[_resultMessageTempDataKey] as string,
+      };
+
+      if (TempData[_resultStatusTempDataKey] is string statusText &&
+         Enum.TryParse(
+            statusText,
+            ignoreCase: true,
+            out PublishResultStatus status))
+      {
+         model.ResultStatus = status;
+      }
+
+      return View(model);
    }
 
    [HttpPost]
@@ -31,11 +47,13 @@ public class PublishController : Controller
    public async Task<IActionResult> Publish(
       CancellationToken cancellationToken)
    {
-      string resultMessage;
       try
       {
          var result = await _publisher.PublishAsync(cancellationToken);
-         resultMessage = $"Published version {result.Version}.";
+
+         SetResult(
+            $"Published version {result.Version}.",
+            PublishResultStatus.Success);
       }
       catch (OperationCanceledException)
          when (cancellationToken.IsCancellationRequested)
@@ -44,17 +62,24 @@ public class PublishController : Controller
       }
       catch (Exception exception)
       {
-         resultMessage = $"Publication failed: {exception.Message}";
          _logger.LogError(exception, "Public site publication failed.");
-         ModelState.AddModelError("Result-Exception", resultMessage);
+
+         SetResult(
+            "Publication failed. Review the application logs for details.",
+            PublishResultStatus.Error);
       }
 
-      return View("Index", new IndexViewModel()
-      {
-         ResultMessage = resultMessage,
-      });
+      return RedirectToAction(nameof(Index));
    }
 
+   private void SetResult(string message, PublishResultStatus status)
+   {
+      TempData[_resultMessageTempDataKey] = message;
+      TempData[_resultStatusTempDataKey] = status.ToString();
+   }
+
+   private const string _resultMessageTempDataKey = "PublishResultMessage";
+   private const string _resultStatusTempDataKey = "PublishResultStatus";
    private readonly IPublicSitePublisher _publisher;
    private readonly ILogger<PublishController> _logger;
 }
