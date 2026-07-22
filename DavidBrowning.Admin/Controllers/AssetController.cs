@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
-[Authorize]
 public class AssetController : Controller
 {
    public AssetController(

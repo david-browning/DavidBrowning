@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DavidBrowning.Admin.Controllers;
 
-[Authorize]
 public sealed class AboutController : Controller
 {
    public AboutController(

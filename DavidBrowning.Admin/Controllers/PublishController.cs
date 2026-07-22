@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Admin.Controllers;
 
-[Authorize]
 public sealed class PublishController : Controller
 {
    public PublishController(

@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;
 
-[Authorize]
 public partial class ProjectsController : Controller
 {
    public ProjectsController(

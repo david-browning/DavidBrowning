@@ -20,7 +20,6 @@ using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Admin.Controllers;
 
-[Authorize]
 public class ErrorController : Controller
 {
    public ErrorController(
