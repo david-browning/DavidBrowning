@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Diagnostics;
+using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Web.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,11 +23,13 @@ public sealed class SystemController : Controller
       ILogger<SystemController> logger,
       IOptionsMonitor<WarmupOptions> options,
       IMemoryCache memoryCache,
+      IPublishedSiteStore siteStore,
       DatabaseWarmupService warmup)
    {
       _warmupOptions = options;
       _logger = logger;
       _memoryCache = memoryCache;
+      _siteStore = siteStore;
       _databaseWarmupService = warmup;
    }
 
@@ -88,6 +91,7 @@ public sealed class SystemController : Controller
          }
 
          await _databaseWarmupService.WarmupAsync(cancellationToken);
+         await _siteStore.WarmupAsync(cancellationToken);
 
          _memoryCache.Set(
             cacheKey, DateTimeOffset.UtcNow, _warmupOptions.CurrentValue.MinimumInterval);
@@ -132,5 +136,6 @@ public sealed class SystemController : Controller
    private readonly ILogger<SystemController> _logger;
    private readonly IMemoryCache _memoryCache;
    private readonly DatabaseWarmupService _databaseWarmupService;
+   private readonly IPublishedSiteStore _siteStore;
    private IOptionsMonitor<WarmupOptions> _warmupOptions;
 }

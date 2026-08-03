@@ -12,16 +12,10 @@ public sealed class SqlProjectStore : IProjectStore
 {
    public SqlProjectStore(
       ILogger<SqlProjectStore> logger,
-      SiteDbContext context,
-      ISlugLookupService<ProjectOrigin> originLookup,
-      ISlugLookupService<ProjectStatus> statusLookup,
-      ISlugLookupService<ProjectVisibility> visibleLookup)
+      SiteDbContext context)
    {
       _logger = logger;
       _dbContext = context;
-      _originLookup = originLookup;
-      _statusLookup = statusLookup;
-      _visibilityLookup = visibleLookup;
    }
 
    public async Task<IReadOnlyList<Project>> GetPublishedProjectsAsync(
@@ -48,9 +42,11 @@ public sealed class SqlProjectStore : IProjectStore
    public async Task<IReadOnlyList<Project>> GetFeaturedWorkProjectsAsync(
       CancellationToken cancellationToken = default)
    {
-      var workOrigin = await _originLookup.GetIdBySlugAsync(
-         "professional", cancellationToken);
-      if (workOrigin == null)
+      //var workOrigin = await _originLookup.GetIdBySlugAsync(
+      //   "professional", cancellationToken);
+      var workRow = await _dbContext.ProjectOrigins.FirstOrDefaultAsync(
+         e => e.Slug == "professional");
+      if (workRow == null)
       {
          throw new InvalidOperationException(
             "Required project origin 'professional' was not found while " +
@@ -59,7 +55,7 @@ public sealed class SqlProjectStore : IProjectStore
 
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
-         .Where(project => project.ProjectOriginId == workOrigin)
+         .Where(project => project.ProjectOriginId == workRow.Id)
          .OrderBy(project => project.SortOrder)
          .ThenBy(project => project.Name)
          .ToListAsync(cancellationToken);
@@ -872,10 +868,12 @@ public sealed class SqlProjectStore : IProjectStore
    private async Task<IQueryable<Project>> BuildPublishedProjectQueryAsync(
       CancellationToken cancellationToken)
    {
-      var publicId = await _visibilityLookup.GetIdBySlugAsync(
-         "public", cancellationToken);
+      //var publicId = await _visibilityLookup.GetIdBySlugAsync(
+      //   "public", cancellationToken);
+      var publicRow = await _dbContext.ProjectVisibilities.FirstOrDefaultAsync(
+         e => e.Slug == "public");
 
-      if (publicId == null)
+      if (publicRow == null)
       {
          throw new InvalidOperationException(
             "Required project visibility 'public' was not found.");
@@ -883,7 +881,7 @@ public sealed class SqlProjectStore : IProjectStore
 
       return _dbContext.Projects
          .AsNoTracking()
-         .Where(project => project.ProjectVisibilityId == publicId)
+         .Where(project => project.ProjectVisibilityId == publicRow.Id)
          .Include(project => project.ProjectStatus)
          .Include(project => project.ProjectVisibility)
          .Include(project => project.ProjectOrigin)
@@ -1032,7 +1030,4 @@ public sealed class SqlProjectStore : IProjectStore
 
    private readonly ILogger<SqlProjectStore> _logger;
    private readonly SiteDbContext _dbContext;
-   private readonly ISlugLookupService<ProjectOrigin> _originLookup;
-   private readonly ISlugLookupService<ProjectStatus> _statusLookup;
-   private readonly ISlugLookupService<ProjectVisibility> _visibilityLookup;
 }

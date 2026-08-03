@@ -1,6 +1,6 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
-@using DavidBrowning.Admin.ViewModels.Publish
+@using DavidBrowning.Admin.ViewModels.Publishing
 @model IndexViewModel
 
 @{
@@ -43,7 +43,7 @@
 					current publication manifest.
 				</p>
 
-				<form asp-controller="Publish" asp-action="Publish" method="post">
+				<form asp-controller="Publishing" asp-action="Publish" method="post">
 					<button type="submit" class="btn btn-primary">
 						Publish site
 					</button>

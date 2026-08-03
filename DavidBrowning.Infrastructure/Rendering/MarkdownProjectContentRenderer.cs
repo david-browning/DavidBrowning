@@ -4,6 +4,7 @@ using DavidBrowning.Helpers;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.Publishing;
 
 namespace DavidBrowning.Infrastructure.Rendering;
 
@@ -11,10 +12,28 @@ public sealed class MarkdownProjectContentRenderer
 {
    public MarkdownProjectContentRenderer(
       IContentStore contentStore,
-      IMarkdownDocumentRenderer markdownRenderer)
+      IMarkdownDocumentRenderer markdownRenderer,
+      PublishedTextContentRenderer publishedContentRenderer)
    {
       _contentStore = contentStore;
       _markdownRenderer = markdownRenderer;
+      _publishedContentRenderer = publishedContentRenderer;
+   }
+
+   public Task<RenderedContent> RenderAsync(
+   PublishedProject project,
+   CancellationToken cancellationToken = default)
+   {
+      ArgumentNullException.ThrowIfNull(project);
+
+      var content = project.Content ??
+         throw new InvalidOperationException(
+            $"Published project '{project.Slug}' does not contain " +
+            "details content.");
+
+      return _publishedContentRenderer.RenderAsync(
+         content,
+         cancellationToken);
    }
 
    public async Task<RenderedContent> RenderAsync(
@@ -86,4 +105,5 @@ public sealed class MarkdownProjectContentRenderer
 
    private readonly IContentStore _contentStore;
    private readonly IMarkdownDocumentRenderer _markdownRenderer;
+   private readonly PublishedTextContentRenderer _publishedContentRenderer;
 }

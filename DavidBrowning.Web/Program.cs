@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DavidBrowning.Diagnostics;
 using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;
+using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Middleware;
 using DavidBrowning.Infrastructure.Seo;
 using DavidBrowning.Web.Data;
@@ -58,7 +59,7 @@ public static partial class Program
       builder.Services.AddScoped<DatabaseWarmupService>();
 
       builder.Services.AddSingleton<SitemapBuilder>();
-      //builder.Services.AddAdminAuthoringServices();
+      builder.Services.AddSingleton<IPublishedSiteStore, AzureBlobPublishedSiteStore>();
       builder.Services.AddControllersWithViews();
 
       var app = builder.Build();

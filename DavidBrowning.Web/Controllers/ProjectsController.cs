@@ -24,7 +24,7 @@ public class ProjectsController : Controller
    public ProjectsController(
       JsonCache jsonCache,
       IContentPipeline contentPipeline,
-      IProjectStore project,
+      IPublishedSiteStore siteStore,
       ISlugService slugService,
       UrlBuilder urlBuilder,
       StructuredDataBuilder dataBuilder,
@@ -37,7 +37,7 @@ public class ProjectsController : Controller
    {
       _jsonCache = jsonCache;
       _contentPipeline = contentPipeline;
-      _projectStore = project;
+      _siteStore = siteStore;
       _urlBuilder = urlBuilder;
       _slugService = slugService;
       _stackLookup = stackLookup;
@@ -79,7 +79,7 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      var projects = await _projectStore.GetPublishedProjectsByStackTagSlugAsync(
+      var projects = await _siteStore.GetPublishedProjectsByStackTagSlugAsync(
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
@@ -119,7 +119,7 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      var projects = await _projectStore.GetPublishedProjectsByStatusSlugAsync(
+      var projects = await _siteStore.GetPublishedProjectsByStatusSlugAsync(
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
@@ -159,7 +159,7 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      var projects = await _projectStore.GetPublishedProjectsByOriginSlugAsync(
+      var projects = await _siteStore.GetPublishedProjectsByOriginSlugAsync(
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
@@ -198,7 +198,7 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      var projects = await _projectStore.GetPublishedProjectsByTypeSlugAsync(
+      var projects = await _siteStore.GetPublishedProjectsByTypeSlugAsync(
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
@@ -231,7 +231,7 @@ public class ProjectsController : Controller
          return NotFound();
       }
 
-      var projects = await _projectStore.GetPublishedProjectsByTagSlugAsync(
+      var projects = await _siteStore.GetPublishedProjectsByTagSlugAsync(
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
@@ -263,7 +263,7 @@ public class ProjectsController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var project = await _projectStore.GetPublishedProjectBySlugAsync(
+      var project = await _siteStore.GetProjectBySlugAsync(
          normalizedSlug, cancellationToken);
       if (project == null)
       {
@@ -287,10 +287,9 @@ public class ProjectsController : Controller
    private async Task<IndexViewModel> GetIndexModelAsync(
       CancellationToken cancellationToken)
    {
-      var featured = await _projectStore.GetFeaturedProjectsAsync(
+      var featured = await _siteStore.GetFeaturedProjectsAsync(
          cancellationToken);
-      var all = await _projectStore.GetPublishedProjectsAsync(
-         cancellationToken);
+      var all = await _siteStore.GetProjectsAsync(cancellationToken);
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "heros/projects.json", cancellationToken);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
@@ -316,7 +315,7 @@ public class ProjectsController : Controller
 
    private readonly JsonCache _jsonCache;
    private readonly IContentPipeline _contentPipeline;
-   private readonly IProjectStore _projectStore;
+   private readonly IPublishedSiteStore _siteStore;
    private readonly ISlugService _slugService;
    private readonly MarkdownProjectContentRenderer _projectContentRenderer;
    private readonly ISlugLookupService<ProjectStackTag> _stackLookup;

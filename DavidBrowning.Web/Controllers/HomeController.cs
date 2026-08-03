@@ -21,16 +21,12 @@ public class HomeController : Controller
 {
    public HomeController(
       IConfiguration configuration,
-      IUncategorizedStore uncategorizedStore,
-      IProjectStore projectStore,
-      IWritingStore writingStore,
+      IPublishedSiteStore siteStore,
       JsonCache jsonCache,
       UrlBuilder urlBuilder)
    {
       _configuration = configuration;
-      _uncategorizedStore = uncategorizedStore;
-      _projectStore = projectStore;
-      _writingStore = writingStore;
+      _siteStore = siteStore;
       _jsonCache = jsonCache;
       _urlBuilder = urlBuilder;
    }
@@ -50,7 +46,7 @@ public class HomeController : Controller
    {
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "heros/home.json", cancellationToken);
-      var interests = await _uncategorizedStore.GetInterestsAsync(
+      var interests = await _siteStore.GetInterestsAsync(
          cancellationToken);
       var index = DateOnly.FromDateTime(DateTime.UtcNow).DayNumber %
          interests.Count;
@@ -61,7 +57,7 @@ public class HomeController : Controller
          throw new ArgumentNullException(
             "The FeaturedProjectSlug is not set in the configuration.");
       }
-      var project = await _projectStore.GetPublishedProjectBySlugAsync(
+      var project = await _siteStore.GetProjectBySlugAsync(
          projectSlug, cancellationToken);
       if (project == null)
       {
@@ -75,7 +71,7 @@ public class HomeController : Controller
          throw new ArgumentNullException(
             "The FeaturePostSlug is not set in the configuration.");
       }
-      var post = await _writingStore.GetPublishedPostBySlugAsync(
+      var post = await _siteStore.GetWritingBySlugAsync(
          postSlug, cancellationToken);
       if (post == null)
       {
@@ -119,9 +115,7 @@ public class HomeController : Controller
    }
 
    private readonly IConfiguration _configuration;
-   private readonly IUncategorizedStore _uncategorizedStore;
-   private readonly IProjectStore _projectStore;
-   private readonly IWritingStore _writingStore;
+   private readonly IPublishedSiteStore _siteStore;
    private readonly JsonCache _jsonCache;
    private readonly UrlBuilder _urlBuilder;
 }

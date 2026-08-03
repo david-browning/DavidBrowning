@@ -3,7 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DavidBrowning.Admin.ViewModels.Publish;
+using DavidBrowning.Admin.ViewModels.Publishing;
 using DavidBrowning.Infrastructure.Publishing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +11,11 @@ using Microsoft.Extensions.Logging;
 
 namespace DavidBrowning.Admin.Controllers;
 
-public sealed class PublishController : Controller
+public sealed class PublishingController : Controller
 {
-   public PublishController(
+   public PublishingController(
       IPublicSitePublisher publisher,
-      ILogger<PublishController> logger)
+      ILogger<PublishingController> logger)
    {
       _publisher = publisher;
       _logger = logger;
@@ -80,5 +80,5 @@ public sealed class PublishController : Controller
    private const string _resultMessageTempDataKey = "PublishResultMessage";
    private const string _resultStatusTempDataKey = "PublishResultStatus";
    private readonly IPublicSitePublisher _publisher;
-   private readonly ILogger<PublishController> _logger;
+   private readonly ILogger<PublishingController> _logger;
 }

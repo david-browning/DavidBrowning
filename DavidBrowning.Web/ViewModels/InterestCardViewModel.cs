@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Web.ViewModels;
@@ -15,6 +16,22 @@ public sealed class InterestCardViewModel
       Title = interest.DisplayName;
       IconCssClass = interest.IconCssClass;
       if (interest.FeaturedPost is not null &&
+         interest.FeaturedPost.Status == PostStatus.Published)
+      {
+         FeaturedPost = new FeaturedPostLinkViewModel(
+            title: interest.FeaturedPost.Title,
+            slug: interest.FeaturedPost.Slug,
+            summary: interest.FeaturedPost.Summary);
+      }
+   }
+
+   [SetsRequiredMembers]
+   public InterestCardViewModel(PublishedInterest interest)
+   {
+      Summary += interest.Summary;
+      Title = interest.DisplayName;
+      IconCssClass = interest.IconCssClass;
+      if(interest.FeaturedPost is not null &&
          interest.FeaturedPost.Status == PostStatus.Published)
       {
          FeaturedPost = new FeaturedPostLinkViewModel(

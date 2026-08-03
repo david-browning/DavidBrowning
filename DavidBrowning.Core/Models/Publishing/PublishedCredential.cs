@@ -4,7 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models.Work;
 
-namespace DavidBrowning.Models.Published;
+namespace DavidBrowning.Models.Publishing;
 
 public sealed class PublishedCredential
 {

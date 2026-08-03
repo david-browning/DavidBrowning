@@ -1,7 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
-using DavidBrowning.Models.Writing;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.ViewModels;
 
 namespace DavidBrowning.Web.ViewModels.Writing;
@@ -14,9 +14,9 @@ public class IndexViewModel
 
    public required string Lede { get; init; }
 
-   public required IReadOnlyList<Post> Posts { get; init; }
+   public required IReadOnlyList<PublishedWriting> Posts { get; init; }
 
-   public required IReadOnlyList<Post> FeaturedPosts { get; init; }
+   public required IReadOnlyList<PublishedWriting> FeaturedPosts { get; init; }
 
    public required PagerViewModel Pager { get; init; }
 

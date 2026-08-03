@@ -2,6 +2,7 @@
 // Source-available for viewing only. No license granted.
 
 using DavidBrowning.Models;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.Models.Writing;
 
 namespace DavidBrowning.Infrastructure.Rendering;
@@ -15,6 +16,35 @@ public sealed class MarkdownPostContentRenderer
    }
 
    public Task<RenderedContent> RenderAsync(
+      PublishedTextContent content,
+      CancellationToken cancellationToken = default)
+   {
+      if (content.ContentFormat != ContentFormat.Markdown &&
+         content.ContentFormat != ContentFormat.PlainText)
+      {
+         throw new InvalidOperationException(
+            $"Unsupported post content format: {content.ContentFormat}.");
+      }
+
+      var markdown = content.Content ?? throw new InvalidOperationException(
+         $"PublishedTextContent does not contain content.");
+      var references = content.AssetLinks.Select(link =>
+      {
+         return new LinkedAssetReference()
+         {
+            Caption = link.Caption,
+            AltText = link.AltText,
+            AssetKey = link.AssetKey,
+            ReferenceKey = link.ReferenceKey,
+         };
+      }).ToList();
+
+      return _markdownRenderer.RenderAsync(
+         $"post-content:{content.CacheKey}",
+         markdown, references, cancellationToken);
+   }
+
+   public Task<RenderedContent> RenderAsync(
       PostRevision revision,
       IReadOnlyCollection<PostRevisionAssetLink> assetLinks,
       CancellationToken cancellationToken = default)
@@ -25,9 +55,8 @@ public sealed class MarkdownPostContentRenderer
             $"Unsupported post content format: {revision.ContentFormat}.");
       }
 
-      var markdown = revision.Content ??
-         throw new InvalidOperationException(
-            $"Post revision {revision.Id} does not contain content.");
+      var markdown = revision.Content ?? throw new InvalidOperationException(
+         $"Post revision {revision.Id} does not contain content.");
 
       var references = assetLinks
          .Select(link =>
@@ -50,9 +79,7 @@ public sealed class MarkdownPostContentRenderer
 
       return _markdownRenderer.RenderAsync(
          $"post-revision:{revision.Id}",
-         markdown,
-         references,
-         cancellationToken);
+         markdown, references, cancellationToken);
    }
 
    private readonly IMarkdownDocumentRenderer _markdownRenderer;

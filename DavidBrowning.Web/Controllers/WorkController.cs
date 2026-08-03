@@ -19,13 +19,11 @@ namespace DavidBrowning.Web.Controllers;
 public class WorkController : Controller
 {
    public WorkController(
-      IWorkStore workStore,
-      IProjectStore projectStore,
+      IPublishedSiteStore siteStore,
       JsonCache jsonCache,
       UrlBuilder urlBuilder)
    {
-      _workStore = workStore;
-      _projectStore = projectStore;
+      _siteStore = siteStore;
       _jsonCache = jsonCache;
       _urlBuilder = urlBuilder;
    }
@@ -88,9 +86,9 @@ public class WorkController : Controller
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Title);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Subtitle);
       ArgumentNullException.ThrowIfNullOrEmpty(hero.Lede);
-      var exp = await _workStore.GetExperienceAsync(cancellationToken);
-      var cred = await _workStore.GetCredentialsAsync(cancellationToken);
-      var projects = await _projectStore.GetFeaturedWorkProjectsAsync(
+      var exp = await _siteStore.GetExperienceAsync(cancellationToken);
+      var cred = await _siteStore.GetCredentialsAsync(cancellationToken);
+      var projects = await _siteStore.GetFeaturedWorkProjectsAsync(
          cancellationToken);
       return new()
       {
@@ -110,8 +108,7 @@ public class WorkController : Controller
       };
    }
 
-   private readonly IWorkStore _workStore;
-   private readonly IProjectStore _projectStore;
+   private readonly IPublishedSiteStore _siteStore;
    private readonly JsonCache _jsonCache;
    private readonly UrlBuilder _urlBuilder;
 }

@@ -25,12 +25,12 @@ public class AboutController : Controller
       JsonCache cache,
       UrlBuilder urlBuilder,
       IContentPipeline contentPipeline,
-      IUncategorizedStore uncategorizedStore)
+      IPublishedSiteStore siteStore)
    {
       _jsonCache = cache;
       _urlBuilder = urlBuilder;
       _contentPipeline = contentPipeline;
-      _uncategorizedStore = uncategorizedStore;
+      _siteStore = siteStore;
    }
 
    public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -58,20 +58,13 @@ public class AboutController : Controller
       var aboutMe = await _contentPipeline.GetRenderedContentAsync(
          "documents/about.txt", null, cancellationToken);
 
-      var interests = await _uncategorizedStore.GetInterestsAsync(
-         cancellationToken);
+      var interests = await _siteStore.GetInterestsAsync(cancellationToken);
       List<InterestCardViewModel> interestCards = new();
       foreach (var interest in interests)
       {
          var card = new InterestCardViewModel(interest);
          interestCards.Add(card);
       }
-
-      //var interestCardTasks = interests
-      //   .Select(interest => GetInterestCardViewModel(
-      //      interest,
-      //      cancellationToken));
-      //var interestCards = await Task.WhenAll(interestCardTasks);
 
       return new IndexViewModel()
       {
@@ -93,6 +86,6 @@ public class AboutController : Controller
 
    private readonly JsonCache _jsonCache;
    private readonly UrlBuilder _urlBuilder;
-   private readonly IUncategorizedStore _uncategorizedStore;
+   private readonly IPublishedSiteStore _siteStore;
    private readonly IContentPipeline _contentPipeline;
 }

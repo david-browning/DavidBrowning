@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using DavidBrowning.Infrastructure.Assets;
-using DavidBrowning.Models.Published;
+using DavidBrowning.Models.Publishing;
 using Microsoft.Extensions.Options;
 
 namespace DavidBrowning.Infrastructure.Publishing;
@@ -44,7 +43,7 @@ public sealed class PublicSitePublisher : IPublicSitePublisher
       var writeResult = await WriteToStoreAsync(
          snapshotKey, snapshot, cancellationToken);
       PublishedSiteManifest manifest = new(snapshot, snapshotKey);
-
+      
       var commitPointResult = await WriteToStoreAsync(
          _options.ManifestKey, manifest, cancellationToken);
       return new PublishResult()

@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace DavidBrowning.Models.Published;
+namespace DavidBrowning.Models.Publishing;
 
 public sealed class PublishedSiteManifest
 {

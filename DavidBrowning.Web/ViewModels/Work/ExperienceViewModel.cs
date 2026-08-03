@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.Models.Work;
 
 namespace DavidBrowning.Web.ViewModels.Work;
@@ -11,6 +12,14 @@ public sealed class ExperienceViewModel
 {
    [SetsRequiredMembers]
    public ExperienceViewModel(Experience exp)
+   {
+      CompanyName = exp.CompanyName;
+      LocationDisplayText = exp.LocationDisplayText;
+      Roles = exp.Roles.Select(r => new ExperienceRoleViewModel(r)).ToList();
+   }
+
+   [SetsRequiredMembers]
+   public ExperienceViewModel(PublishedExperience exp)
    {
       CompanyName = exp.CompanyName;
       LocationDisplayText = exp.LocationDisplayText;

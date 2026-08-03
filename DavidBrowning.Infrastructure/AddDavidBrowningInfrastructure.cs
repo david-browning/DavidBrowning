@@ -593,6 +593,7 @@ public static class ServiceCollectionExtensions
              serviceProvider.GetRequiredService<RenderedContentMemoryCache>());
       });
 
+      services.AddSingleton<PublishedTextContentRenderer>();
       services.AddSingleton<MarkdownPostContentRenderer>();
       services.AddSingleton<MarkdownProjectContentRenderer>();
 

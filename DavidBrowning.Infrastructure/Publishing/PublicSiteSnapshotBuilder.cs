@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
-using DavidBrowning.Models.Published;
+using DavidBrowning.Models.Publishing;
 
 namespace DavidBrowning.Infrastructure.Publishing;
 
@@ -39,8 +39,11 @@ public sealed class PublicSiteSnapshotBuilder : IPublicSiteSnapshotBuilder
       var experience = await BuildExperienceAsync(cancellationToken);
       var credentials = await BuildCredentialsAsync(cancellationToken);
       var interests = await BuildInterestsAsync(cancellationToken);
+      var projectTags = await _projectStore.GetProjectTagsAsync(cancellationToken);
+      var projectStacks = await _projectStore.GetProjectStackTagsAsync(cancellationToken);
+      var writingTags = await _writingStore.GetTagsAsync(cancellationToken);
 
-      return new PublishedSiteSnapshot
+      return new PublishedSiteSnapshot()
       {
          Version = version,
          PublishedAtUtc = publishedAtUtc,
@@ -49,6 +52,12 @@ public sealed class PublicSiteSnapshotBuilder : IPublicSiteSnapshotBuilder
          Experience = experience,
          Credentials = credentials,
          Interests = interests,
+         AllProjectProjectTags = projectTags.Select(
+            t => new PublishedLookup(t)).ToList(),
+         AllProjectStacks = projectStacks.Select(
+            t => new PublishedLookup(t)).ToList(),
+         AllWritingTags = writingTags.Select(
+            t => new PublishedLookup(t)).ToList(),
       };
    }
 

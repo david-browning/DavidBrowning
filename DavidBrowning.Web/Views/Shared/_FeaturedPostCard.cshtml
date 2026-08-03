@@ -1,7 +1,7 @@
 ﻿@* Copyright © 2026 David Browning. All rights reserved.
    Source-available for viewing only. No license granted. *@
 @inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
-@model DavidBrowning.Models.Writing.Post
+@model DavidBrowning.Models.Publishing.PublishedWriting
 @{
 	var url = urlBuilder.GetDetailsUrl(Model.Slug, "writing");
 }

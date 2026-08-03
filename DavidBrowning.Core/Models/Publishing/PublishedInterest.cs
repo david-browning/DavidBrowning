@@ -2,10 +2,9 @@
 // Source-available for viewing only. No license granted.
 
 using System.Diagnostics.CodeAnalysis;
-using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
 
-namespace DavidBrowning.Models.Published;
+namespace DavidBrowning.Models.Publishing;
 
 public sealed class PublishedInterest
 {
@@ -52,6 +51,8 @@ public sealed class PublishedFeaturedPostLink
 
    public string? Summary { get; set; }
 
+   public required PostStatus Status { get; set; }
+
    public PublishedFeaturedPostLink()
    {
 
@@ -65,5 +66,6 @@ public sealed class PublishedFeaturedPostLink
       Slug = post.Slug;
       Title = post.Title;
       Summary = post.Summary;
+      Status = post.Status;
    }
 }

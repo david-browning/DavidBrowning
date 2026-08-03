@@ -7,11 +7,9 @@ namespace DavidBrowning.Infrastructure.Publishing;
 
 public sealed class PublicSitePublicationOptions
 {
-   public string ManifestKey { get; set; } =
-      "published/current.json";
+   public string ManifestKey { get; set; } = FixedAssetKeys.SiteManifestKey;
 
-   public string SnapshotPrefix { get; set; } =
-      "published/snapshots";
+   public string SnapshotPrefix { get; set; } = "published/snapshots";
 }
 
 public sealed record PublishResult

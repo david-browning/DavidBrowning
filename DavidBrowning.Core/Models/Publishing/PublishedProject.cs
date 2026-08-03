@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models.Projects;
 using DavidBrowning.Models.Writing;
 
-namespace DavidBrowning.Models.Published;
+namespace DavidBrowning.Models.Publishing;
 
 public sealed class PublishedProject
 {

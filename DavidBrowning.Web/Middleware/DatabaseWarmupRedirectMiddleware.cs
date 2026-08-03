@@ -64,12 +64,12 @@ public class DatabaseWarmupRedirectMiddleware
    {
       string path = requestPath.Value ?? string.Empty;
 
-      if (SkippedExactPaths.Contains(path, StringComparer.OrdinalIgnoreCase))
+      if (_skippedExactPaths.Contains(path, StringComparer.OrdinalIgnoreCase))
       {
          return true;
       }
 
-      return SkippedPathPrefixes.Any(prefix => PathStartsWithSegment(path, prefix));
+      return _skippedPathPrefixes.Any(prefix => PathStartsWithSegment(path, prefix));
    }
 
    private static bool PathStartsWithSegment(
@@ -133,12 +133,12 @@ public class DatabaseWarmupRedirectMiddleware
    private readonly RequestDelegate _next;
    private readonly ILogger<DatabaseWarmupRedirectMiddleware> _logger;
 
-   private static readonly string[] SkippedExactPaths =
+   private static readonly string[] _skippedExactPaths =
    {
       "/favicon.ico",
    };
 
-   private static readonly string[] SkippedPathPrefixes =
+   private static readonly string[] _skippedPathPrefixes =
    {
       "/system/warming-up",
       "/api/warmup",
