@@ -200,6 +200,60 @@ public class AzureBlobPublishedSiteStore : IPublishedSiteStore
          w => w.Slug.EqualsOrdinalIgnoreCase(slug));
    }
 
+   public async Task<PublishedLookup?> GetProjectTagAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   {
+      var data = await GetSnapshotAsync(cancellationToken);
+      return data.AllProjectProjectTags.FirstOrDefault(
+         t => t.Slug.EqualsOrdinalIgnoreCase(slug));
+   }
+
+   public async Task<PublishedLookup?> GetProjectStackTagAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   {
+      var data = await GetSnapshotAsync(cancellationToken);
+      return data.AllProjectStacks.FirstOrDefault(
+         s => s.Slug.EqualsOrdinalIgnoreCase(slug));
+   }
+
+   public async Task<PublishedLookup?> GetProjectStatusAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   {
+      var data = await GetSnapshotAsync(cancellationToken);
+      return data.Projects.FirstOrDefault(
+         p => p.ProjectStatus.Slug.EqualsOrdinalIgnoreCase(slug))?.ProjectStatus;
+   }
+
+   public async Task<PublishedLookup?> GetProjectOriginAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   {
+      var data = await GetSnapshotAsync(cancellationToken);
+      return data.Projects.FirstOrDefault(
+         p => p.ProjectOrigin.Slug.EqualsOrdinalIgnoreCase(slug))?.ProjectOrigin;
+   }
+
+   public async Task<PublishedLookup?> GetProjectTypeAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   {
+      var data = await GetSnapshotAsync(cancellationToken);
+      return data.Projects.FirstOrDefault(
+         p => p.ProjectType.Slug.EqualsOrdinalIgnoreCase(slug))?.ProjectType;
+   }
+
+   public async Task<PublishedLookup?> GetWritingTagAsync(
+      string slug,
+      CancellationToken cancellationToken = default)
+   {
+      var data = await GetSnapshotAsync(cancellationToken);
+      return data.AllWritingTags.FirstOrDefault(
+         t => t.Slug.EqualsOrdinalIgnoreCase(slug));
+   }
+
    public async Task WarmupAsync(CancellationToken cancellationToken = default)
    {
       await GetSnapshotAsync(cancellationToken);

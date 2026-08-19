@@ -4,12 +4,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DavidBrowning.Infrastructure;
-using DavidBrowning.Infrastructure.Assets;
 using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
-using DavidBrowning.Models.Projects;
 using DavidBrowning.Web.ViewModels;
 using DavidBrowning.Web.ViewModels.Projects;
 using Microsoft.AspNetCore.Mvc;
@@ -23,28 +21,16 @@ public class ProjectsController : Controller
 {
    public ProjectsController(
       JsonCache jsonCache,
-      IContentPipeline contentPipeline,
       IPublishedSiteStore siteStore,
       ISlugService slugService,
       UrlBuilder urlBuilder,
       StructuredDataBuilder dataBuilder,
-      MarkdownProjectContentRenderer projectRenderer,
-      ISlugLookupService<ProjectStackTag> stackLookup,
-      ISlugLookupService<ProjectOrigin> originLookup,
-      ISlugLookupService<ProjectType> typeLookup,
-      ISlugLookupService<ProjectStatus> statusLookup,
-      ISlugLookupService<ProjectTag> tagLookup)
+      MarkdownProjectContentRenderer projectRenderer)
    {
       _jsonCache = jsonCache;
-      _contentPipeline = contentPipeline;
       _siteStore = siteStore;
       _urlBuilder = urlBuilder;
       _slugService = slugService;
-      _stackLookup = stackLookup;
-      _originLookup = originLookup;
-      _typeLookup = typeLookup;
-      _statusLookup = statusLookup;
-      _tagLookup = tagLookup;
       _projectContentRenderer = projectRenderer;
       _jsonDataBuilder = dataBuilder;
    }
@@ -72,7 +58,7 @@ public class ProjectsController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var stack = await _stackLookup.GetBySlugAsync(
+      var stack = await _siteStore.GetProjectStackTagAsync(
          normalizedSlug, cancellationToken);
       if (stack == null)
       {
@@ -112,7 +98,7 @@ public class ProjectsController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var status = await _statusLookup.GetBySlugAsync(
+      var status = await _siteStore.GetProjectStatusAsync(
          normalizedSlug, cancellationToken);
       if (status == null)
       {
@@ -152,7 +138,7 @@ public class ProjectsController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var origin = await _originLookup.GetBySlugAsync(
+      var origin = await _siteStore.GetProjectOriginAsync(
          normalizedSlug, cancellationToken);
       if (origin == null)
       {
@@ -191,7 +177,7 @@ public class ProjectsController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var type = await _typeLookup.GetBySlugAsync(
+      var type = await _siteStore.GetProjectTypeAsync(
          normalizedSlug, cancellationToken);
       if (type == null)
       {
@@ -224,7 +210,7 @@ public class ProjectsController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var tag = await _tagLookup.GetBySlugAsync(
+      var tag = await _siteStore.GetProjectTagAsync(
          normalizedSlug, cancellationToken);
       if (tag == null)
       {
@@ -314,15 +300,9 @@ public class ProjectsController : Controller
    }
 
    private readonly JsonCache _jsonCache;
-   private readonly IContentPipeline _contentPipeline;
    private readonly IPublishedSiteStore _siteStore;
    private readonly ISlugService _slugService;
    private readonly MarkdownProjectContentRenderer _projectContentRenderer;
-   private readonly ISlugLookupService<ProjectStackTag> _stackLookup;
-   private readonly ISlugLookupService<ProjectOrigin> _originLookup;
-   private readonly ISlugLookupService<ProjectType> _typeLookup;
-   private readonly ISlugLookupService<ProjectStatus> _statusLookup;
-   private readonly ISlugLookupService<ProjectTag> _tagLookup;
    private readonly UrlBuilder _urlBuilder;
    private readonly StructuredDataBuilder _jsonDataBuilder;
 }

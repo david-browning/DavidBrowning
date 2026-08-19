@@ -32,7 +32,6 @@ public class WritingController : Controller
       UrlBuilder urlBuilder,
       IPublishedSiteStore siteStore,
       ISlugService slugs,
-      ISlugLookupService<WritingTag> tagStore,
       StructuredDataBuilder jsonDataBuilder)
    {
       _pageSize = configurationManager.GetValue<int>("Content:PageSize");
@@ -40,7 +39,6 @@ public class WritingController : Controller
       _postRendered = postRendered;
       _siteStore = siteStore;
       _slugService = slugs;
-      _tagLookup = tagStore;
       _urlBuilder = urlBuilder;
       _jsonDataBuilder = jsonDataBuilder;
    }
@@ -80,7 +78,7 @@ public class WritingController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var tag = await _tagLookup.GetBySlugAsync(
+      var tag = await _siteStore.GetWritingTagAsync(
          normalizedSlug, cancellationToken);
       if (tag == null)
       {
@@ -196,7 +194,6 @@ public class WritingController : Controller
    private readonly UrlBuilder _urlBuilder;
    private readonly IPublishedSiteStore _siteStore;
    private readonly ISlugService _slugService;
-   private readonly ISlugLookupService<WritingTag> _tagLookup;
    private readonly MarkdownPostContentRenderer _postRendered;
    private readonly StructuredDataBuilder _jsonDataBuilder;
 }

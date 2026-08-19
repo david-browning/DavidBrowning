@@ -78,5 +78,29 @@ public interface IPublishedSiteStore
       string slug,
       CancellationToken cancellationToken = default);
 
+   Task<PublishedLookup?> GetProjectTagAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+
+   Task<PublishedLookup?> GetProjectStackTagAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+
+   Task<PublishedLookup?> GetProjectStatusAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+
+   Task<PublishedLookup?> GetProjectOriginAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+
+   Task<PublishedLookup?> GetProjectTypeAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+
+   Task<PublishedLookup?> GetWritingTagAsync(
+      string slug,
+      CancellationToken cancellationToken = default);
+
    Task WarmupAsync(CancellationToken cancellationToken = default);
 }
