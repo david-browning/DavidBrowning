@@ -7,4 +7,6 @@ public static class FixedAssetKeys
    public const string ResumePDFAssetKey = "documents/resume.pdf";
 
    public const string EmptyContentAssetKey = "empty-asset.txt";
+
+   public const string SiteManifestKey = "published/current.json";
 }

@@ -1,7 +1,7 @@
 ﻿// Copyright © 2026 David Browning. All rights reserved.
 // Source-available for viewing only. No license granted.
 using System.Collections.Generic;
-using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.Publishing;
 
 namespace DavidBrowning.Web.ViewModels.Work;
 
@@ -24,7 +24,7 @@ public sealed class IndexViewModel
    /// <summary>
    /// Featured projects from work. No personal projects.
    /// </summary>
-   public required IReadOnlyList<Project> FeaturedWorkProjects { get; init; }
+   public required IReadOnlyList<PublishedProject> FeaturedWorkProjects { get; init; }
 
    /// <summary>
    /// List of education credentials and certifications.

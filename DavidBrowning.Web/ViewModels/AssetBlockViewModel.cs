@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.Publishing;
 
 namespace DavidBrowning.Web.ViewModels;
 
@@ -42,6 +43,17 @@ public sealed class AssetBlockViewModel
       Caption = link.Caption;
       WidthPixels = asset.WidthPixels;
       HeightPixels = asset.HeightPixels;
+   }
+
+   [SetsRequiredMembers]
+   public AssetBlockViewModel(PublishedAssetBlock block)
+   {
+      AssetKey = block.AssetKey;
+      ContentType = block.ContentType;
+      Caption = block.Caption;
+      AltText = block.AltText;
+      WidthPixels = block.WidthPixels;
+      HeightPixels = block.HeightPixels;
    }
 
    public required string AssetKey { get; init; }

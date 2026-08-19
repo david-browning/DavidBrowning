@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.Models.Work;
 
 namespace DavidBrowning.Web.ViewModels.Work;
@@ -16,6 +17,15 @@ public sealed class ExperienceRoleViewModel
       Title = role.Title;
       Description = role.Description;
       Bullets = role.Bullets.Select(b => b.Text).ToList();
+   }
+
+   [SetsRequiredMembers]
+   public ExperienceRoleViewModel(PublishedExperienceRole role)
+   {
+      DateDisplayText = role.DateDisplayText;
+      Title = role.Title;
+      Description = role.Description;
+      Bullets = role.Bullets;
    }
 
    public string? DateDisplayText { get; init; }

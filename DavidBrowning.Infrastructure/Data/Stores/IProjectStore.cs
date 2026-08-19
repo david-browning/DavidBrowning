@@ -9,6 +9,9 @@ public interface IProjectStore
    Task<IReadOnlyList<Project>> GetPublishedProjectsAsync(
       CancellationToken cancellationToken = default);
 
+   Task<IReadOnlyList<Project>> GetPublishedProjectsWithDetailsAsync(
+      CancellationToken cancellationToken = default);
+
    Task<PagedResult<Project>> GetPagedPublishedProjectsAsync(
       int page,
       int pageSize,

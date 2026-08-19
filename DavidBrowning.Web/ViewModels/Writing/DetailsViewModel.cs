@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using DavidBrowning.Models;
-using DavidBrowning.Models.Writing;
+using DavidBrowning.Models.Publishing;
 
 namespace DavidBrowning.Web.ViewModels.Writing;
 
@@ -12,7 +12,7 @@ public class DetailsViewModel
 {
    [SetsRequiredMembers]
    public DetailsViewModel(
-      Post post,
+      PublishedWriting post,
       RenderedContent body,
       SeoMetadataViewModel seo)
    {
@@ -50,7 +50,7 @@ public class DetailsViewModel
 
    public required RenderedContent Body { get; set; }
 
-   public required ICollection<PostTag> TagLinks { get; init; }
+   public required IReadOnlyCollection<PublishedPostTag> TagLinks { get; init; }
 
    public required SeoMetadataViewModel Seo { get; init; }
 }

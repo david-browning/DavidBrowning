@@ -3,6 +3,7 @@
 using System.Text.Json.Nodes;
 using DavidBrowning.Infrastructure.Options;
 using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.Models.Writing;
 using Microsoft.Extensions.Options;
 
@@ -44,10 +45,37 @@ public class StructuredDataBuilder
       return result;
    }
 
+   public JsonObject CreateWritingPostMetadata(PublishedWriting post)
+   {
+      var result = new JsonObject
+      {
+         ["@context"] = "https://schema.org",
+         ["@type"] = "BlogPosting",
+         ["headline"] = post.Title,
+         ["description"] = post.Summary,
+         ["url"] = _urlBuilder.GetAbsoluteUrl($"/writing/{post.Slug}"),
+         ["datePublished"] = post.PublishedDateUtc?.ToString("O") ??
+            post.LastUpdatedDateUtc.ToString("O"),
+         ["dateModified"] = post.LastUpdatedDateUtc.ToString("O"),
+         ["author"] = CreateAuthor(),
+      };
+
+      //if (!string.IsNullOrWhiteSpace(imageUrl))
+      //{
+      //   result["image"] = imageUrl;
+      //}
+
+      return result;
+   }
+
    public JsonObject CreateProjectMetadata(Project project)
    {
       return new JsonObject();
+   }
 
+   public JsonObject CreateProjectMetadata(PublishedProject project)
+   {
+      return new JsonObject();
    }
 
    private JsonObject CreateAuthor()

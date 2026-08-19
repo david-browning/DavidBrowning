@@ -5,7 +5,7 @@
 	A project card is a wide (takes up the whole width) card with the overview
 	and key details of a project.
 *@
-@model DavidBrowning.Models.Projects.Project
+@model DavidBrowning.Models.Publishing.PublishedProject
 @inject DavidBrowning.Infrastructure.UrlBuilder urlBuilder
 @{
 	var url = urlBuilder.GetDetailsUrl(Model.Slug, "projects");

@@ -10,6 +10,7 @@ using DavidBrowning.Infrastructure.Cache;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
 using DavidBrowning.Models;
+using DavidBrowning.Models.Publishing;
 using DavidBrowning.Models.Writing;
 using DavidBrowning.ViewModels;
 using DavidBrowning.Web.ViewModels;
@@ -29,17 +30,15 @@ public class WritingController : Controller
       JsonCache jsonCache,
       MarkdownPostContentRenderer postRendered,
       UrlBuilder urlBuilder,
-      IWritingStore writingStore,
+      IPublishedSiteStore siteStore,
       ISlugService slugs,
-      ISlugLookupService<WritingTag> tagStore,
       StructuredDataBuilder jsonDataBuilder)
    {
       _pageSize = configurationManager.GetValue<int>("Content:PageSize");
       _jsonCache = jsonCache;
       _postRendered = postRendered;
-      _writingStore = writingStore;
+      _siteStore = siteStore;
       _slugService = slugs;
-      _tagLookup = tagStore;
       _urlBuilder = urlBuilder;
       _jsonDataBuilder = jsonDataBuilder;
    }
@@ -79,14 +78,14 @@ public class WritingController : Controller
       }
 
       var normalizedSlug = _slugService.CleanSlug(slug);
-      var tag = await _tagLookup.GetBySlugAsync(
+      var tag = await _siteStore.GetWritingTagAsync(
          normalizedSlug, cancellationToken);
       if (tag == null)
       {
          return NotFound();
       }
 
-      var results = await _writingStore.GetPublishedPostsByTagSlugAsync(
+      var results = await _siteStore.GetPublishedWritingsByTagSlugAsync(
          normalizedSlug, cancellationToken);
       FilteredResultsViewModel model = new()
       {
@@ -116,18 +115,15 @@ public class WritingController : Controller
          return NotFound();
       }
 
-      var post = await _writingStore.GetPublishedPostBySlugAsync(
-         slug, cancellationToken);
-
+      var post = await _siteStore.GetWritingBySlugAsync(slug, cancellationToken);
       if (post is null)
       {
          return NotFound();
       }
 
-      PostRevision? revision = post.CurrentRevision;
+      var revision = post.CurrentRevision;
       RenderedContent body = revision is not null ?
-         await _postRendered.RenderAsync(
-            revision, revision.AssetLinks.ToList(), cancellationToken) :
+         await _postRendered.RenderAsync(revision, cancellationToken) :
          RenderedContent.Empty;
       SeoMetadataViewModel seo = new()
       {
@@ -159,12 +155,12 @@ public class WritingController : Controller
       int page,
       CancellationToken cancellationToken)
    {
-      var pagedPosts = await _writingStore.GetPagedPublishedPostsAsync(
+      var pagedPosts = await _siteStore.GetWritingPageAsync(
          page, _pageSize, cancellationToken);
 
-      IReadOnlyList<Post> featuredPosts = page == 1 ?
-         await _writingStore.GetFeaturedPostsAsync(cancellationToken) :
-         Array.Empty<Post>();
+      IReadOnlyList<PublishedWriting> featuredPosts = page == 1 ?
+         await _siteStore.GetFeaturedWritingsAsync(cancellationToken) :
+         Array.Empty<PublishedWriting>();
 
       var hero = await _jsonCache.GetJsonFileContentAsync<HeroData>(
          "heros/writing.json", cancellationToken);
@@ -196,9 +192,8 @@ public class WritingController : Controller
    private readonly int _pageSize;
    private readonly JsonCache _jsonCache;
    private readonly UrlBuilder _urlBuilder;
-   private readonly IWritingStore _writingStore;
+   private readonly IPublishedSiteStore _siteStore;
    private readonly ISlugService _slugService;
-   private readonly ISlugLookupService<WritingTag> _tagLookup;
    private readonly MarkdownPostContentRenderer _postRendered;
    private readonly StructuredDataBuilder _jsonDataBuilder;
 }

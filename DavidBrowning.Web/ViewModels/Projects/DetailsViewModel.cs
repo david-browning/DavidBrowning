@@ -3,9 +3,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DavidBrowning.Helpers;
 using DavidBrowning.Models;
-using DavidBrowning.Models.Projects;
+using DavidBrowning.Models.Publishing;
 
 namespace DavidBrowning.Web.ViewModels.Projects;
 
@@ -13,7 +12,7 @@ public class DetailsViewModel
 {
    [SetsRequiredMembers]
    public DetailsViewModel(
-      Project project,
+      PublishedProject project,
       RenderedContent? body,
       SeoMetadataViewModel seo)
    {
@@ -30,12 +29,7 @@ public class DetailsViewModel
       TagLinks = project.TagLinks;
       StackTagLinks = project.StackTagLinks;
       Links = project.Links;
-      AssetBlocks = project.AssetLinks
-         .Where(link =>
-            !link.ProjectAssetRole!.Slug.EqualsOrdinalIgnoreCase(
-               "details-content"))
-         .OrderBy(link => link.ProjectAssetRole!.SortOrder)
-         .ThenBy(link => link.SortOrder)
+      AssetBlocks = project.AssetBlocks
          .Select(link => new AssetBlockViewModel(link))
          .ToList();
       RelatedPosts = project.RelatedPosts;
@@ -56,11 +50,11 @@ public class DetailsViewModel
 
    public RenderedContent? Body { get; init; }
 
-   public required ICollection<ProjectTagLink> TagLinks { get; init; }
-   public required ICollection<ProjectStackTagLink> StackTagLinks { get; init; }
-   public required ICollection<ProjectLink> Links { get; init; }
-   public required IReadOnlyList<AssetBlockViewModel> AssetBlocks { get; init; }
-   public required ICollection<ProjectPost> RelatedPosts { get; init; }
+   public required IReadOnlyCollection<PublishedProjectTagLink> TagLinks { get; init; }
+   public required IReadOnlyCollection<PublishedProjectStackTagLink> StackTagLinks { get; init; }
+   public required IReadOnlyCollection<PublishedProjectLink> Links { get; init; }
+   public required IReadOnlyCollection<AssetBlockViewModel> AssetBlocks { get; init; }
+   public required IReadOnlyCollection<PublishedProjectPost> RelatedPosts { get; init; }
 
    public required SeoMetadataViewModel Seo { get; init; }
 }

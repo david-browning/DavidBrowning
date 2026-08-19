@@ -12,6 +12,7 @@ using DavidBrowning.Infrastructure;
 using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Infrastructure.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DavidBrowning.Admin.Controllers;

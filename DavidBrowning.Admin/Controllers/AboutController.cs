@@ -14,6 +14,7 @@ using DavidBrowning.Infrastructure.Data;
 using DavidBrowning.Infrastructure.Data.Stores;
 using DavidBrowning.Models;
 using DavidBrowning.Models.Writing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 

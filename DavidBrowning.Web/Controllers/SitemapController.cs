@@ -23,14 +23,12 @@ public class SitemapController : Controller
       UrlBuilder urlBuilder,
       JsonCache jsonCache,
       SitemapBuilder sitemap,
-      IProjectStore projectStore,
-      IWritingStore writingStore)
+      IPublishedSiteStore siteStore)
    {
       _hostEnvironment = hostEnvironment;
       _urlBuilder = urlBuilder;
       _sitemapBuilder = sitemap;
-      _projectStore = projectStore;
-      _writingStore = writingStore;
+      _siteStore = siteStore;
       _jsonCache = jsonCache;
    }
 
@@ -56,15 +54,17 @@ public class SitemapController : Controller
       var entries = publicPages.ToList();
 
       // Add published writings and projects
-      var posts = await _writingStore.GetPublishedPostsAsync(cancellationToken);
+      //var posts = await _writingStore.GetPublishedPostsAsync(cancellationToken);
+      var posts = await _siteStore.GetPublishedWritingsAsync(cancellationToken);
       entries.AddRange(posts.Select(post => new SitemapEntry()
       {
          RelativePath = _urlBuilder.GetDetailsUrl(post.Slug, "writing"),
          LastModifiedUtc = post.LastUpdatedDateUtc,
       }));
 
-      var projects = await _projectStore.GetPublishedProjectsAsync(
-         cancellationToken);
+      //var projects = await _projectStore.GetPublishedProjectsAsync(
+      //   cancellationToken);
+      var projects = await _siteStore.GetProjectsAsync(cancellationToken);
       entries.AddRange(projects.Select(project => new SitemapEntry()
       {
          RelativePath = _urlBuilder.GetDetailsUrl(project.Slug, "projects"),
@@ -72,14 +72,18 @@ public class SitemapController : Controller
       }));
 
       // Add all the project tags and stacks
-      var projectTags = await _projectStore.GetProjectTagsAsync(
+      //var projectTags = await _projectStore.GetProjectTagsAsync(
+      //   cancellationToken);
+      var projectTags = await _siteStore.GetAllProjectTagsAsync(
          cancellationToken);
       entries.AddRange(projectTags.Select(tag => new SitemapEntry()
       {
          RelativePath = _urlBuilder.GetFilterUrl(tag.Slug, "projects", "tags"),
       }));
 
-      var projectStacks = await _projectStore.GetProjectStackTagsAsync(
+      //var projectStacks = await _projectStore.GetProjectStackTagsAsync(
+      //   cancellationToken);
+      var projectStacks = await _siteStore.GetAllProjectStackTagsAsync(
          cancellationToken);
       entries.AddRange(projectStacks.Select(stack => new SitemapEntry()
       {
@@ -88,7 +92,8 @@ public class SitemapController : Controller
       }));
 
       // Add all the writing tags
-      var postTags = await _writingStore.GetTagsAsync(cancellationToken);
+      //var postTags = await _writingStore.GetTagsAsync(cancellationToken);
+      var postTags = await _siteStore.GetAllWritingTagsAsync(cancellationToken);
       entries.AddRange(postTags.Select(tag => new SitemapEntry()
       {
          RelativePath = _urlBuilder.GetFilterUrl(tag.Slug, "writing", "tags"),
@@ -99,8 +104,7 @@ public class SitemapController : Controller
    }
 
    private readonly IHostEnvironment _hostEnvironment;
-   private readonly IProjectStore _projectStore;
-   private readonly IWritingStore _writingStore;
+   private readonly IPublishedSiteStore _siteStore;
    private readonly SitemapBuilder _sitemapBuilder;
    private readonly JsonCache _jsonCache;
    private readonly UrlBuilder _urlBuilder;

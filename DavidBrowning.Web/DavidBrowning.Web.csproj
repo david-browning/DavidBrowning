@@ -11,8 +11,14 @@
    </PropertyGroup>
 
    <ItemGroup>
+     <Compile Remove="ViewModels\Error\**" />
+     <Content Remove="ViewModels\Error\**" />
+     <EmbeddedResource Remove="ViewModels\Error\**" />
+     <None Remove="ViewModels\Error\**" />
+   </ItemGroup>
+
+   <ItemGroup>
       <Folder Include="ContentAssets\Images\" />
-      <Folder Include="ViewModels\Error\" />
    </ItemGroup>
    <ItemGroup>
       <None Update="ContentAssets\**\*.*">

@@ -12,16 +12,10 @@ public sealed class SqlProjectStore : IProjectStore
 {
    public SqlProjectStore(
       ILogger<SqlProjectStore> logger,
-      SiteDbContext context,
-      ISlugLookupService<ProjectOrigin> originLookup,
-      ISlugLookupService<ProjectStatus> statusLookup,
-      ISlugLookupService<ProjectVisibility> visibleLookup)
+      SiteDbContext context)
    {
       _logger = logger;
       _dbContext = context;
-      _originLookup = originLookup;
-      _statusLookup = statusLookup;
-      _visibilityLookup = visibleLookup;
    }
 
    public async Task<IReadOnlyList<Project>> GetPublishedProjectsAsync(
@@ -34,12 +28,25 @@ public sealed class SqlProjectStore : IProjectStore
          .ToListAsync(cancellationToken);
    }
 
+   public async Task<IReadOnlyList<Project>> GetPublishedProjectsWithDetailsAsync(
+      CancellationToken cancellationToken = default)
+   {
+      var query = await BuildPublishedProjectDetailQueryAsync(cancellationToken);
+
+      return await query
+         .OrderBy(project => project.SortOrder)
+         .ThenBy(project => project.Name)
+         .ToListAsync(cancellationToken);
+   }
+
    public async Task<IReadOnlyList<Project>> GetFeaturedWorkProjectsAsync(
       CancellationToken cancellationToken = default)
    {
-      var workOrigin = await _originLookup.GetIdBySlugAsync(
-         "professional", cancellationToken);
-      if (workOrigin == null)
+      //var workOrigin = await _originLookup.GetIdBySlugAsync(
+      //   "professional", cancellationToken);
+      var workRow = await _dbContext.ProjectOrigins.FirstOrDefaultAsync(
+         e => e.Slug == "professional");
+      if (workRow == null)
       {
          throw new InvalidOperationException(
             "Required project origin 'professional' was not found while " +
@@ -48,7 +55,7 @@ public sealed class SqlProjectStore : IProjectStore
 
       var query = await BuildPublishedProjectQueryAsync(cancellationToken);
       return await query
-         .Where(project => project.ProjectOriginId == workOrigin)
+         .Where(project => project.ProjectOriginId == workRow.Id)
          .OrderBy(project => project.SortOrder)
          .ThenBy(project => project.Name)
          .ToListAsync(cancellationToken);
@@ -105,36 +112,13 @@ public sealed class SqlProjectStore : IProjectStore
       CancellationToken cancellationToken = default)
    {
       ArgumentException.ThrowIfNullOrWhiteSpace(slug);
-      var publicId = await _visibilityLookup.GetIdBySlugAsync(
-        "public", cancellationToken);
 
-      return await _dbContext.Projects
-         .AsNoTracking()
-         .AsSplitQuery()
-         .Where(project => project.Slug == slug)
-         .Where(project => project.ProjectVisibilityId == publicId)
-         .Include(project => project.ProjectStatus)
-         .Include(project => project.ProjectVisibility)
-         .Include(project => project.ProjectOrigin)
-         .Include(project => project.ProjectType)
-         .Include(project => project.AssetLinks.OrderBy(link => link.SortOrder))
-            .ThenInclude(link => link.SiteAsset)
-         .Include(project => project.AssetLinks)
-            .ThenInclude(link => link.ProjectAssetRole)
-         .Include(project => project.TagLinks)
-            .ThenInclude(link => link.ProjectTag)
-         .Include(project => project.StackTagLinks)
-            .ThenInclude(link => link.ProjectStackTag)
-         .Include(project => project.Links.OrderBy(link => link.SortOrder))
-            .ThenInclude(link => link.ProjectLinkType)
-         .Include(project => project.RelatedPosts.OrderBy(post => post.SortOrder))
-            .ThenInclude(project => project.Post)
-               .ThenInclude(post => post!.Tags)
-                  .ThenInclude(tag => tag.WritingTag)
-         .Include(project => project.RelatedPosts)
-            .ThenInclude(project => project.Post)
-               .ThenInclude(post => post!.PostStyle)
-         .SingleOrDefaultAsync(cancellationToken);
+      var query = await BuildPublishedProjectDetailQueryAsync(
+         cancellationToken);
+
+      return await query.SingleOrDefaultAsync(
+         project => project.Slug == slug,
+         cancellationToken);
    }
 
    public async Task<IReadOnlyList<Project>> GetFeaturedProjectsAsync(
@@ -884,10 +868,12 @@ public sealed class SqlProjectStore : IProjectStore
    private async Task<IQueryable<Project>> BuildPublishedProjectQueryAsync(
       CancellationToken cancellationToken)
    {
-      var publicId = await _visibilityLookup.GetIdBySlugAsync(
-         "public", cancellationToken);
+      //var publicId = await _visibilityLookup.GetIdBySlugAsync(
+      //   "public", cancellationToken);
+      var publicRow = await _dbContext.ProjectVisibilities.FirstOrDefaultAsync(
+         e => e.Slug == "public");
 
-      if (publicId == null)
+      if (publicRow == null)
       {
          throw new InvalidOperationException(
             "Required project visibility 'public' was not found.");
@@ -895,7 +881,7 @@ public sealed class SqlProjectStore : IProjectStore
 
       return _dbContext.Projects
          .AsNoTracking()
-         .Where(project => project.ProjectVisibilityId == publicId)
+         .Where(project => project.ProjectVisibilityId == publicRow.Id)
          .Include(project => project.ProjectStatus)
          .Include(project => project.ProjectVisibility)
          .Include(project => project.ProjectOrigin)
@@ -904,6 +890,35 @@ public sealed class SqlProjectStore : IProjectStore
             .ThenInclude(link => link.ProjectTag)
          .Include(project => project.StackTagLinks)
             .ThenInclude(link => link.ProjectStackTag);
+   }
+
+   private async Task<IQueryable<Project>>
+      BuildPublishedProjectDetailQueryAsync(
+         CancellationToken cancellationToken)
+   {
+      var query = await BuildPublishedProjectQueryAsync(
+         cancellationToken);
+
+      return query
+         .AsSplitQuery()
+         .Include(project =>
+            project.AssetLinks.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.SiteAsset)
+         .Include(project =>
+            project.AssetLinks.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.ProjectAssetRole)
+         .Include(project =>
+            project.Links.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.ProjectLinkType)
+         .Include(project =>
+            project.RelatedPosts.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.Post)
+               .ThenInclude(post => post!.Tags)
+                  .ThenInclude(tag => tag.WritingTag)
+         .Include(project =>
+            project.RelatedPosts.OrderBy(link => link.SortOrder))
+            .ThenInclude(link => link.Post)
+               .ThenInclude(post => post!.PostStyle);
    }
 
    private static void ReplaceProjectTagLinks(
@@ -1015,7 +1030,4 @@ public sealed class SqlProjectStore : IProjectStore
 
    private readonly ILogger<SqlProjectStore> _logger;
    private readonly SiteDbContext _dbContext;
-   private readonly ISlugLookupService<ProjectOrigin> _originLookup;
-   private readonly ISlugLookupService<ProjectStatus> _statusLookup;
-   private readonly ISlugLookupService<ProjectVisibility> _visibilityLookup;
 }
